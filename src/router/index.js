@@ -16,7 +16,12 @@ const routes = [
     // 懒加载路由
     component: () => import("../components/Login.vue"),
   },
-  // 可以添加更多路由...
+  {
+    path: "/main",
+    name: "main",
+    // 懒加载路由
+    component: () => import("../components/Main.vue"),
+  },
 ];
 
 const router = createRouter({
