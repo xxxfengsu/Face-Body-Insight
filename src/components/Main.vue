@@ -252,7 +252,7 @@ const handleSubmit = () => {
     .upload-box {
       width: 90%;
       max-width: 400px;
-      height: 70px;
+      height: 100px;
       border: 2px dashed #ccc;
       border-radius: 15px;
       display: flex;
