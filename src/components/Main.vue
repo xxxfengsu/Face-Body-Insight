@@ -36,21 +36,21 @@
             :class="{ active: selectedBox === 0 }"
             @click="selectBox(0)"
           >
-            <img src="../assets/logo.png" alt="Face close-up" />
+            <img src="../assets/body_icon.png" alt="Face close-up" />
           </div>
           <div
             class="select-box"
             :class="{ active: selectedBox === 1 }"
             @click="selectBox(1)"
           >
-            <img src="../assets/logo.png" alt="Face portrait" />
+            <img src="../assets/face_icon.png" alt="Face portrait" />
           </div>
           <div
             class="select-box"
             :class="{ active: selectedBox === 2 }"
             @click="selectBox(2)"
           >
-            <img src="../assets/logo.png" alt="Full body" />
+            <img src="../assets/half_icon.png" alt="Full body" />
           </div>
         </div>
       </div>
