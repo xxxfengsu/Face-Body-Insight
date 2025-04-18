@@ -1,24 +1,32 @@
 <template>
   <div class="main">
     <div class="backPic">
-      <div class="head">
-        <div
-          @click="changeRoute(1)"
-          :class="activeRoute == 1 ? 'activeRoute' : ''"
-        >
-          Uploading
-        </div>
-        <div
-          @click="changeRoute(2)"
-          :class="activeRoute == 2 ? 'activeRoute' : ''"
-        >
-          Report
-        </div>
-        <div
-          @click="changeRoute(3)"
-          :class="activeRoute == 3 ? 'activeRoute' : ''"
-        >
-          History
+      <div class="head-container">
+        <div class="head" ref="headScroll">
+          <div
+            @click="changeRoute(1)"
+            :class="activeRoute == 1 ? 'activeRoute' : ''"
+          >
+            Uploading
+          </div>
+          <div
+            @click="changeRoute(2)"
+            :class="activeRoute == 2 ? 'activeRoute' : ''"
+          >
+            Report
+          </div>
+          <div
+            @click="changeRoute(3)"
+            :class="activeRoute == 3 ? 'activeRoute' : ''"
+          >
+            History
+          </div>
+          <div
+            @click="changeRoute(4)"
+            :class="activeRoute == 4 ? 'activeRoute' : ''"
+          >
+            Change Clothes
+          </div>
         </div>
       </div>
       <div class="changeMode">
@@ -69,31 +77,64 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
 let activeRoute = ref(1);
-let selectedBox = ref(1); // Default middle box selected
+let selectedBox = ref(1);
 const fileInput = ref(null);
+const headScroll = ref(null);
+const router = useRouter();
 
-// 适配移动设备视口高度
+// 添加触摸滑动相关变量
+let touchStartX = 0;
+let scrollLeft = 0;
+
 onMounted(() => {
-  // 设置视口高度变量
+  // 原有的视口高度适配代码保持不变
   const setVh = () => {
     let vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty("--vh", `${vh}px`);
   };
-
-  // 初始设置
   setVh();
-
-  // 处理窗口大小变化
   window.addEventListener("resize", setVh);
-
-  // iOS Safari需要额外延迟设置高度
   setTimeout(setVh, 100);
+
+  // 添加触摸事件监听
+  const headElement = headScroll.value;
+  if (headElement) {
+    headElement.addEventListener("touchstart", handleTouchStart, {
+      passive: true,
+    });
+    headElement.addEventListener("touchmove", handleTouchMove, {
+      passive: true,
+    });
+    headElement.addEventListener("touchend", handleTouchEnd, { passive: true });
+  }
 });
+
+// 触摸事件处理函数
+const handleTouchStart = (e) => {
+  touchStartX = e.touches[0].pageX;
+  scrollLeft = headScroll.value.scrollLeft;
+};
+
+const handleTouchMove = (e) => {
+  if (!touchStartX) return;
+  const x = e.touches[0].pageX;
+  const walk = (touchStartX - x) * 2; // 滚动速度系数
+  headScroll.value.scrollLeft = scrollLeft + walk;
+};
+
+const handleTouchEnd = () => {
+  touchStartX = null;
+};
 
 const changeRoute = (index) => {
   activeRoute.value = index;
+  if (index === 4) {
+    // Change Clothes 选项
+    router.push("/change-clothes");
+  }
 };
 
 const selectBox = (index) => {
@@ -107,13 +148,11 @@ const triggerFileUpload = () => {
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
-    // Handle file upload logic here
     console.log("File selected:", file.name);
   }
 };
 
 const handleSubmit = () => {
-  // Handle form submission
   console.log("Form submitted");
 };
 </script>
@@ -149,14 +188,56 @@ const handleSubmit = () => {
     max-width: 500px;
     margin-bottom: 20px;
 
-    .head {
-      display: flex;
-      justify-content: space-around;
-      color: #fff;
-      padding-top: 1.5rem;
-      margin-bottom: 1rem;
-      .activeRoute {
-        text-decoration: underline;
+    .head-container {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+
+      &::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 20px;
+        background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.3));
+        pointer-events: none;
+      }
+
+      .head {
+        display: flex;
+        color: #fff;
+        padding: 1.5rem 1rem;
+        margin-bottom: 1rem;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+        white-space: nowrap;
+        gap: 1.5rem;
+        padding-right: 2rem; /* 为渐变留出空间 */
+
+        &::-webkit-scrollbar {
+          display: none; /* Chrome, Safari and Opera */
+        }
+
+        div {
+          padding: 0.5rem 1rem;
+          cursor: pointer;
+          position: relative;
+          flex-shrink: 0;
+          transition: all 0.3s ease;
+
+          &.activeRoute {
+            text-decoration: underline;
+            font-weight: 500;
+          }
+
+          &:not(:last-child) {
+            margin-right: 0.5rem;
+          }
+        }
       }
     }
 

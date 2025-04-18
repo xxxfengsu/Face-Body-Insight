@@ -22,6 +22,11 @@ const routes = [
     // 懒加载路由
     component: () => import("../components/Main.vue"),
   },
+  {
+    path: "/change-clothes",
+    name: "changeClothes",
+    component: () => import("../components/ChangeClothes.vue"),
+  },
 ];
 
 const router = createRouter({
