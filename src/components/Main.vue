@@ -72,12 +72,20 @@
 
       <button class="go-button" @click="handleSubmit">GO</button>
     </div>
+
+    <!-- 内容容器 -->
+    <div class="content-container">
+      <Uploading v-if="activeRoute === 1" />
+      <History v-if="activeRoute === 3" />
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+// import History from "./History.vue";
+// import Uploading from "./Uploading.vue";
 
 let activeRoute = ref(1);
 let selectedBox = ref(1);
@@ -134,6 +142,9 @@ const changeRoute = (index) => {
   if (index === 4) {
     // Change Clothes 选项
     router.push("/change-clothes");
+  } else if (index === 2) {
+    // Report 选项
+    router.push("/report");
   }
 };
 
