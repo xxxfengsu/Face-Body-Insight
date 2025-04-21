@@ -6,9 +6,9 @@
       </div>
     </div>
     <div class="navigation">
-      <div>Uploading</div>
-      <div class="active">Report</div>
-      <div>History</div>
+      <div @click="changeRoute(1)">Uploading</div>
+      <div @click="changeRoute(2)" class="active">Report</div>
+      <div @click="changeRoute(3)">History</div>
     </div>
     <div class="report-content">
       <!-- 内容区域可滑动 -->
@@ -216,6 +216,19 @@ const handleTouchEnd = () => {
   // 重置触摸变量
   touchStartX = 0;
   touchEndX = 0;
+};
+
+const changeRoute = (index) => {
+  if (index === 1) {
+    // Change Clothes 选项
+    router.push("/main");
+  } else if (index === 2) {
+    // Report 选项
+    router.push("/report");
+  } else if (index === 3) {
+    // History 选项
+    router.push("/history");
+  }
 };
 </script>
 

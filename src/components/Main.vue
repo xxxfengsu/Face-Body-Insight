@@ -145,6 +145,9 @@ const changeRoute = (index) => {
   } else if (index === 2) {
     // Report 选项
     router.push("/report");
+  } else if (index === 3) {
+    // History 选项
+    router.push("/history");
   }
 };
 

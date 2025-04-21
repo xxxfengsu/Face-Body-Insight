@@ -32,6 +32,11 @@ const routes = [
     name: "report",
     component: () => import("../components/Report.vue"),
   },
+  {
+    path: "/history",
+    name: "history",
+    component: () => import("../components/History.vue"),
+  },
 ];
 
 const router = createRouter({
