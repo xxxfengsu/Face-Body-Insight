@@ -229,7 +229,7 @@ const handleSubmit = () => {
         scrollbar-width: none; /* Firefox */
         -ms-overflow-style: none; /* IE and Edge */
         white-space: nowrap;
-        gap: 1.5rem;
+        gap: 0.5rem;
         padding-right: 2rem; /* 为渐变留出空间 */
 
         &::-webkit-scrollbar {
