@@ -41,8 +41,18 @@
     </div>
 
     <!-- 显示百分比值（可选） -->
-    <div class="percentage-display">{{ sliderPercentage }}%</div>
+    <!-- <div class="percentage-display">{{ sliderPercentage }}%</div> -->
+    <div class="iconBar">
+      <div class="cutOut_icon"></div>
+      <div class="rotate_icon"></div>
+      <div class="xR_icon"></div>
+      <div class="yRicon"></div>
+    </div>
 
+    <div class="btnBar">
+      <div class="btn">分析</div>
+      <div class="btn">换装</div>
+    </div>
     <!-- <div class="edit-controls">
       <div class="control-row">
         <button @click="rotateLeft"><span>↺</span> 向左旋转</button>
@@ -194,6 +204,7 @@ const startDrag = (event) => {
   if (event.type.includes("mouse")) {
     event.preventDefault();
   }
+  event.preventDefault();
 };
 
 // 拖动过程
@@ -220,6 +231,7 @@ const drag = (event) => {
   if (event.type.includes("mouse")) {
     event.preventDefault();
   }
+  event.preventDefault();
 };
 
 // 结束拖动
@@ -307,6 +319,46 @@ const goBack = () => {
 </script>
 
 <style lang="less" scoped>
+.btnBar {
+  width: 100%;
+  height: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  .btn {
+    padding: 12px 34px;
+    display: flex;
+    align-items: center;
+    color: white;
+    border: 1px solid #fff;
+    border-radius: 1rem;
+  }
+}
+.iconBar {
+  width: 100%;
+  height: 2rem;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 1rem;
+  div {
+    width: 20px;
+    height: 20px;
+    background-size: cover;
+  }
+  .cutOut_icon {
+    background-image: url(../assets/icon/cutOut_icon.png);
+  }
+  .rotate_icon {
+    background-image: url(../assets/icon/rotate_icon.png);
+  }
+  .xR_icon {
+    background-image: url(../assets/icon/xR_icon.png);
+  }
+  .yRicon {
+    background-image: url(../assets/icon/yRicon.png);
+  }
+}
 .image-editor {
   display: flex;
   flex-direction: column;
