@@ -92,6 +92,7 @@ let selectedBox = ref(1);
 const fileInput = ref(null);
 const headScroll = ref(null);
 const router = useRouter();
+const uploadedImageUrl = ref(null);
 
 // 添加触摸滑动相关变量
 let touchStartX = 0;
@@ -162,12 +163,34 @@ const triggerFileUpload = () => {
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
-    console.log("File selected:", file.name);
+    console.log("File selected:", file);
+    // 创建一个临时URL用于图片预览
+    uploadedImageUrl.value = URL.createObjectURL(file);
+
+    // 显示编辑选项
+    showEditOptions();
+  }
+};
+
+// 添加新方法: 显示编辑选项
+const showEditOptions = () => {
+  if (uploadedImageUrl.value) {
+    // 使用确认对话框询问用户是否要编辑图片
+    if (confirm("是否要编辑图片？")) {
+      // 将图片URL存储在本地存储中，以便在编辑页面加载
+      localStorage.setItem("editImage", uploadedImageUrl.value);
+      // 导航到图片编辑页面
+      router.push({
+        path: "/image-editor",
+        query: { imageUrl: uploadedImageUrl.value },
+      });
+    }
   }
 };
 
 const handleSubmit = () => {
   console.log("Form submitted");
+  // 可以在这里添加表单提交逻辑
 };
 </script>
 

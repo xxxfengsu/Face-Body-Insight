@@ -37,6 +37,11 @@ const routes = [
     name: "history",
     component: () => import("../components/History.vue"),
   },
+  {
+    path: "/image-editor",
+    name: "imageEditor",
+    component: () => import("../components/ImageEditor.vue"),
+  },
 ];
 
 const router = createRouter({
