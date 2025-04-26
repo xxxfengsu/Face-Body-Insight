@@ -13,9 +13,9 @@
         class="image-wrapper"
         @wheel="handleZoom"
         @mousedown="startPan"
-        @touchstart="startPan"
+        @touchstart.prevent="startPan"
         @mousemove="pan"
-        @touchmove="pan"
+        @touchmove.prevent="pan"
         @mouseup="endPan"
         @touchend="endPan"
         @mouseleave="endPan"
@@ -286,29 +286,53 @@ const toggleYrotationMode = () => {
 const handleKeyDown = (event) => {
   if (cropMode.value) {
     const step = event.shiftKey ? 10 : 1;
+    const imgRect = imageElement.value.getBoundingClientRect();
+    const containerRect = imageContainer.value.getBoundingClientRect();
+
+    // 图片在容器中的相对位置
+    const imgLeft = imgRect.left - containerRect.left;
+    const imgTop = imgRect.top - containerRect.top;
+    const imgRight = imgLeft + imgRect.width;
+    const imgBottom = imgTop + imgRect.height;
+
+    let newLeft = cropBoxLeft.value;
+    let newTop = cropBoxTop.value;
+
     switch (event.key) {
       case "ArrowLeft":
-        cropBoxLeft.value -= step;
-        event.preventDefault();
+        newLeft = cropBoxLeft.value - step;
         break;
       case "ArrowRight":
-        cropBoxLeft.value += step;
-        event.preventDefault();
+        newLeft = cropBoxLeft.value + step;
         break;
       case "ArrowUp":
-        cropBoxTop.value -= step;
-        event.preventDefault();
+        newTop = cropBoxTop.value - step;
         break;
       case "ArrowDown":
-        cropBoxTop.value += step;
-        event.preventDefault();
+        newTop = cropBoxTop.value + step;
         break;
     }
+
+    // 确保裁剪框在图片边界内
+    newLeft = Math.max(
+      imgLeft,
+      Math.min(newLeft, imgRight - cropBoxWidth.value)
+    );
+    newTop = Math.max(
+      imgTop,
+      Math.min(newTop, imgBottom - cropBoxHeight.value)
+    );
+
+    cropBoxLeft.value = newLeft;
+    cropBoxTop.value = newTop;
+
+    event.preventDefault();
   }
 };
 
 // 开始裁剪框调整大小
 const startResize = (event, corner) => {
+  // 停止事件传播和默认行为
   event.stopPropagation();
   event.preventDefault();
 
@@ -332,8 +356,8 @@ const startResize = (event, corner) => {
   };
 
   // 添加事件监听器
-  document.addEventListener("mousemove", handleResize);
-  document.addEventListener("touchmove", handleResize);
+  document.addEventListener("mousemove", handleResize, { passive: false });
+  document.addEventListener("touchmove", handleResize, { passive: false });
   document.addEventListener("mouseup", endResize);
   document.addEventListener("touchend", endResize);
 };
@@ -354,33 +378,70 @@ const handleResize = (event) => {
 
   const initial = initialCropValues.value;
 
+  // 获取图片边界
+  const imgRect = imageElement.value.getBoundingClientRect();
+  const containerRect = imageContainer.value.getBoundingClientRect();
+
+  // 图片在容器中的相对位置
+  const imgLeft = imgRect.left - containerRect.left;
+  const imgTop = imgRect.top - containerRect.top;
+  const imgRight = imgLeft + imgRect.width;
+  const imgBottom = imgTop + imgRect.height;
+
+  // 临时存储计算后的值，稍后会应用边界限制
+  let newLeft = initial.left;
+  let newTop = initial.top;
+  let newWidth = initial.width;
+  let newHeight = initial.height;
+
   // 根据不同角落进行调整
   switch (resizeCorner.value) {
     case "topLeft":
-      cropBoxLeft.value = initial.left + deltaX;
-      cropBoxTop.value = initial.top + deltaY;
-      cropBoxWidth.value = initial.width - deltaX;
-      cropBoxHeight.value = initial.height - deltaY;
+      newLeft = initial.left + deltaX;
+      newTop = initial.top + deltaY;
+      newWidth = initial.width - deltaX;
+      newHeight = initial.height - deltaY;
       break;
     case "topRight":
-      cropBoxTop.value = initial.top + deltaY;
-      cropBoxWidth.value = initial.width + deltaX;
-      cropBoxHeight.value = initial.height - deltaY;
+      newTop = initial.top + deltaY;
+      newWidth = initial.width + deltaX;
+      newHeight = initial.height - deltaY;
       break;
     case "bottomLeft":
-      cropBoxLeft.value = initial.left + deltaX;
-      cropBoxWidth.value = initial.width - deltaX;
-      cropBoxHeight.value = initial.height + deltaY;
+      newLeft = initial.left + deltaX;
+      newWidth = initial.width - deltaX;
+      newHeight = initial.height + deltaY;
       break;
     case "bottomRight":
-      cropBoxWidth.value = initial.width + deltaX;
-      cropBoxHeight.value = initial.height + deltaY;
+      newWidth = initial.width + deltaX;
+      newHeight = initial.height + deltaY;
       break;
   }
 
-  // 确保宽高不为负
-  if (cropBoxWidth.value < 20) cropBoxWidth.value = 20;
-  if (cropBoxHeight.value < 20) cropBoxHeight.value = 20;
+  // 应用边界限制
+  // 确保裁剪框不会超出图片边界
+  newLeft = Math.max(imgLeft, Math.min(newLeft, imgRight - 20));
+  newTop = Math.max(imgTop, Math.min(newTop, imgBottom - 20));
+
+  // 确保裁剪框的右边界不超出图片
+  if (newLeft + newWidth > imgRight) {
+    newWidth = imgRight - newLeft;
+  }
+
+  // 确保裁剪框的下边界不超出图片
+  if (newTop + newHeight > imgBottom) {
+    newHeight = imgBottom - newTop;
+  }
+
+  // 确保宽高不小于最小值
+  newWidth = Math.max(newWidth, 20);
+  newHeight = Math.max(newHeight, 20);
+
+  // 应用计算后的值
+  cropBoxLeft.value = newLeft;
+  cropBoxTop.value = newTop;
+  cropBoxWidth.value = newWidth;
+  cropBoxHeight.value = newHeight;
 
   event.preventDefault();
 };
@@ -431,9 +492,9 @@ const startPan = (event) => {
   initialTranslateX.value = translateX.value;
   initialTranslateY.value = translateY.value;
 
-  if (event.type.includes("mouse")) {
-    event.preventDefault();
-  }
+  // 阻止默认行为 - 不管是鼠标还是触摸事件
+  event.preventDefault();
+  event.stopPropagation();
 };
 
 // 图片平移
@@ -455,9 +516,9 @@ const pan = (event) => {
   translateX.value = initialTranslateX.value + deltaX;
   translateY.value = initialTranslateY.value + deltaY;
 
-  if (event.type.includes("mouse")) {
-    event.preventDefault();
-  }
+  // 阻止默认行为 - 不管是鼠标还是触摸事件
+  event.preventDefault();
+  event.stopPropagation();
 };
 
 // 结束图片平移
@@ -605,6 +666,12 @@ const resetEdits = () => {
     // 退出裁剪模式
     cropMode.value = false;
   }
+  if (xRotationMode.value) {
+    xRotationMode.value = false;
+  }
+  if (yRotationMode.value) {
+    yRotationMode.value = false;
+  }
 };
 
 // 保存编辑
@@ -679,7 +746,7 @@ const goBack = () => {
     position: relative;
     overflow: hidden;
     background-color: rgba(255, 255, 255, 0.3);
-    height: 65%;
+    height: 55%;
     width: 80%;
     margin: 0 auto;
     perspective: 1000px; /* 为3D旋转添加透视效果 */
