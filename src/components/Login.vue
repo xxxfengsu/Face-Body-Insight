@@ -3,21 +3,18 @@
     <img src="../assets/baseDeepPic.png" alt="Background" class="bg-image" />
     <div class="overlay">
       <div class="header">
-        <div class="back-button">
+        <div class="back-button" @click="goBack">
           <span>&lt;</span>
-        </div>
-        <div class="logo">
-          <img src="../assets/logo.png" alt="Logo" />
         </div>
       </div>
 
       <div class="login-form">
-        <h1 class="title">Sign In</h1>
+        <h1 class="title">{{ $t("login.title") }}</h1>
 
         <div class="input-group">
           <input
             type="text"
-            placeholder="Username"
+            :placeholder="$t('login.username')"
             v-model="username"
             class="form-input"
           />
@@ -26,43 +23,63 @@
         <div class="input-group">
           <input
             type="password"
-            placeholder="Password"
+            :placeholder="$t('login.password')"
             v-model="password"
             class="form-input"
           />
         </div>
 
-        <button class="go-button" @click="login">GO</button>
+        <button class="go-button" @click="login">
+          {{ $t("login.loginButton") }}
+        </button>
       </div>
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { useLanguage } from "../composables/useLanguage";
+import { userApi } from "../api";
 
-export default {
-  name: "Login",
-  setup() {
-    const router = useRouter();
-    const username = ref("");
-    const password = ref("");
+const router = useRouter();
+const { t } = useI18n();
+// 使用语言钩子获取当前语言和切换语言方法
+const { currentLanguage, changeLanguage } = useLanguage();
 
-    const login = () => {
-      // 这里添加登录逻辑
-      console.log("Login attempt:", username.value, password.value);
+const username = ref("");
+const password = ref("");
+
+const goBack = () => {
+  router.push("/");
+};
+
+const login = async () => {
+  try {
+    const data = {
+      captchaId: "1",
+      username: username.value,
+      password: password.value,
+    };
+    const res = await userApi.login(data);
+
+    // 登录成功，存储token到sessionStorage
+    if (res && res.data && res.data.token) {
+      sessionStorage.setItem("token", res.data.token);
+      console.log("登录成功，token已保存");
 
       // 登录成功后跳转
       router.push("/main");
-    };
-
-    return {
-      username,
-      password,
-      login,
-    };
-  },
+    } else {
+      console.error("登录失败：未获取到token");
+      alert(t("login.loginFailed"));
+    }
+  } catch (error) {
+    console.error("登录出错:", error);
+    alert(t("login.loginFailed"));
+  }
 };
 </script>
 
@@ -101,6 +118,7 @@ export default {
   display: flex;
   justify-content: space-between;
   width: 100%;
+  align-items: center;
 }
 
 .back-button {

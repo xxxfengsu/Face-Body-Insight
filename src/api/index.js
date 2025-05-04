@@ -19,12 +19,18 @@ service.interceptors.request.use(
   (config) => {
     // 开发环境下打印请求信息
     if (import.meta.env.DEV) {
+      // 可以在这里打印请求信息
     }
 
-    // 添加token等通用请求头
-    const token = localStorage.getItem("token");
+    // 添加token等通用请求头 - 从sessionStorage获取
+    const token = sessionStorage.getItem("token");
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
+
+      // 如果是FormData类型的请求，也将token添加到FormData中
+      if (config.data instanceof FormData && !config.data.has("token")) {
+        config.data.append("token", token);
+      }
     }
     return config;
   },
@@ -120,19 +126,10 @@ export const clothesApi = {
 
 // 用户相关的 API 封装
 export const userApi = {
-  // 获取用户信息
-  getUserInfo() {
+  login(data) {
     return service({
-      url: "/user/info",
-      method: "get",
-    });
-  },
-
-  // 更新用户信息
-  updateUserInfo(data) {
-    return service({
-      url: "/user/info",
-      method: "put",
+      url: "/base/login",
+      method: "post",
       data,
     });
   },

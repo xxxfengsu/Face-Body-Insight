@@ -810,6 +810,12 @@ const saveEdits = async () => {
     formData.append("classId", "4");
     formData.append("force", "false");
 
+    // 获取token并添加到formData
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      formData.append("token", token);
+    }
+
     console.log("准备上传文件:", file.name, file.size);
 
     // 调用API上传文件

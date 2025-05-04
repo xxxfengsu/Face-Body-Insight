@@ -5,7 +5,7 @@
         <span>&lt;</span>
       </div>
       <div class="title">
-        <span class="active">Change Clothes</span>
+        <span class="active">{{ $t("changeClothes.title") }}</span>
       </div>
     </div>
 
@@ -32,7 +32,9 @@
       </div>
     </div>
 
-    <div v-if="loading" class="loading-overlay">Loading...</div>
+    <div v-if="loading" class="loading-overlay">
+      {{ $t("changeClothes.loading") }}
+    </div>
     <div v-if="error" class="error-message">
       {{ error }}
     </div>
@@ -42,12 +44,18 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { useLanguage } from "../composables/useLanguage";
 import { clothesApi } from "@/api";
 import changeclothes from "../assets/changeclothes.png";
 import changeclothes1 from "../assets/changeclothes1.png";
 import changeclothes2 from "../assets/changeclothes2.png";
 
 const router = useRouter();
+const { t } = useI18n();
+// 使用语言钩子
+const { currentLanguage, changeLanguage } = useLanguage();
+
 const carousel = ref(null);
 const currentIndex = ref(0);
 let touchStartX = 0;
@@ -166,6 +174,7 @@ const handleTouchEnd = async (e) => {
     align-items: center;
     padding: 20px;
     color: white;
+    justify-content: space-between;
 
     .back {
       width: 36px;
@@ -182,6 +191,7 @@ const handleTouchEnd = async (e) => {
     .title {
       display: flex;
       gap: 20px;
+      flex-grow: 1;
 
       span {
         opacity: 0.6;

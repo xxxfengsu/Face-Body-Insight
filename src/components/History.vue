@@ -6,9 +6,11 @@
       </div>
     </div>
     <div class="navigation">
-      <div @click="changeRoute(1)">Uploading</div>
-      <div @click="changeRoute(2)">Report</div>
-      <div @click="changeRoute(3)" class="active">History</div>
+      <div @click="changeRoute(1)">{{ $t("main.uploading") }}</div>
+      <!-- <div @click="changeRoute(2)">{{ $t("report.title") }}</div> -->
+      <div @click="changeRoute(3)" class="active">
+        {{ $t("history.title") }}
+      </div>
     </div>
     <div class="report-content">
       <div class="search-container">
@@ -67,8 +69,14 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { useLanguage } from "../composables/useLanguage";
 
 const router = useRouter();
+const { t } = useI18n();
+// 使用语言钩子
+const { currentLanguage, changeLanguage } = useLanguage();
+
 const historyItems = ref([
   {},
   {},
@@ -78,7 +86,7 @@ const historyItems = ref([
   {},
   {},
   {},
-  {}, // 6 empty items to represent the document icons
+  {}, // 9 empty items to represent the document icons
 ]);
 
 const goBack = () => {
@@ -111,13 +119,13 @@ const changeRoute = (index) => {
   overflow-y: auto;
 
   .header {
-    padding: 20px 0;
+    padding: 20px;
     height: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
     .back {
-      position: absolute;
-      left: 20px;
-      top: 20px;
       width: 36px;
       height: 36px;
       border-radius: 50%;

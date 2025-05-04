@@ -11,8 +11,8 @@
           <img src="../assets/logo.png" alt="Logo" />
         </div>
       </div>
-      <h1 class="title">Let Your Beauty<br />Have A Trace To Follow</h1>
-      <p class="subtitle">Hua Xing</p>
+      <h1 class="title">{{ $t("home.title") }}</h1>
+      <p class="subtitle">{{ $t("home.subtitle") }}</p>
       <div class="go-button-wrapper">
         <transition name="slide-up">
           <div class="go-button-container" v-show="!isMoved">
@@ -25,7 +25,7 @@
               :class="{ moved: isMoved }"
               :style="{ transform: `translateY(${dragOffset}px)` }"
             >
-              GO
+              {{ $t("home.go") }}
             </button>
           </div>
         </transition>
@@ -37,11 +37,15 @@
 <script>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { useLanguage } from "../composables/useLanguage";
 
 export default {
   name: "BeautyIntroPage",
   setup() {
     const router = useRouter();
+    const { t } = useI18n();
+    const { currentLanguage, changeLanguage } = useLanguage();
     const isMoved = ref(false);
     const dragOffset = ref(0);
     const isDragging = ref(false);
@@ -94,12 +98,14 @@ export default {
       startDrag,
       onDrag,
       endDrag,
+      currentLanguage,
+      changeLanguage,
     };
   },
 };
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .page-container {
   position: fixed;
   width: 100%;

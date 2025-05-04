@@ -6,9 +6,9 @@
       </div>
     </div>
     <div class="navigation">
-      <div @click="changeRoute(1)">Uploading</div>
-      <div @click="changeRoute(2)" class="active">Report</div>
-      <div @click="changeRoute(3)">History</div>
+      <div @click="changeRoute(1)">{{ $t("main.uploading") }}</div>
+      <div @click="changeRoute(2)" class="active">{{ $t("report.title") }}</div>
+      <div @click="changeRoute(3)">{{ $t("main.history") }}</div>
     </div>
     <div class="report-content">
       <!-- 内容区域可滑动 -->
@@ -210,9 +210,14 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { useLanguage } from "../composables/useLanguage";
 
 const router = useRouter();
 const route = useRoute();
+const { t } = useI18n();
+// 使用语言钩子确保语言一致性
+const { currentLanguage } = useLanguage();
 const currentSlideIndex = ref(0);
 
 // 添加这段代码来接收参数

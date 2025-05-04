@@ -7,28 +7,47 @@
             @click="changeRoute(1)"
             :class="activeRoute == 1 ? 'activeRoute' : ''"
           >
-            Uploading
+            {{ $t("main.uploading") }}
           </div>
-          <div
+          <!-- <div
             @click="changeRoute(2)"
             :class="activeRoute == 2 ? 'activeRoute' : ''"
           >
             Report
-          </div>
+          </div> -->
           <div
             @click="changeRoute(3)"
             :class="activeRoute == 3 ? 'activeRoute' : ''"
           >
-            History
+            {{ $t("main.history") }}
           </div>
           <div
             @click="changeRoute(4)"
             :class="activeRoute == 4 ? 'activeRoute' : ''"
           >
-            Change Clothes
+            {{ $t("main.changeClothes") }}
           </div>
         </div>
       </div>
+
+      <!-- 语言切换按钮 -->
+      <div class="language-switcher">
+        <div
+          class="language-btn"
+          :class="{ active: currentLanguage === 'zh' }"
+          @click="changeLanguage('zh')"
+        >
+          中文
+        </div>
+        <div
+          class="language-btn"
+          :class="{ active: currentLanguage === 'en' }"
+          @click="changeLanguage('en')"
+        >
+          English
+        </div>
+      </div>
+
       <div class="changeMode">
         <div class="select-boxes">
           <div
@@ -57,7 +76,7 @@
     </div>
     <div class="formBox">
       <div class="input-number">
-        <input type="text" placeholder="type some infomation" />
+        <input type="text" :placeholder="$t('main.inputPlaceholder')" />
       </div>
 
       <div class="upload-box" @click="triggerFileUpload">
@@ -70,7 +89,9 @@
         <div class="plus-icon">+</div>
       </div>
 
-      <button class="go-button" @click="handleSubmit">GO</button>
+      <button class="go-button" @click="handleSubmit">
+        {{ $t("main.go") }}
+      </button>
     </div>
 
     <!-- 内容容器 -->
@@ -84,8 +105,15 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { useLanguage } from "../composables/useLanguage";
 // import History from "./History.vue";
 // import Uploading from "./Uploading.vue";
+
+// 获取i18n实例
+const { t } = useI18n();
+// 使用语言钩子
+const { currentLanguage, changeLanguage } = useLanguage();
 
 let activeRoute = ref(1);
 let selectedBox = ref(1);
@@ -99,6 +127,12 @@ let touchStartX = 0;
 let scrollLeft = 0;
 
 onMounted(() => {
+  // 获取存储的语言设置
+  const savedLanguage = localStorage.getItem("language");
+  if (savedLanguage) {
+    changeLanguage(savedLanguage);
+  }
+
   // 原有的视口高度适配代码保持不变
   const setVh = () => {
     let vh = window.innerHeight * 0.01;
@@ -120,23 +154,6 @@ onMounted(() => {
     headElement.addEventListener("touchend", handleTouchEnd, { passive: true });
   }
 });
-
-// 触摸事件处理函数
-const handleTouchStart = (e) => {
-  touchStartX = e.touches[0].pageX;
-  scrollLeft = headScroll.value.scrollLeft;
-};
-
-const handleTouchMove = (e) => {
-  if (!touchStartX) return;
-  const x = e.touches[0].pageX;
-  const walk = (touchStartX - x) * 2; // 滚动速度系数
-  headScroll.value.scrollLeft = scrollLeft + walk;
-};
-
-const handleTouchEnd = () => {
-  touchStartX = null;
-};
 
 const changeRoute = (index) => {
   activeRoute.value = index;
@@ -191,6 +208,23 @@ const showEditOptions = () => {
 const handleSubmit = () => {
   console.log("Form submitted");
   // 可以在这里添加表单提交逻辑
+};
+
+// 触摸事件处理函数
+const handleTouchStart = (e) => {
+  touchStartX = e.touches[0].pageX;
+  scrollLeft = headScroll.value.scrollLeft;
+};
+
+const handleTouchMove = (e) => {
+  if (!touchStartX) return;
+  const x = e.touches[0].pageX;
+  const walk = (touchStartX - x) * 2; // 滚动速度系数
+  headScroll.value.scrollLeft = scrollLeft + walk;
+};
+
+const handleTouchEnd = () => {
+  touchStartX = null;
 };
 </script>
 
@@ -324,6 +358,35 @@ const handleSubmit = () => {
             height: 2px;
             background-color: rgba(255, 165, 0, 0.7);
           }
+        }
+      }
+    }
+
+    // 添加语言切换按钮样式
+    .language-switcher {
+      position: absolute;
+      top: 5rem;
+      left: 20px;
+      display: flex;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+      .language-btn {
+        padding: 8px 12px;
+        color: white;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &.active {
+          background: rgba(255, 255, 255, 0.3);
+          font-weight: bold;
+        }
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.4);
         }
       }
     }
