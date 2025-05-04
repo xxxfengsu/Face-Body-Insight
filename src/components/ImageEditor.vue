@@ -112,6 +112,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { reportApi } from "@/api";
 
 const router = useRouter();
 const route = useRoute();
@@ -157,6 +158,16 @@ const startX = ref(0);
 const currentOffset = ref(0);
 const initialOffset = ref(0);
 const maxOffset = ref(300); // 最大滑动范围
+
+// 添加保存变换状态用的变量
+const savedTransformations = ref({
+  rotation: 0,
+  rotateX: 0,
+  rotateY: 0,
+  scale: 100,
+  translateX: 0,
+  translateY: 0,
+});
 
 // 计算ruler-marks的样式
 const marksStyle = computed(() => {
@@ -243,12 +254,30 @@ const imageStyle = computed(() => {
   };
 });
 
-// 切换裁剪模式
+// 修改切换裁剪模式函数
 const toggleCropMode = () => {
   cropMode.value = !cropMode.value;
 
   if (cropMode.value) {
-    // 进入裁剪模式时，初始化裁剪框的位置和大小
+    // 进入裁剪模式时，保存当前变换状态
+    savedTransformations.value = {
+      rotation: rotation.value,
+      rotateX: rotateX.value,
+      rotateY: rotateY.value,
+      scale: scale.value,
+      translateX: translateX.value,
+      translateY: translateY.value,
+    };
+
+    // 重置变换，回到未旋转状态，便于裁剪
+    rotation.value = 0;
+    rotateX.value = 0;
+    rotateY.value = 0;
+    scale.value = 100;
+    translateX.value = 0;
+    translateY.value = 0;
+
+    // 初始化裁剪框的位置和大小
     if (imageElement.value && imageContainer.value) {
       const container = imageContainer.value.getBoundingClientRect();
       const img = imageElement.value.getBoundingClientRect();
@@ -261,6 +290,14 @@ const toggleCropMode = () => {
       cropBoxLeft.value = (container.width - cropBoxWidth.value) / 2;
       cropBoxTop.value = (container.height - cropBoxHeight.value) / 2;
     }
+  } else {
+    // 退出裁剪模式时，恢复之前的变换状态
+    rotation.value = savedTransformations.value.rotation;
+    rotateX.value = savedTransformations.value.rotateX;
+    rotateY.value = savedTransformations.value.rotateY;
+    scale.value = savedTransformations.value.scale;
+    translateX.value = savedTransformations.value.translateX;
+    translateY.value = savedTransformations.value.translateY;
   }
 };
 
@@ -578,51 +615,81 @@ const endDrag = () => {
 const applyCrop = () => {
   if (!cropMode.value || !imageElement.value) return;
 
-  // 创建canvas来实现裁剪
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
+  // 创建两个canvas - 一个用于应用变换，一个用于裁剪
+  const transformCanvas = document.createElement("canvas");
+  const cropCanvas = document.createElement("canvas");
+  const transformCtx = transformCanvas.getContext("2d");
+  const cropCtx = cropCanvas.getContext("2d");
 
-  // 确保获取原始图像尺寸
   const img = imageElement.value;
+
+  // 首先，在第一个canvas上应用所有变换（旋转、缩放等）
+  transformCanvas.width = img.naturalWidth;
+  transformCanvas.height = img.naturalHeight;
+
+  // 应用变换 - 注意：与saveEdits函数中的变换保持一致
+  transformCtx.translate(transformCanvas.width / 2, transformCanvas.height / 2);
+  transformCtx.rotate((rotation.value * Math.PI) / 180);
+  transformCtx.scale(scale.value / 100, scale.value / 100);
+  transformCtx.translate(
+    -transformCanvas.width / 2,
+    -transformCanvas.height / 2
+  );
+
+  // 绘制原始图像到变换canvas上
+  transformCtx.drawImage(img, 0, 0);
 
   // 获取图像、裁剪框以及容器的位置和尺寸信息
   const imgRect = img.getBoundingClientRect();
   const cropRect = cropBox.value.getBoundingClientRect();
   const containerRect = imageContainer.value.getBoundingClientRect();
 
-  // 计算缩放和旋转后的图像在容器中的位置
-  const imgScaleFactor = img.naturalWidth / imgRect.width;
+  // 计算裁剪框在原始图像上的位置和大小
+  // 由于已经应用了变换，这需要考虑当前的缩放和位置
+  const scaleRatio = img.naturalWidth / (imgRect.width * (scale.value / 100));
 
-  // 计算裁剪框相对于图像的位置
-  const cropLeft =
-    (cropRect.left - containerRect.left - (imgRect.left - containerRect.left)) *
-    imgScaleFactor;
-  const cropTop =
-    (cropRect.top - containerRect.top - (imgRect.top - containerRect.top)) *
-    imgScaleFactor;
-  const cropWidth = cropRect.width * imgScaleFactor;
-  const cropHeight = cropRect.height * imgScaleFactor;
+  // 计算裁剪框相对于原图的位置，考虑平移和缩放
+  // 需要计算变换后图像中心相对于容器中心的偏移
+  const containerCenterX = containerRect.width / 2;
+  const containerCenterY = containerRect.height / 2;
 
-  // 设置canvas尺寸为裁剪区域大小
-  canvas.width = cropWidth;
-  canvas.height = cropHeight;
+  // 裁剪框相对于容器中心的位置
+  const cropRelativeX =
+    cropRect.left + cropRect.width / 2 - containerRect.left - containerCenterX;
+  const cropRelativeY =
+    cropRect.top + cropRect.height / 2 - containerRect.top - containerCenterY;
 
-  // 注意：这种简单方法无法完全处理复杂的3D变换
-  // 更完整的实现需要考虑旋转和3D变换
-  ctx.drawImage(
-    img,
-    cropLeft,
-    cropTop,
+  // 考虑旋转后的图像中心
+  const transformedCenterX = transformCanvas.width / 2;
+  const transformedCenterY = transformCanvas.height / 2;
+
+  // 计算裁剪区域在变换后图像上的位置
+  const cropX = transformedCenterX + cropRelativeX * scaleRatio;
+  const cropY = transformedCenterY + cropRelativeY * scaleRatio;
+
+  // 裁剪区域的宽高
+  const cropWidth = cropRect.width * scaleRatio;
+  const cropHeight = cropRect.height * scaleRatio;
+
+  // 设置裁剪canvas的尺寸
+  cropCanvas.width = cropWidth;
+  cropCanvas.height = cropHeight;
+
+  // 从变换后的图像中裁剪指定区域
+  cropCtx.drawImage(
+    transformCanvas,
+    cropX - cropWidth / 2, // 左上角X坐标
+    cropY - cropHeight / 2, // 左上角Y坐标
     cropWidth,
-    cropHeight, // 源图像裁剪区域
+    cropHeight,
     0,
     0,
     cropWidth,
-    cropHeight // 目标canvas区域
+    cropHeight
   );
 
-  // 将canvas转为图像数据URL
-  const croppedImageUrl = canvas.toDataURL("image/jpeg");
+  // 将裁剪后的图像转为URL
+  const croppedImageUrl = cropCanvas.toDataURL("image/jpeg");
 
   // 更新图片URL并退出裁剪模式
   imageUrl.value = croppedImageUrl;
@@ -675,34 +742,64 @@ const resetEdits = () => {
 };
 
 // 保存编辑
-const saveEdits = () => {
-  // 创建canvas来渲染变换后的图像
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
+const saveEdits = async () => {
+  try {
+    // 创建canvas来渲染变换后的图像
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    let processedImageUrl;
 
-  if (imageElement.value) {
-    // 设置canvas尺寸
-    canvas.width = imageElement.value.naturalWidth;
-    canvas.height = imageElement.value.naturalHeight;
+    if (imageElement.value) {
+      // 设置canvas尺寸
+      canvas.width = imageElement.value.naturalWidth;
+      canvas.height = imageElement.value.naturalHeight;
 
-    // 应用变换
-    ctx.translate(canvas.width / 2, canvas.height / 2);
-    ctx.rotate((rotation.value * Math.PI) / 180);
-    ctx.scale(scale.value / 100, scale.value / 100);
-    ctx.translate(-canvas.width / 2, -canvas.height / 2);
+      // 应用变换
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((rotation.value * Math.PI) / 180);
+      ctx.scale(scale.value / 100, scale.value / 100);
+      ctx.translate(-canvas.width / 2, -canvas.height / 2);
 
-    // 绘制图像
-    ctx.drawImage(imageElement.value, 0, 0);
+      // 绘制图像
+      ctx.drawImage(imageElement.value, 0, 0);
 
-    // 将canvas转为图像数据
-    const processedImageUrl = canvas.toDataURL("image/jpeg");
-    localStorage.setItem("lastEditedImage", processedImageUrl);
-  } else {
-    localStorage.setItem("lastEditedImage", imageUrl.value);
+      // 将canvas转为图像数据
+      processedImageUrl = canvas.toDataURL("image/jpeg");
+      localStorage.setItem("lastEditedImage", processedImageUrl);
+    } else {
+      processedImageUrl = imageUrl.value;
+      localStorage.setItem("lastEditedImage", imageUrl.value);
+    }
+
+    // 将base64数据转换为Blob
+    const base64Response = await fetch(processedImageUrl);
+    const blob = await base64Response.blob();
+
+    // 创建文件对象
+    const file = new File([blob], "edited_image.jpg", { type: "image/jpeg" });
+
+    // 创建FormData对象
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("classId", "1");
+    formData.append("force", "false");
+
+    console.log("准备上传文件:", file.name, file.size);
+
+    // 调用API上传文件
+    const res = await reportApi.getReport(formData);
+
+    console.log("上传结果:", res);
+
+    // 上传成功后跳转，并传递结果数据
+    router.push({
+      path: "/report",
+      query: { reportData: JSON.stringify(res.data) },
+    });
+  } catch (error) {
+    console.error("保存或上传过程中出错:", error);
+    alert("图片保存失败，请重试");
   }
-
-  // 返回主页
-  router.push("/main");
 };
 
 // 返回上一页

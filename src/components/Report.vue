@@ -176,15 +176,35 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { ref, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
 
 const router = useRouter();
+const route = useRoute();
 const currentSlideIndex = ref(0);
+
+// 添加这段代码来接收参数
+const reportData = computed(() => {
+  if (route.query.reportData) {
+    try {
+      return JSON.parse(route.query.reportData);
+    } catch (e) {
+      console.error("解析报告数据失败:", e);
+      return null;
+    }
+  }
+  return null;
+});
+
+// 可以在组件初始化时打印一下数据
+if (reportData.value) {
+  console.log("接收到的报告数据:", reportData.value);
+}
 
 // 触摸滑动相关变量
 let touchStartX = 0;
 let touchEndX = 0;
+let touchStartY = 0;
 
 const goBack = () => {
   router.push("/main");
@@ -192,13 +212,28 @@ const goBack = () => {
 
 const handleTouchStart = (e) => {
   touchStartX = e.touches[0].clientX;
+  // 记录开始触摸的Y坐标
+  touchStartY = e.touches[0].clientY;
 };
 
 const handleTouchMove = (e) => {
-  touchEndX = e.touches[0].clientX;
+  // 判断是水平滑动还是垂直滑动
+  const currentX = e.touches[0].clientX;
+  const currentY = e.touches[0].clientY;
+
+  // 计算X和Y方向的移动距离
+  const deltaX = Math.abs(currentX - touchStartX);
+  const deltaY = Math.abs(currentY - touchStartY);
+
+  // 如果水平滑动距离大于垂直滑动距离，阻止默认行为（防止页面水平滑动）
+  if (deltaX > deltaY) {
+    e.preventDefault();
+  }
+
+  touchEndX = currentX;
 };
 
-const handleTouchEnd = () => {
+const handleTouchEnd = (e) => {
   const minSwipeDistance = 50;
   const swipeDistance = touchStartX - touchEndX;
 

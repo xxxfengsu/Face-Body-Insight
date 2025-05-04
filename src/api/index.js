@@ -138,8 +138,22 @@ export const userApi = {
   },
 };
 
+export const reportApi = {
+  getReport(data) {
+    return service({
+      url: "/analysis/report",
+      method: "post",
+      data,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
+};
+
 // 统一导出
 export default {
   clothes: clothesApi,
   user: userApi,
+  report: reportApi,
 };
