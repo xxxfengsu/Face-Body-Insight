@@ -103,8 +103,28 @@
 
     <div class="btnBar">
       <div class="btn" @click="resetEdits">重置</div>
-      <div class="btn" v-if="cropMode" @click="applyCrop">确认裁剪</div>
-      <div class="btn" v-else @click="saveEdits">保存</div>
+      <div
+        class="btn"
+        v-if="cropMode"
+        @click="applyCrop"
+        :class="{ disabled: isLoading }"
+      >
+        确认裁剪
+      </div>
+      <div
+        class="btn"
+        v-else
+        @click="saveEdits"
+        :class="{ disabled: isLoading }"
+      >
+        {{ isLoading ? "保存中..." : "保存" }}
+      </div>
+    </div>
+
+    <!-- 在 template 部分，添加加载指示器 -->
+    <div class="loading-overlay" v-if="isLoading">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">正在处理图片...</div>
     </div>
   </div>
 </template>
@@ -168,6 +188,9 @@ const savedTransformations = ref({
   translateX: 0,
   translateY: 0,
 });
+
+// 在 script setup 部分的顶部添加一个 loading 状态
+const isLoading = ref(false);
 
 // 计算ruler-marks的样式
 const marksStyle = computed(() => {
@@ -741,9 +764,12 @@ const resetEdits = () => {
   }
 };
 
-// 保存编辑
+// 修改保存编辑函数
 const saveEdits = async () => {
   try {
+    // 开始加载
+    isLoading.value = true;
+
     // 创建canvas来渲染变换后的图像
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
@@ -791,12 +817,17 @@ const saveEdits = async () => {
 
     console.log("上传结果:", res);
 
-    // 上传成功后跳转，并传递结果数据
+    // 上传成功后，取消loading，然后跳转
+    isLoading.value = false;
+
+    // 跳转到报告页面
     router.push({
       path: "/report",
       query: { reportData: JSON.stringify(res.data) },
     });
   } catch (error) {
+    // 出错时也要取消loading
+    isLoading.value = false;
     console.error("保存或上传过程中出错:", error);
     alert("图片保存失败，请重试");
   }
@@ -1055,6 +1086,47 @@ const goBack = () => {
     .yRicon {
       background-image: url(../assets/icon/yRicon.png);
     }
+  }
+
+  /* 在 style 部分添加加载样式 */
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 20px;
+  }
+
+  .loading-text {
+    color: white;
+    font-size: 18px;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .btn.disabled {
+    opacity: 0.5;
+    pointer-events: none;
   }
 }
 

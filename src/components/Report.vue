@@ -171,19 +171,32 @@
                   <img src="../assets/analysisProcess.png" />
                 </div>
               </div>
-            </section>
-
-            <div class="section-divider"></div>
-
-            <section class="face-blank-section">
-              <h2>面部留白</h2>
-              <div class="face-blank-analysis">
-                <div class="image-container">
-                  <img
-                    src="../assets/baseDeepPic.png"
-                    alt="面部留白"
-                    class="circle-image"
-                  />
+              <div class="section-divider"></div>
+              <div class="proportion-analysis">
+                <div class="comparison-images">
+                  <div class="comparison-item">
+                    <img
+                      :src="
+                        reportData?.five_eyes_analysis.result_image_url ||
+                        '../assets/baseDeepPic.png'
+                      "
+                      alt="五眼比例"
+                      class="circle-image"
+                    />
+                    <div class="proportion-label">五眼比例</div>
+                    <div class="proportion-data">
+                      {{ reportData?.five_eyes_analysis.ratios }}
+                    </div>
+                  </div>
+                </div>
+                <div class="analysis-text proportion-text">
+                  <p>
+                    上庭：{{ reportData?.five_eyes_analysis.result_name }}
+                    {{ reportData?.five_eyes_analysis.advice }}
+                  </p>
+                </div>
+                <div class="improvement-steps">
+                  <img src="../assets/analysisProcess.png" />
                 </div>
               </div>
             </section>
