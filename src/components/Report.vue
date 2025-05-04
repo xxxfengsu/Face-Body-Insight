@@ -26,78 +26,102 @@
           <!-- 第一个分析：五官量感 -->
           <div class="analysis-slide">
             <h2>五官量感</h2>
-            <div class="metrics">
-              <div class="metric-item">
-                <div class="label">眼睛</div>
-                <div class="progress-container">
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 85%"></div>
-                  </div>
-                  <div class="score">85</div>
-                </div>
+            <div class="feature-container">
+              <div class="user-image-container">
+                <img
+                  :src="
+                    reportData?.facial_density.result_image_url ||
+                    '../assets/baseDeepPic.png'
+                  "
+                  alt="用户照片"
+                  class="user-image"
+                />
               </div>
-              <div class="metric-item">
-                <div class="label">鼻子</div>
-                <div class="progress-container">
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 91%"></div>
-                  </div>
-                  <div class="score">91</div>
-                </div>
-              </div>
-              <div class="metric-item">
-                <div class="label">嘴巴</div>
-                <div class="progress-container">
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 88%"></div>
-                  </div>
-                  <div class="score">88</div>
-                </div>
-              </div>
-              <div class="metric-item">
-                <div class="label">脸型</div>
-                <div class="progress-container">
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 89%"></div>
-                  </div>
-                  <div class="score">89</div>
-                </div>
-              </div>
-              <div class="metric-item">
-                <div class="label">协调性</div>
-                <div class="progress-container">
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 87%"></div>
-                  </div>
-                  <div class="score">87</div>
-                </div>
+              <div class="analysis-content">
+                <p class="main-analysis">
+                  {{ reportData.facial_density.result_name }}
+                </p>
+                <p>
+                  {{ reportData.facial_density.advice }}
+                </p>
               </div>
             </div>
-            <div class="analysis-text">
-              <p>五官量感大（如眼睛大、鼻梁高、嘴唇厚、骨骼立体）</p>
-              <p>容易给人明艳大气的印象，但妆容不当也可能显得"不重"</p>
-              <p>或"粗糙"。合适的妆容应**平衡量感与精致度**，强化</p>
-              <p>优势的同时避免"五官打架"。</p>
+
+            <h3>五官类型</h3>
+            <div class="features-list">
+              <div class="feature-item">
+                <span class="feature-label">眉毛:</span>
+                <span class="feature-value">{{
+                  reportData?.feature_types?.brows.result_name || ""
+                }}</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-label">眼睛:</span>
+                <span class="feature-value">{{
+                  reportData?.feature_types?.eyes.result_name || ""
+                }}</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-label">鼻子:</span>
+                <span class="feature-value">{{
+                  reportData?.feature_types?.nose.result_name || ""
+                }}</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-label">嘴巴:</span>
+                <span class="feature-value">{{
+                  reportData?.feature_types?.lip.result_name || ""
+                }}</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-label">脸型:</span>
+                <span class="feature-value">{{
+                  reportData?.feature_types?.face_shape.result_name || ""
+                }}</span>
+              </div>
             </div>
           </div>
 
           <!-- 第二个分析：整体分析（包含肤色、比例、面部留白） -->
           <div class="analysis-slide">
             <section class="skin-section">
-              <h2>肤色分析</h2>
+              <h2>皮肤分析</h2>
               <div class="skin-analysis">
                 <div class="image-container">
                   <img
-                    src="../assets/baseDeepPic.png"
+                    :src="
+                      reportData?.skin_analysis.result_image_url ||
+                      '../assets/baseDeepPic.png'
+                    "
                     alt="肤色分析"
                     class="circle-image"
                   />
-                  <div class="color-circle"></div>
                 </div>
                 <div class="analysis-text">
-                  <p>肤色：冷偏哑，"20"</p>
-                  <p>冷色眼科色经适合明智的白皙肤色，强调冰冷色彩色，</p>
-                  <p>也温暖色系使用时，保存于下半部位体现温暖感和亲和力。</p>
+                  <p>痘痘：{{ reportData?.skin_analysis.acne.result_name }}</p>
+                  <p>{{ reportData?.skin_analysis.acne.advice }}</p>
+                  <p>
+                    眼皮：{{
+                      reportData?.skin_analysis.eyelid_type.result_name
+                    }}
+                  </p>
+                  <p>{{ reportData?.skin_analysis.eyelid_type.advice }}</p>
+                  <p>
+                    法令纹：{{
+                      reportData?.skin_analysis.nasolabial_fold.result_name
+                    }}
+                  </p>
+                  <p>{{ reportData?.skin_analysis.nasolabial_fold.advice }}</p>
+                  <p>
+                    斑点：{{ reportData?.skin_analysis.skin_spot.result_name }}
+                  </p>
+                  <p>{{ reportData?.skin_analysis.skin_spot.advice }}</p>
+                  <p>
+                    皮肤类型：{{
+                      reportData?.skin_analysis.skin_type.result_name
+                    }}
+                  </p>
+                  <p>{{ reportData?.skin_analysis.skin_type.advice }}</p>
                 </div>
               </div>
             </section>
@@ -110,46 +134,41 @@
                 <div class="comparison-images">
                   <div class="comparison-item">
                     <img
-                      src="../assets/baseDeepPic.png"
-                      alt="四庭比例"
+                      :src="
+                        reportData?.three_part_analysis.result_image_url ||
+                        '../assets/baseDeepPic.png'
+                      "
+                      alt="三庭比例"
                       class="circle-image"
                     />
-                    <div class="proportion-label">四庭比例</div>
-                    <div class="proportion-data">0.64: 0.76: 0.85: 0.76</div>
-                  </div>
-                  <div class="comparison-item">
-                    <img
-                      src="../assets/baseDeepPic.png"
-                      alt="五眼比例"
-                      class="circle-image"
-                    />
-                    <div class="proportion-label">五眼比例</div>
+                    <div class="proportion-label">三庭比例</div>
                     <div class="proportion-data">
-                      0.42: 0.45: 0.45: 0.45: 0.41
+                      {{ reportData?.three_part_analysis.ratios }}
                     </div>
                   </div>
                 </div>
                 <div class="analysis-text proportion-text">
                   <p>
-                    四庭比例、可以联想由下方落在圆上，如此上扬。面部显长，两颊分布两宽。（眼部提升，鼻翼延伸，额头改变上下比）。轮廓距离在外形最外围，所以发型修饰很关键。
+                    上庭：{{
+                      reportData?.three_part_analysis.one_part.result_name
+                    }}
+                    {{ reportData?.three_part_analysis.one_part.advice }}
+                  </p>
+                  <p>
+                    中庭：{{
+                      reportData?.three_part_analysis.two_part.result_name
+                    }}
+                    {{ reportData?.three_part_analysis.two_part.advice }}
+                  </p>
+                  <p>
+                    下庭：{{
+                      reportData?.three_part_analysis.three_part.result_name
+                    }}
+                    {{ reportData?.three_part_analysis.three_part.advice }}
                   </p>
                 </div>
                 <div class="improvement-steps">
-                  <img
-                    src="../assets/baseDeepPic.png"
-                    alt="改善过程1"
-                    class="step-image"
-                  />
-                  <img
-                    src="../assets/baseDeepPic.png"
-                    alt="改善过程2"
-                    class="step-image"
-                  />
-                  <img
-                    src="../assets/baseDeepPic.png"
-                    alt="改善过程3"
-                    class="step-image"
-                  />
+                  <img src="../assets/analysisProcess.png" />
                 </div>
               </div>
             </section>
@@ -332,10 +351,10 @@ const changeRoute = (index) => {
 
     .face-analysis {
       max-width: 600px;
-      background: rgba(128, 128, 128, 0.3);
+      background: rgba(128, 128, 128, 0.5);
       border-radius: 20px;
       padding: 0;
-      backdrop-filter: blur(1px);
+      backdrop-filter: blur(10px);
       position: absolute;
       overflow: hidden;
       bottom: 1rem;
@@ -364,46 +383,69 @@ const changeRoute = (index) => {
           }
 
           // 五官量感分析
-          .metrics {
-            margin-bottom: 30px;
+          .feature-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+          }
 
-            .metric-item {
-              display: flex;
-              align-items: center;
-              margin-bottom: 15px;
+          .user-image-container {
+            margin-bottom: 15px;
+          }
 
-              .label {
-                width: 60px;
-                text-align: right;
-                margin-right: 20px;
-              }
+          .user-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+          }
 
-              .progress-container {
-                flex: 1;
-                display: flex;
-                align-items: center;
+          .analysis-content {
+            text-align: left;
+            width: 100%;
+          }
 
-                .progress-bar {
-                  flex: 1;
-                  height: 8px;
-                  background-color: rgba(255, 255, 255, 0.2);
-                  border-radius: 4px;
-                  overflow: hidden;
-                  margin-right: 10px;
+          .main-analysis {
+            font-weight: bold;
+            margin-bottom: 10px;
+          }
 
-                  .progress-fill {
-                    height: 100%;
-                    background-color: white;
-                    border-radius: 4px;
-                  }
-                }
+          .analysis-content ol {
+            padding-left: 20px;
+            margin-top: 10px;
+          }
 
-                .score {
-                  width: 30px;
-                  text-align: left;
-                }
-              }
-            }
+          .analysis-content li {
+            margin-bottom: 5px;
+          }
+
+          h3 {
+            text-align: left;
+            margin: 20px 0 10px 0;
+            font-weight: normal;
+            font-size: 18px;
+          }
+
+          .features-list {
+            width: 100%;
+            text-align: left;
+          }
+
+          .feature-item {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: baseline;
+          }
+
+          .feature-label {
+            font-weight: bold;
+            min-width: 60px;
+          }
+
+          .feature-value {
+            flex: 1;
           }
 
           // 第二个分析页面中的各部分
@@ -421,12 +463,14 @@ const changeRoute = (index) => {
           .skin-analysis {
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: start;
 
             .image-container {
               position: relative;
               margin-bottom: 15px;
-
+              display: flex;
+              justify-content: center;
+              width: 100%;
               .circle-image {
                 width: 130px;
                 height: 130px;
@@ -452,16 +496,15 @@ const changeRoute = (index) => {
           .proportion-analysis {
             .comparison-images {
               display: flex;
-              justify-content: space-between;
+              justify-content: center;
               margin-bottom: 15px;
 
               .comparison-item {
                 text-align: center;
-                width: 48%;
 
                 .circle-image {
-                  width: 100px;
-                  height: 100px;
+                  width: 200px;
+                  height: 200px;
                   border-radius: 50%;
                   object-fit: cover;
                   margin-bottom: 8px;
@@ -489,7 +532,10 @@ const changeRoute = (index) => {
               display: flex;
               justify-content: space-between;
               margin-top: 15px;
-
+              img {
+                width: 100%;
+                height: 100%;
+              }
               .step-image {
                 width: 32%;
                 height: auto;
@@ -519,7 +565,7 @@ const changeRoute = (index) => {
           .analysis-text {
             line-height: 1.6;
             font-size: 14px;
-
+            text-align: left;
             p {
               margin: 4px 0;
             }

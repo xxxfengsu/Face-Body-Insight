@@ -781,7 +781,7 @@ const saveEdits = async () => {
     // 创建FormData对象
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("classId", "1");
+    formData.append("classId", "4");
     formData.append("force", "false");
 
     console.log("准备上传文件:", file.name, file.size);
