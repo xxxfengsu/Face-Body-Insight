@@ -25,7 +25,7 @@ service.interceptors.request.use(
     // 添加token等通用请求头 - 从sessionStorage获取
     const token = sessionStorage.getItem("token");
     if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
+      config.headers["Authorization"] = `${token}`;
 
       // 如果是FormData类型的请求，也将token添加到FormData中
       if (config.data instanceof FormData && !config.data.has("token")) {

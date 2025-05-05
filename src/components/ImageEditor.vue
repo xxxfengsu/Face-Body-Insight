@@ -117,7 +117,7 @@
         @click="saveEdits"
         :class="{ disabled: isLoading }"
       >
-        {{ isLoading ? "保存中..." : "保存" }}
+        {{ isLoading ? "分析中..." : "分析" }}
       </div>
     </div>
 
@@ -841,7 +841,7 @@ const saveEdits = async () => {
 
 // 返回上一页
 const goBack = () => {
-  router.go(-1);
+  router.replace({name: 'main'})
 };
 </script>
 

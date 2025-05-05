@@ -3,7 +3,7 @@ export default {
     uploading: "上传",
     history: "历史记录",
     changeClothes: "换装",
-    inputPlaceholder: "输入一些信息",
+    inputPlaceholder: "请输入主播编号",
     go: "确定",
   },
   report: {

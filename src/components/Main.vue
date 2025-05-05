@@ -76,7 +76,7 @@
     </div>
     <div class="formBox">
       <div class="input-number">
-        <input type="text" :placeholder="$t('main.inputPlaceholder')" />
+        <input type="text" :placeholder="$t('main.inputPlaceholder')" v-model="uploadId"/>
       </div>
 
       <div class="upload-box" @click="triggerFileUpload">
@@ -117,6 +117,7 @@ const { currentLanguage, changeLanguage } = useLanguage();
 
 let activeRoute = ref(1);
 let selectedBox = ref(1);
+let uploadId = ref('')
 const fileInput = ref(null);
 const headScroll = ref(null);
 const router = useRouter();
@@ -178,6 +179,10 @@ const triggerFileUpload = () => {
 };
 
 const handleFileUpload = (event) => {
+  if (!uploadId.value) {
+    alert('请输入主播编号')
+    return
+  }
   const file = event.target.files[0];
   if (file) {
     console.log("File selected:", file);
@@ -193,7 +198,7 @@ const handleFileUpload = (event) => {
 const showEditOptions = () => {
   if (uploadedImageUrl.value) {
     // 使用确认对话框询问用户是否要编辑图片
-    if (confirm("是否要编辑图片？")) {
+
       // 将图片URL存储在本地存储中，以便在编辑页面加载
       localStorage.setItem("editImage", uploadedImageUrl.value);
       // 导航到图片编辑页面
@@ -201,7 +206,6 @@ const showEditOptions = () => {
         path: "/image-editor",
         query: { imageUrl: uploadedImageUrl.value },
       });
-    }
   }
 };
 

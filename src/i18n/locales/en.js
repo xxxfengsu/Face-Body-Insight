@@ -3,7 +3,7 @@ export default {
     uploading: "Uploading",
     history: "History",
     changeClothes: "Change Clothes",
-    inputPlaceholder: "Type some information",
+    inputPlaceholder: "Type Id",
     go: "GO",
   },
   report: {
