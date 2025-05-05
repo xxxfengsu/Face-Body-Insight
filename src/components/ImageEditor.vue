@@ -146,6 +146,7 @@ const imageElement = ref(null);
 const imageContainer = ref(null);
 const rulerContainer = ref(null);
 const cropBox = ref(null);
+const personId = ref('')
 
 // 新增 - 裁剪模式标志
 const cropMode = ref(false);
@@ -243,6 +244,7 @@ onMounted(() => {
   if (route.query.imageUrl) {
     imageUrl.value = route.query.imageUrl;
     originalImageUrl.value = route.query.imageUrl; // 保存原始图片URL
+    personId.value = route.query.personId
   } else if (localStorage.getItem("editImage")) {
     // 如果本地存储有图片，也可以使用
     imageUrl.value = localStorage.getItem("editImage");
@@ -809,6 +811,7 @@ const saveEdits = async () => {
     formData.append("file", file);
     formData.append("classId", "4");
     formData.append("force", "false");
+    formData.append("personId", personId.value);
 
     // 获取token并添加到formData
     const token = sessionStorage.getItem("token");

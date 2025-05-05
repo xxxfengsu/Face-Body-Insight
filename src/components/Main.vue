@@ -204,7 +204,7 @@ const showEditOptions = () => {
       // 导航到图片编辑页面
       router.push({
         path: "/image-editor",
-        query: { imageUrl: uploadedImageUrl.value },
+        query: { imageUrl: uploadedImageUrl.value, personId:uploadId.value },
       });
   }
 };
