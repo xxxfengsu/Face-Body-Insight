@@ -74,11 +74,11 @@ const login = async () => {
       router.push("/main");
     } else {
       console.error("登录失败：未获取到token");
-      alert(t("login.loginFailed"));
+      alert(res.msg);
     }
   } catch (error) {
     console.error("登录出错:", error);
-    alert(t("login.loginFailed"));
+    alert(error);
   }
 };
 </script>

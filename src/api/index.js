@@ -59,9 +59,9 @@ service.interceptors.response.use(
           console.error("No permission");
           break;
         default:
-          console.error(res.message || "Error");
+          console.error(res.msg || "Error");
       }
-      return Promise.reject(new Error(res.message || "Error"));
+      return Promise.reject(new Error(res.msg || "Error"));
     }
     return res;
   },
