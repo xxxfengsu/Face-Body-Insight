@@ -148,19 +148,20 @@
                   </div>
                 </div>
                 <div class="analysis-text proportion-text">
-                  <p>
+                  <p v-if="reportData?.three_part_analysis.advice">{{reportData?.three_part_analysis.advice}}</p>
+                  <p v-if="reportData?.three_part_analysis.one_part.result !== 'faceup_normal'">
                     上庭：{{
                       reportData?.three_part_analysis.one_part.result_name
                     }}
                     {{ reportData?.three_part_analysis.one_part.advice }}
                   </p>
-                  <p>
+                  <p v-if="reportData?.three_part_analysis.two_part.result !== 'facemid_normal'">
                     中庭：{{
                       reportData?.three_part_analysis.two_part.result_name
                     }}
                     {{ reportData?.three_part_analysis.two_part.advice }}
                   </p>
-                  <p>
+                  <p v-if="reportData?.three_part_analysis.three_part.result !== 'facedown_normal'">
                     下庭：{{
                       reportData?.three_part_analysis.three_part.result_name
                     }}
@@ -168,7 +169,7 @@
                   </p>
                 </div>
                 <div class="improvement-steps">
-                  <img src="../assets/analysisProcess.png" />
+                  <img :src="reportData?.three_part_analysis.normal_image_url || '../assets/analysisProcess.png'" />
                 </div>
               </div>
               <div class="section-divider"></div>
@@ -191,12 +192,12 @@
                 </div>
                 <div class="analysis-text proportion-text">
                   <p>
-                    上庭：{{ reportData?.five_eyes_analysis.result_name }}
+                    眼距：{{ reportData?.five_eyes_analysis.result_name }}
                     {{ reportData?.five_eyes_analysis.advice }}
                   </p>
                 </div>
                 <div class="improvement-steps">
-                  <img src="../assets/analysisProcess.png" />
+                  <img :src="reportData?.five_eyes_analysis.image_url || '../assets/analysisProcess.png'" />
                 </div>
               </div>
             </section>
