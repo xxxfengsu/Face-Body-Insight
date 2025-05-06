@@ -141,7 +141,7 @@ const changeRoute = (index) => {
   } else if (index === 2) {
     // Report 选项
     if (!localStorage.getItem("reportData")) {
-      alert('请上传照片')
+      alert('请')
       return
     }
       
@@ -422,7 +422,7 @@ const handleTouchEnd = () => {
     flex: 1 0 auto; /* 允许伸长但不收缩，确保填满剩余空间 */
 
     .input-number {
-      width: 90%;
+      width: 85%;
       max-width: 400px;
       margin-top: 10px;
 
@@ -435,7 +435,7 @@ const handleTouchEnd = () => {
         font-size: 16px;
         outline: none;
         box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.05);
-        text-align: center;
+        text-align: left;
         box-sizing: border-box;
 
         &::placeholder {
@@ -445,9 +445,9 @@ const handleTouchEnd = () => {
     }
 
     .upload-box {
-      width: 90%;
+      width: 80%;
       max-width: 400px;
-      height: 100px;
+      height: 110px;
       border: 2px dashed #ccc;
       border-radius: 15px;
       display: flex;
@@ -463,9 +463,9 @@ const handleTouchEnd = () => {
       }
 
       .plus-icon {
-        font-size: 30px;
-        color: #999;
-        font-weight: lighter;
+        font-size: 40px;
+        color: #5B4F4F;
+        font-weight: bold;
       }
     }
 
@@ -531,7 +531,7 @@ body {
     }
     .formBox {
       width: 100%;
-      padding: 15px 20px; /* 修改内边距 */
+      padding: 25px 20px; /* 修改内边距 */
     }
   }
 }

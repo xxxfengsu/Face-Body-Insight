@@ -4,7 +4,7 @@ export default {
     history: "历史记录",
     report: '分析报告',
     changeClothes: "换装",
-    inputPlaceholder: "请输入主播编号",
+    inputPlaceholder: "主播编号",
     go: "确定",
   },
   report: {

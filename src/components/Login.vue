@@ -206,6 +206,7 @@ const login = async () => {
   margin-top: 1.5rem;
   margin-bottom: 2rem;
   cursor: pointer;
+  margin: 1.5rem auto 2rem;
   transition: all 0.3s ease;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
