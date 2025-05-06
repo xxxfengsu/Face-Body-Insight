@@ -338,7 +338,7 @@ const handleTouchEnd = () => {
           width: 65px;
           height: 65px;
           border-radius: 10px;
-          overflow: hidden;
+          // overflow: hidden;
           border: 2px solid white;
           background-color: #333;
           transition: all 0.3s ease;
@@ -357,14 +357,16 @@ const handleTouchEnd = () => {
             object-fit: cover;
           }
 
-          &:before {
+          &::before {
             content: "";
             position: absolute;
-            left: -15px;
+            left: -25px;
             top: 50%;
-            width: 15px;
-            height: 2px;
-            background-color: rgba(255, 165, 0, 0.7);
+            transform:translateY(-50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #fff
           }
         }
       }
