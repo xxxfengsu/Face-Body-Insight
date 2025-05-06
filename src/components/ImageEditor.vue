@@ -804,10 +804,10 @@ const saveEdits = async () => {
 
       // 将canvas转为图像数据
       processedImageUrl = canvas.toDataURL("image/jpeg");
-      localStorage.setItem("lastEditedImage", processedImageUrl);
+      // localStorage.setItem("lastEditedImage", processedImageUrl);
     } else {
       processedImageUrl = imageUrl.value;
-      localStorage.setItem("lastEditedImage", imageUrl.value);
+      // localStorage.setItem("lastEditedImage", imageUrl.value);
     }
 
     // 将base64数据转换为Blob
@@ -839,7 +839,7 @@ const saveEdits = async () => {
 
     // 上传成功后，取消loading，然后跳转
     isLoading.value = false;
-
+    localStorage.setItem("reportData", JSON.stringify(res.data));
     // 跳转到报告页面
     router.push({
       path: "/report",

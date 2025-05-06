@@ -9,12 +9,12 @@
           >
             {{ $t("main.uploading") }}
           </div>
-          <!-- <div
+          <div
             @click="changeRoute(2)"
             :class="activeRoute == 2 ? 'activeRoute' : ''"
           >
-            Report
-          </div> -->
+            {{$t("main.report")}}
+          </div>
           <div
             @click="changeRoute(3)"
             :class="activeRoute == 3 ? 'activeRoute' : ''"
@@ -30,33 +30,9 @@
         </div>
       </div>
 
-      <!-- 语言切换按钮 -->
-      <div class="language-switcher">
-        <div
-          class="language-btn"
-          :class="{ active: currentLanguage === 'zh' }"
-          @click="changeLanguage('zh')"
-        >
-          中文
-        </div>
-        <div
-          class="language-btn"
-          :class="{ active: currentLanguage === 'en' }"
-          @click="changeLanguage('en')"
-        >
-          English
-        </div>
-      </div>
 
       <div class="changeMode">
         <div class="select-boxes">
-          <div
-            class="select-box"
-            :class="{ active: selectedBox === 0 }"
-            @click="selectBox(0)"
-          >
-            <img src="../assets/body_icon.png" alt="Face close-up" />
-          </div>
           <div
             class="select-box"
             :class="{ active: selectedBox === 1 }"
@@ -66,11 +42,12 @@
           </div>
           <div
             class="select-box"
-            :class="{ active: selectedBox === 2 }"
-            @click="selectBox(2)"
+            :class="{ active: selectedBox === 0 }"
+            @click="selectBox(0)"
           >
-            <img src="../assets/half_icon.png" alt="Full body" />
+            <img src="../assets/body_icon.png" alt="Face close-up" />
           </div>
+
         </div>
       </div>
     </div>
@@ -226,8 +203,8 @@ const showEditOptions = () => {
   if (uploadedImageUrl.value) {
     // 使用确认对话框询问用户是否要编辑图片
 
-      // 将图片URL存储在本地存储中，以便在编辑页面加载
-      localStorage.setItem("editImage", uploadedImageUrl.value);
+      // // 将图片URL存储在本地存储中，以便在编辑页面加载
+      // localStorage.setItem("editImage", uploadedImageUrl.value);
       // 导航到图片编辑页面
       router.push({
         path: "/image-editor",
@@ -358,8 +335,8 @@ const handleTouchEnd = () => {
         z-index: 10;
 
         .select-box {
-          width: 45px;
-          height: 45px;
+          width: 65px;
+          height: 65px;
           border-radius: 10px;
           overflow: hidden;
           border: 2px solid white;
@@ -369,8 +346,8 @@ const handleTouchEnd = () => {
           position: relative;
 
           &.active {
-            width: 65px;
-            height: 65px;
+            width: 85px;
+            height: 85px;
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
           }
 
@@ -429,7 +406,6 @@ const handleTouchEnd = () => {
     background-color: white;
     border-radius: 30px 30px 0 0;
     padding: 20px;
-    box-shadow: 0px -5px 15px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;

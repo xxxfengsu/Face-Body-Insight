@@ -7,9 +7,9 @@
     </div>
     <div class="navigation">
       <div @click="changeRoute(1)">{{ $t("main.uploading") }}</div>
-      <div @click="changeRoute(4)">{{ $t("main.changeClothes") }}</div>
       <div @click="changeRoute(2)" class="active">{{ $t("report.title") }}</div>
       <div @click="changeRoute(3)">{{ $t("main.history") }}</div>
+      <div @click="changeRoute(4)">{{ $t("main.changeClothes") }}</div>
     </div>
     <div class="report-content">
       <!-- 内容区域可滑动，现在使用垂直滚动 -->
@@ -164,9 +164,9 @@
               </div>
               <div class="analysis-content">
                 <p class="main-analysis">
-                  {{ reportData.facial_density.result_name }}
+                  {{ reportData?.facial_density.result_name }}
                 </p>
-                <p v-html="formatAdvice(reportData.facial_density.advice)">
+                <p v-html="formatAdvice(reportData?.facial_density.advice)">
                 </p>
               </div>
             </div>
@@ -233,6 +233,13 @@ const reportData = computed(() => {
       return null;
     }
   }
+  if (localStorage.getItem("reportData"))
+  try {
+      return JSON.parse(localStorage.getItem("reportData"));
+    } catch (e) {
+      console.error("解析报告数据失败:", e);
+      return null;
+    }
   return null;
 });
 

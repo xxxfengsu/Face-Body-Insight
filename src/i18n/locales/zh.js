@@ -1,13 +1,14 @@
 export default {
   main: {
-    uploading: "上传",
+    uploading: "上传照片",
     history: "历史记录",
+    report: '分析报告',
     changeClothes: "换装",
     inputPlaceholder: "请输入主播编号",
     go: "确定",
   },
   report: {
-    title: "报告",
+    title: "分析报告",
     back: "返回",
     // 其他report页面的文本
   },
