@@ -141,7 +141,7 @@ const changeRoute = (index) => {
   } else if (index === 2) {
     // Report 选项
     if (!localStorage.getItem("reportData")) {
-      alert('请')
+      alert('请上传图片')
       return
     }
       
