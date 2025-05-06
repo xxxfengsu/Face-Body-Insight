@@ -31,8 +31,8 @@ export default {
     back: "返回",
   },
   home: {
-    title: "让您的美丽",
-    subtitle: "拥有一条可以追随的痕迹",
-    go: "确定",
+    title: "Let Your Beauty",
+    subtitle: "Have A Trace To Follow",
+    go: "GO"
   },
 };

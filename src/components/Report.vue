@@ -33,29 +33,29 @@
                 </div>
                 <div class="analysis-text">
                   <p>痘痘：{{ reportData?.skin_analysis.acne.result_name }}</p>
-                  <p>{{ reportData?.skin_analysis.acne.advice }}</p>
+                  <p v-html="formatAdvice(reportData?.skin_analysis.acne.advice)"></p>
                   <p>
                     眼皮：{{
                       reportData?.skin_analysis.eyelid_type.result_name
                     }}
                   </p>
-                  <p>{{ reportData?.skin_analysis.eyelid_type.advice }}</p>
+                  <p v-html="formatAdvice(reportData?.skin_analysis.eyelid_type.advice)"></p>
                   <p>
                     法令纹：{{
                       reportData?.skin_analysis.nasolabial_fold.result_name
                     }}
                   </p>
-                  <p>{{ reportData?.skin_analysis.nasolabial_fold.advice }}</p>
+                  <p v-html="formatAdvice(reportData?.skin_analysis.nasolabial_fold.advice)"></p>
                   <p>
                     斑点：{{ reportData?.skin_analysis.skin_spot.result_name }}
                   </p>
-                  <p>{{ reportData?.skin_analysis.skin_spot.advice }}</p>
+                  <p v-html="formatAdvice(reportData?.skin_analysis.skin_spot.advice)"></p>
                   <p>
                     皮肤类型：{{
                       reportData?.skin_analysis.skin_type.result_name
                     }}
                   </p>
-                  <p>{{ reportData?.skin_analysis.skin_type.advice }}</p>
+                  <p v-html="formatAdvice(reportData?.skin_analysis.skin_type.advice)"></p>
                 </div>
               </div>
             </section>
@@ -82,12 +82,12 @@
                   </div>
                 </div>
                 <div class="analysis-text proportion-text">
-                  <p v-if="reportData?.three_part_analysis.advice">{{reportData?.three_part_analysis.advice}}</p>
+                  <p v-if="reportData?.three_part_analysis.advice" v-html="formatAdvice(reportData?.three_part_analysis.advice)"></p>
                   <p v-if="reportData?.three_part_analysis.one_part.result !== 'faceup_normal'">
                     上庭：{{
                       reportData?.three_part_analysis.one_part.result_name
                     }}
-                    {{ reportData?.three_part_analysis.one_part.advice }}
+                    <span v-html="formatAdvice(reportData?.three_part_analysis.one_part.advice)"></span>
                   </p>
                   <div v-if="reportData?.three_part_analysis.one_part.advice_image_url" class="improvement-steps">
                     <img :src="reportData?.three_part_analysis.one_part.advice_image_url" alt="上庭建议" />
@@ -97,7 +97,7 @@
                     中庭：{{
                       reportData?.three_part_analysis.two_part.result_name
                     }}
-                    {{ reportData?.three_part_analysis.two_part.advice }}
+                    <span v-html="formatAdvice(reportData?.three_part_analysis.two_part.advice)"></span>
                   </p>
                   <div v-if="reportData?.three_part_analysis.two_part.advice_image_url" class="improvement-steps">
                     <img :src="reportData?.three_part_analysis.two_part.advice_image_url" alt="中庭建议" />
@@ -107,7 +107,7 @@
                     下庭：{{
                       reportData?.three_part_analysis.three_part.result_name
                     }}
-                    {{ reportData?.three_part_analysis.three_part.advice }}
+                    <span v-html="formatAdvice(reportData?.three_part_analysis.three_part.advice)"></span>
                   </p>
                   <div v-if="reportData?.three_part_analysis.three_part.advice_image_url" class="improvement-steps">
                     <img :src="reportData?.three_part_analysis.three_part.advice_image_url" alt="下庭建议" />
@@ -138,7 +138,7 @@
                 <div class="analysis-text proportion-text">
                   <p>
                     眼距：{{ reportData?.five_eyes_analysis.result_name }}
-                    {{ reportData?.five_eyes_analysis.advice }}
+                    <span v-html="formatAdvice(reportData?.five_eyes_analysis.advice)"></span>
                   </p>
                 </div>
                 <div class="improvement-steps">
@@ -166,8 +166,7 @@
                 <p class="main-analysis">
                   {{ reportData.facial_density.result_name }}
                 </p>
-                <p>
-                  {{ reportData.facial_density.advice }}
+                <p v-html="formatAdvice(reportData.facial_density.advice)">
                 </p>
               </div>
             </div>
@@ -236,6 +235,12 @@ const reportData = computed(() => {
   }
   return null;
 });
+
+// 处理advice文本，将句号替换为换行符
+const formatAdvice = (advice) => {
+  if (!advice) return '';
+  return advice.replace(/。/g, '。<br>').replace(/\.$/, '.<br>');
+};
 
 // 可以在组件初始化时打印一下数据
 if (reportData.value) {
