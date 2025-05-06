@@ -239,16 +239,27 @@ const cropBoxStyle = computed(() => {
   };
 });
 
-// 如果有通过路由传递的图片URL，则使用它
+// 组件挂载时加载图片URL和配置
 onMounted(() => {
-  if (route.query.imageUrl) {
-    imageUrl.value = route.query.imageUrl;
-    originalImageUrl.value = route.query.imageUrl; // 保存原始图片URL
-    personId.value = route.query.personId
-  } else if (localStorage.getItem("editImage")) {
-    // 如果本地存储有图片，也可以使用
-    imageUrl.value = localStorage.getItem("editImage");
-    originalImageUrl.value = localStorage.getItem("editImage"); // 保存原始图片URL
+  // 从localStorage或路由参数中获取图片URL
+  const urlFromRoute = route.query.imageUrl;
+  const idFromRoute = route.query.personId;
+  
+  // 设置人员ID
+  if (idFromRoute) {
+    personId.value = idFromRoute;
+    console.log("设置personId:", personId.value);
+  }
+
+  if (urlFromRoute) {
+    imageUrl.value = urlFromRoute;
+    originalImageUrl.value = urlFromRoute;
+  } else {
+    const savedImage = localStorage.getItem("editImage");
+    if (savedImage) {
+      imageUrl.value = savedImage;
+      originalImageUrl.value = savedImage;
+    }
   }
 
   // 初始化最大偏移量，可以根据容器宽度动态计算

@@ -179,13 +179,40 @@ const triggerFileUpload = () => {
 };
 
 const handleFileUpload = (event) => {
-  if (!uploadId.value) {
-    alert('请输入主播编号')
-    return
+  // 清空之前选择的文件
+  const fileInputElement = fileInput.value;
+  
+  // 验证主播编号
+  if (!uploadId.value || uploadId.value.trim() === '') {
+    alert('请输入主播编号');
+    if (fileInputElement) {
+      fileInputElement.value = ''; // 清空文件选择
+    }
+    return;
   }
+  
   const file = event.target.files[0];
   if (file) {
-    console.log("File selected:", file);
+    // 验证文件类型
+    if (!file.type.includes('image/')) {
+      alert('请上传图片文件（jpg、png等）');
+      if (fileInputElement) {
+        fileInputElement.value = ''; // 清空文件选择
+      }
+      return;
+    }
+    
+    // 验证文件大小（限制为10MB）
+    if (file.size > 10 * 1024 * 1024) {
+      alert('图片大小不能超过10MB');
+      if (fileInputElement) {
+        fileInputElement.value = ''; // 清空文件选择
+      }
+      return;
+    }
+    
+    console.log("已选择文件:", file.name, "大小:", (file.size / 1024 / 1024).toFixed(2) + "MB", "主播ID:", uploadId.value);
+    
     // 创建一个临时URL用于图片预览
     uploadedImageUrl.value = URL.createObjectURL(file);
 

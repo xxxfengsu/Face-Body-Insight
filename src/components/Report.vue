@@ -7,82 +7,16 @@
     </div>
     <div class="navigation">
       <div @click="changeRoute(1)">{{ $t("main.uploading") }}</div>
+      <div @click="changeRoute(4)">{{ $t("main.changeClothes") }}</div>
       <div @click="changeRoute(2)" class="active">{{ $t("report.title") }}</div>
       <div @click="changeRoute(3)">{{ $t("main.history") }}</div>
     </div>
     <div class="report-content">
-      <!-- 内容区域可滑动 -->
-      <div
-        class="face-analysis"
-        @touchstart="handleTouchStart"
-        @touchmove="handleTouchMove"
-        @touchend="handleTouchEnd"
-      >
-        <!-- 滑动容器 -->
-        <div
-          class="analysis-slider"
-          :style="{ transform: `translateX(-${currentSlideIndex * 50}%)` }"
-        >
-          <!-- 第一个分析：五官量感 -->
-          <div class="analysis-slide">
-            <h2>五官量感</h2>
-            <div class="feature-container">
-              <div class="user-image-container">
-                <img
-                  :src="
-                    reportData?.facial_density.result_image_url ||
-                    '../assets/baseDeepPic.png'
-                  "
-                  alt="用户照片"
-                  class="user-image"
-                />
-              </div>
-              <div class="analysis-content">
-                <p class="main-analysis">
-                  {{ reportData.facial_density.result_name }}
-                </p>
-                <p>
-                  {{ reportData.facial_density.advice }}
-                </p>
-              </div>
-            </div>
-
-            <h3>五官类型</h3>
-            <div class="features-list">
-              <div class="feature-item">
-                <span class="feature-label">眉毛:</span>
-                <span class="feature-value">{{
-                  reportData?.feature_types?.brows.result_name || ""
-                }}</span>
-              </div>
-              <div class="feature-item">
-                <span class="feature-label">眼睛:</span>
-                <span class="feature-value">{{
-                  reportData?.feature_types?.eyes.result_name || ""
-                }}</span>
-              </div>
-              <div class="feature-item">
-                <span class="feature-label">鼻子:</span>
-                <span class="feature-value">{{
-                  reportData?.feature_types?.nose.result_name || ""
-                }}</span>
-              </div>
-              <div class="feature-item">
-                <span class="feature-label">嘴巴:</span>
-                <span class="feature-value">{{
-                  reportData?.feature_types?.lip.result_name || ""
-                }}</span>
-              </div>
-              <div class="feature-item">
-                <span class="feature-label">脸型:</span>
-                <span class="feature-value">{{
-                  reportData?.feature_types?.face_shape.result_name || ""
-                }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 第二个分析：整体分析（包含肤色、比例、面部留白） -->
+      <!-- 内容区域可滑动，现在使用垂直滚动 -->
+      <div class="face-analysis">
+        <!-- 滑动容器，改为垂直布局 -->
+        <div class="analysis-slider">
+          <!-- 第一个分析：整体分析（包含肤色、比例、面部留白） -->
           <div class="analysis-slide">
             <section class="skin-section">
               <h2>皮肤分析</h2>
@@ -155,21 +89,32 @@
                     }}
                     {{ reportData?.three_part_analysis.one_part.advice }}
                   </p>
+                  <div v-if="reportData?.three_part_analysis.one_part.advice_image_url" class="improvement-steps">
+                    <img :src="reportData?.three_part_analysis.one_part.advice_image_url" alt="上庭建议" />
+                  </div>
+                  
                   <p v-if="reportData?.three_part_analysis.two_part.result !== 'facemid_normal'">
                     中庭：{{
                       reportData?.three_part_analysis.two_part.result_name
                     }}
                     {{ reportData?.three_part_analysis.two_part.advice }}
                   </p>
+                  <div v-if="reportData?.three_part_analysis.two_part.advice_image_url" class="improvement-steps">
+                    <img :src="reportData?.three_part_analysis.two_part.advice_image_url" alt="中庭建议" />
+                  </div>
+                  
                   <p v-if="reportData?.three_part_analysis.three_part.result !== 'facedown_normal'">
                     下庭：{{
                       reportData?.three_part_analysis.three_part.result_name
                     }}
                     {{ reportData?.three_part_analysis.three_part.advice }}
                   </p>
+                  <div v-if="reportData?.three_part_analysis.three_part.advice_image_url" class="improvement-steps">
+                    <img :src="reportData?.three_part_analysis.three_part.advice_image_url" alt="下庭建议" />
+                  </div>
                 </div>
-                <div class="improvement-steps">
-                  <img :src="reportData?.three_part_analysis.normal_image_url || '../assets/analysisProcess.png'" />
+                <div class="improvement-steps" v-if="reportData?.three_part_analysis.normal_image_url">
+                  <img :src="reportData?.three_part_analysis.normal_image_url" />
                 </div>
               </div>
               <div class="section-divider"></div>
@@ -201,6 +146,65 @@
                 </div>
               </div>
             </section>
+            
+            <div class="section-divider"></div>
+            
+            <!-- 五官量感分析放到最后 -->
+            <h2>五官量感</h2>
+            <div class="feature-container">
+              <div class="user-image-container">
+                <img
+                  :src="
+                    reportData?.facial_density.result_image_url ||
+                    '../assets/baseDeepPic.png'
+                  "
+                  alt="用户照片"
+                  class="user-image"
+                />
+              </div>
+              <div class="analysis-content">
+                <p class="main-analysis">
+                  {{ reportData.facial_density.result_name }}
+                </p>
+                <p>
+                  {{ reportData.facial_density.advice }}
+                </p>
+              </div>
+            </div>
+
+            <h3>五官类型</h3>
+            <div class="features-list">
+              <div class="feature-item">
+                <span class="feature-label">眉毛:</span>
+                <span class="feature-value">{{
+                  reportData?.feature_types?.brows.result_name || ""
+                }}</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-label">眼睛:</span>
+                <span class="feature-value">{{
+                  reportData?.feature_types?.eyes.result_name || ""
+                }}</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-label">鼻子:</span>
+                <span class="feature-value">{{
+                  reportData?.feature_types?.nose.result_name || ""
+                }}</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-label">嘴巴:</span>
+                <span class="feature-value">{{
+                  reportData?.feature_types?.lip.result_name || ""
+                }}</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-label">脸型:</span>
+                <span class="feature-value">{{
+                  reportData?.feature_types?.face_shape.result_name || ""
+                }}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -219,7 +223,6 @@ const route = useRoute();
 const { t } = useI18n();
 // 使用语言钩子确保语言一致性
 const { currentLanguage } = useLanguage();
-const currentSlideIndex = ref(0);
 
 // 添加这段代码来接收参数
 const reportData = computed(() => {
@@ -239,61 +242,13 @@ if (reportData.value) {
   console.log("接收到的报告数据:", reportData.value);
 }
 
-// 触摸滑动相关变量
-let touchStartX = 0;
-let touchEndX = 0;
-let touchStartY = 0;
-
 const goBack = () => {
   router.push("/main");
 };
 
-const handleTouchStart = (e) => {
-  touchStartX = e.touches[0].clientX;
-  // 记录开始触摸的Y坐标
-  touchStartY = e.touches[0].clientY;
-};
-
-const handleTouchMove = (e) => {
-  // 判断是水平滑动还是垂直滑动
-  const currentX = e.touches[0].clientX;
-  const currentY = e.touches[0].clientY;
-
-  // 计算X和Y方向的移动距离
-  const deltaX = Math.abs(currentX - touchStartX);
-  const deltaY = Math.abs(currentY - touchStartY);
-
-  // 如果水平滑动距离大于垂直滑动距离，阻止默认行为（防止页面水平滑动）
-  if (deltaX > deltaY) {
-    e.preventDefault();
-  }
-
-  touchEndX = currentX;
-};
-
-const handleTouchEnd = (e) => {
-  const minSwipeDistance = 50;
-  const swipeDistance = touchStartX - touchEndX;
-
-  if (Math.abs(swipeDistance) > minSwipeDistance) {
-    // 向左滑动，切换到第二个分析
-    if (swipeDistance > 0 && currentSlideIndex.value === 0) {
-      currentSlideIndex.value = 1;
-    }
-    // 向右滑动，切换到第一个分析
-    else if (swipeDistance < 0 && currentSlideIndex.value === 1) {
-      currentSlideIndex.value = 0;
-    }
-  }
-
-  // 重置触摸变量
-  touchStartX = 0;
-  touchEndX = 0;
-};
-
 const changeRoute = (index) => {
   if (index === 1) {
-    // Change Clothes 选项
+    // Uploading 选项
     router.push("/main");
   } else if (index === 2) {
     // Report 选项
@@ -301,6 +256,9 @@ const changeRoute = (index) => {
   } else if (index === 3) {
     // History 选项
     router.push("/history");
+  } else if (index === 4) {
+    // Change Clothes 选项
+    router.push("/change-clothes");
   }
 };
 </script>
@@ -338,12 +296,22 @@ const changeRoute = (index) => {
   .navigation {
     display: flex;
     justify-content: center;
-    gap: 80px;
+    gap: 40px;
     height: 30px;
+    padding: 0 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    
     div {
       cursor: pointer;
       font-size: 18px;
       opacity: 0.7;
+      flex-shrink: 0;
 
       &.active {
         opacity: 1;
@@ -375,24 +343,19 @@ const changeRoute = (index) => {
       padding: 0;
       backdrop-filter: blur(10px);
       position: absolute;
-      overflow: hidden;
+      overflow-y: auto;
       bottom: 1rem;
       top: 8rem;
       left: 2rem;
       right: 2rem;
 
       .analysis-slider {
-        display: flex;
-        width: 200%; // 两个分析页面
         height: 100%;
-        transition: transform 0.3s ease;
-
+        
         .analysis-slide {
-          width: 50%; // 每个分析占1/2
-          height: 100%;
+          width: 100%;
           padding: 30px;
           box-sizing: border-box;
-          overflow-y: auto;
 
           h2 {
             text-align: center;

@@ -5,7 +5,7 @@ import path from "path";
 // https://vite.dev/config/
 export default defineConfig({
   server: {
-    port: 8080,
+    port: 8089,
     host: "0.0.0.0",
     sourcemapIgnoreList: false,
     proxy: {
