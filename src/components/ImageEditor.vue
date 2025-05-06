@@ -865,7 +865,7 @@ const goBack = () => {
   flex-direction: column;
   height: 100vh;
   width: 100%;
-  background-color: black;
+  background: url('../assets/edit_image_bg.png') no-repeat;
 
   .header {
     padding: 20px 0;
@@ -899,6 +899,7 @@ const goBack = () => {
     margin: 0 auto;
     perspective: 1000px; /* 为3D旋转添加透视效果 */
     border-radius: 1rem;
+    backdrop-filter: blur(2px);
 
     .image-wrapper {
       position: relative;
@@ -977,10 +978,10 @@ const goBack = () => {
       bottom: 0;
       background-image: linear-gradient(
           to right,
-          rgba(255, 165, 0, 0.2) 1px,
+          rgba(255, 255, 255, 0.5) 1px,
           transparent 1px
         ),
-        linear-gradient(to bottom, rgba(255, 165, 0, 0.2) 1px, transparent 1px);
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
       background-size: 25% 25%;
       pointer-events: none;
     }
