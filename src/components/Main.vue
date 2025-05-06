@@ -140,6 +140,11 @@ const changeRoute = (index) => {
     router.push("/change-clothes");
   } else if (index === 2) {
     // Report 选项
+    if (!localStorage.getItem("reportData")) {
+      alert('请上传照片')
+      return
+    }
+      
     router.push("/report");
   } else if (index === 3) {
     // History 选项
