@@ -2,7 +2,7 @@
   <div class="report">
     <div class="header">
       <div class="back" @click="goBack">
-        <span>&lt;</span>
+        <span></span>
       </div>
     </div>
     <div class="navigation">
@@ -451,14 +451,19 @@ const changeRoute = (index) => {
       position: absolute;
       left: 20px;
       top: 20px;
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.2);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      span {
+        background: url(../assets/icon/back_icon.png) no-repeat center center;
+        width: 12px;
+        height: 21px;
+      }
     }
   }
 
