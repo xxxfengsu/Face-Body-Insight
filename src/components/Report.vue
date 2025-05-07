@@ -18,6 +18,59 @@
         <div class="analysis-slider">
           <!-- 第一个分析：整体分析（包含肤色、比例、面部留白） -->
           <div class="analysis-slide">
+            <!-- 风格参考放到第一位 -->
+            <h2>风格参考</h2>
+            <div class="style-reference">
+              <!-- 使用v-for循环遍历style_reference_list数组 -->
+              <div
+                v-for="(styleRef, index) in reportData?.style_reference_list ||
+                []"
+                :key="index"
+                class="style-card"
+              >
+                <div class="style-content">
+                  <!-- 左侧图片和颜色面板 -->
+                  <div class="style-image-section" v-if="styleRef.imageUrl">
+                    <img
+                      :src="styleRef.imageUrl || '../assets/baseDeepPic.png'"
+                      alt="风格参考"
+                      class="style-image"
+                    />
+                  </div>
+
+                  <!-- 右侧信息区 -->
+                  <div class="style-info">
+                    <div class="style-item">
+                      <div class="style-label">三庭比例:</div>
+                      <div class="style-value">
+                        {{ styleRef.threePartRatio || "" }}
+                      </div>
+                    </div>
+                    <div class="style-item">
+                      <div class="style-label">五眼比例:</div>
+                      <div class="style-value">
+                        {{ styleRef.fiveEyeRatio || "" }}
+                      </div>
+                    </div>
+                    <div class="style-item">
+                      <div class="style-label">风格定位:</div>
+                      <div class="style-value">
+                        {{ styleRef.stylePositioning || "" }}
+                      </div>
+                    </div>
+                    <div class="style-item">
+                      <div class="style-label">妆容重点:</div>
+                      <div class="style-value">
+                        {{ styleRef.makeupFocus || "" }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-divider"></div>
+
             <section class="skin-section">
               <h2>皮肤分析</h2>
               <div class="skin-analysis">
@@ -255,7 +308,7 @@
 
             <div class="section-divider"></div>
 
-            <!-- 五官量感分析放到最后 -->
+            <!-- 五官量感分析 -->
             <h2>五官量感</h2>
             <div class="feature-container">
               <div class="user-image-container">
@@ -307,58 +360,6 @@
                 <span class="feature-value">{{
                   reportData?.feature_types?.face_shape.result_name || ""
                 }}</span>
-              </div>
-            </div>
-
-            <div class="section-divider"></div>
-
-            <h2>风格参考</h2>
-            <div class="style-reference">
-              <!-- 使用v-for循环遍历style_reference_list数组 -->
-              <div
-                v-for="(styleRef, index) in reportData?.style_reference_list ||
-                []"
-                :key="index"
-                class="style-card"
-              >
-                <div class="style-content">
-                  <!-- 左侧图片和颜色面板 -->
-                  <div class="style-image-section" v-if="styleRef.imageUrl">
-                    <img
-                      :src="styleRef.imageUrl || '../assets/baseDeepPic.png'"
-                      alt="风格参考"
-                      class="style-image"
-                    />
-                  </div>
-
-                  <!-- 右侧信息区 -->
-                  <div class="style-info">
-                    <div class="style-item">
-                      <div class="style-label">三庭比例:</div>
-                      <div class="style-value">
-                        {{ styleRef.threePartRatio || "" }}
-                      </div>
-                    </div>
-                    <div class="style-item">
-                      <div class="style-label">五眼比例:</div>
-                      <div class="style-value">
-                        {{ styleRef.fiveEyeRatio || "" }}
-                      </div>
-                    </div>
-                    <div class="style-item">
-                      <div class="style-label">风格定位:</div>
-                      <div class="style-value">
-                        {{ styleRef.stylePositioning || "" }}
-                      </div>
-                    </div>
-                    <div class="style-item">
-                      <div class="style-label">妆容重点:</div>
-                      <div class="style-value">
-                        {{ styleRef.makeupFocus || "" }}
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
