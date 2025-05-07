@@ -523,7 +523,7 @@ const changeRoute = (index) => {
 
         .analysis-slide {
           width: 100%;
-          padding: 30px;
+          padding: 10px 20px;
           box-sizing: border-box;
 
           h2 {
@@ -737,10 +737,12 @@ const changeRoute = (index) => {
             flex-direction: row;
             align-items: flex-start;
             gap: 10px;
+            overflow: hidden;
           }
 
           .style-image-section {
-            min-width: 30%;
+            max-width: 40%;
+            min-width: 40%;
             border-radius: 15px;
             overflow: hidden;
           }
@@ -779,7 +781,7 @@ const changeRoute = (index) => {
 
           .style-label {
             font-weight: bold;
-            min-width: 100px;
+            min-width: 65px;
             text-align: left;
           }
 
