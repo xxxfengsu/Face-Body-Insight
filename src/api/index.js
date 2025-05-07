@@ -6,7 +6,8 @@ const config = getConfig();
 
 // 创建 axios 实例
 const service = axios.create({
-  baseURL: "http://112.74.166.183:8881",
+  // baseURL: "http://112.74.166.183:8881",
+  baseURL: "http://139.224.59.6:8881",
   timeout: 100000,
   headers: {
     "Content-Type": "application/json",

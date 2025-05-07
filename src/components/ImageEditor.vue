@@ -146,7 +146,8 @@ const imageElement = ref(null);
 const imageContainer = ref(null);
 const rulerContainer = ref(null);
 const cropBox = ref(null);
-const personId = ref('')
+const personId = ref("");
+const boxFromRoute = ref("");
 
 // 新增 - 裁剪模式标志
 const cropMode = ref(false);
@@ -244,10 +245,11 @@ onMounted(() => {
   // 从localStorage或路由参数中获取图片URL
   const urlFromRoute = route.query.imageUrl;
   const idFromRoute = route.query.personId;
-  
+
   // 设置人员ID
   if (idFromRoute) {
     personId.value = idFromRoute;
+    boxFromRoute.value = route.query.selectedBox;
     console.log("设置personId:", personId.value);
   }
 
@@ -820,7 +822,7 @@ const saveEdits = async () => {
     // 创建FormData对象
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("classId", "4");
+    formData.append("classId", boxFromRoute.value);
     formData.append("force", "false");
     formData.append("personId", personId.value);
 
@@ -855,7 +857,7 @@ const saveEdits = async () => {
 
 // 返回上一页
 const goBack = () => {
-  router.replace({name: 'main'})
+  router.replace({ name: "main" });
 };
 </script>
 
@@ -865,7 +867,7 @@ const goBack = () => {
   flex-direction: column;
   height: 100vh;
   width: 100%;
-  background: url('../assets/edit_image_bg.png') no-repeat;
+  background: url("../assets/edit_image_bg.png") no-repeat;
 
   .header {
     padding: 20px 0;
@@ -981,7 +983,11 @@ const goBack = () => {
           rgba(255, 255, 255, 0.5) 1px,
           transparent 1px
         ),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
+        linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.5) 1px,
+          transparent 1px
+        );
       background-size: 25% 25%;
       pointer-events: none;
     }

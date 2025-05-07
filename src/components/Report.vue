@@ -33,29 +33,49 @@
                 </div>
                 <div class="analysis-text">
                   <p>痘痘：{{ reportData?.skin_analysis.acne.result_name }}</p>
-                  <p v-html="formatAdvice(reportData?.skin_analysis.acne.advice)"></p>
+                  <p
+                    v-html="formatAdvice(reportData?.skin_analysis.acne.advice)"
+                  ></p>
                   <p>
                     眼皮：{{
                       reportData?.skin_analysis.eyelid_type.result_name
                     }}
                   </p>
-                  <p v-html="formatAdvice(reportData?.skin_analysis.eyelid_type.advice)"></p>
+                  <p
+                    v-html="
+                      formatAdvice(reportData?.skin_analysis.eyelid_type.advice)
+                    "
+                  ></p>
                   <p>
                     法令纹：{{
                       reportData?.skin_analysis.nasolabial_fold.result_name
                     }}
                   </p>
-                  <p v-html="formatAdvice(reportData?.skin_analysis.nasolabial_fold.advice)"></p>
+                  <p
+                    v-html="
+                      formatAdvice(
+                        reportData?.skin_analysis.nasolabial_fold.advice
+                      )
+                    "
+                  ></p>
                   <p>
                     斑点：{{ reportData?.skin_analysis.skin_spot.result_name }}
                   </p>
-                  <p v-html="formatAdvice(reportData?.skin_analysis.skin_spot.advice)"></p>
+                  <p
+                    v-html="
+                      formatAdvice(reportData?.skin_analysis.skin_spot.advice)
+                    "
+                  ></p>
                   <p>
                     皮肤类型：{{
                       reportData?.skin_analysis.skin_type.result_name
                     }}
                   </p>
-                  <p v-html="formatAdvice(reportData?.skin_analysis.skin_type.advice)"></p>
+                  <p
+                    v-html="
+                      formatAdvice(reportData?.skin_analysis.skin_type.advice)
+                    "
+                  ></p>
                 </div>
               </div>
             </section>
@@ -82,39 +102,116 @@
                   </div>
                 </div>
                 <div class="analysis-text proportion-text">
-                  <p v-if="reportData?.three_part_analysis.advice" v-html="formatAdvice(reportData?.three_part_analysis.advice)"></p>
-                  <p v-if="reportData?.three_part_analysis.one_part.result !== 'faceup_normal'">
+                  <p
+                    v-if="reportData?.three_part_analysis.advice"
+                    v-html="
+                      formatAdvice(reportData?.three_part_analysis.advice)
+                    "
+                  ></p>
+                  <p
+                    v-if="
+                      reportData?.three_part_analysis.one_part.result !==
+                      'faceup_normal'
+                    "
+                  >
                     上庭：{{
                       reportData?.three_part_analysis.one_part.result_name
                     }}
-                    <span v-html="formatAdvice(reportData?.three_part_analysis.one_part.advice)"></span>
+                    <span
+                      v-html="
+                        formatAdvice(
+                          reportData?.three_part_analysis.one_part.advice
+                        )
+                      "
+                    ></span>
                   </p>
-                  <div v-if="reportData?.three_part_analysis.one_part.advice_image_url" class="improvement-steps">
-                    <img :src="reportData?.three_part_analysis.one_part.advice_image_url" alt="上庭建议" />
+                  <div
+                    v-if="
+                      reportData?.three_part_analysis.one_part.advice_image_url
+                    "
+                    class="improvement-steps"
+                  >
+                    <img
+                      :src="
+                        reportData?.three_part_analysis.one_part
+                          .advice_image_url
+                      "
+                      alt="上庭建议"
+                    />
                   </div>
-                  
-                  <p v-if="reportData?.three_part_analysis.two_part.result !== 'facemid_normal'">
+
+                  <p
+                    v-if="
+                      reportData?.three_part_analysis.two_part.result !==
+                      'facemid_normal'
+                    "
+                  >
                     中庭：{{
                       reportData?.three_part_analysis.two_part.result_name
                     }}
-                    <span v-html="formatAdvice(reportData?.three_part_analysis.two_part.advice)"></span>
+                    <span
+                      v-html="
+                        formatAdvice(
+                          reportData?.three_part_analysis.two_part.advice
+                        )
+                      "
+                    ></span>
                   </p>
-                  <div v-if="reportData?.three_part_analysis.two_part.advice_image_url" class="improvement-steps">
-                    <img :src="reportData?.three_part_analysis.two_part.advice_image_url" alt="中庭建议" />
+                  <div
+                    v-if="
+                      reportData?.three_part_analysis.two_part.advice_image_url
+                    "
+                    class="improvement-steps"
+                  >
+                    <img
+                      :src="
+                        reportData?.three_part_analysis.two_part
+                          .advice_image_url
+                      "
+                      alt="中庭建议"
+                    />
                   </div>
-                  
-                  <p v-if="reportData?.three_part_analysis.three_part.result !== 'facedown_normal'">
+
+                  <p
+                    v-if="
+                      reportData?.three_part_analysis.three_part.result !==
+                      'facedown_normal'
+                    "
+                  >
                     下庭：{{
                       reportData?.three_part_analysis.three_part.result_name
                     }}
-                    <span v-html="formatAdvice(reportData?.three_part_analysis.three_part.advice)"></span>
+                    <span
+                      v-html="
+                        formatAdvice(
+                          reportData?.three_part_analysis.three_part.advice
+                        )
+                      "
+                    ></span>
                   </p>
-                  <div v-if="reportData?.three_part_analysis.three_part.advice_image_url" class="improvement-steps">
-                    <img :src="reportData?.three_part_analysis.three_part.advice_image_url" alt="下庭建议" />
+                  <div
+                    v-if="
+                      reportData?.three_part_analysis.three_part
+                        .advice_image_url
+                    "
+                    class="improvement-steps"
+                  >
+                    <img
+                      :src="
+                        reportData?.three_part_analysis.three_part
+                          .advice_image_url
+                      "
+                      alt="下庭建议"
+                    />
                   </div>
                 </div>
-                <div class="improvement-steps" v-if="reportData?.three_part_analysis.normal_image_url">
-                  <img :src="reportData?.three_part_analysis.normal_image_url" />
+                <div
+                  class="improvement-steps"
+                  v-if="reportData?.three_part_analysis.normal_image_url"
+                >
+                  <img
+                    :src="reportData?.three_part_analysis.normal_image_url"
+                  />
                 </div>
               </div>
               <div class="section-divider"></div>
@@ -138,17 +235,26 @@
                 <div class="analysis-text proportion-text">
                   <p>
                     眼距：{{ reportData?.five_eyes_analysis.result_name }}
-                    <span v-html="formatAdvice(reportData?.five_eyes_analysis.advice)"></span>
+                    <span
+                      v-html="
+                        formatAdvice(reportData?.five_eyes_analysis.advice)
+                      "
+                    ></span>
                   </p>
                 </div>
                 <div class="improvement-steps">
-                  <img :src="reportData?.five_eyes_analysis.image_url || '../assets/analysisProcess.png'" />
+                  <img
+                    :src="
+                      reportData?.five_eyes_analysis.image_url ||
+                      '../assets/analysisProcess.png'
+                    "
+                  />
                 </div>
               </div>
             </section>
-            
+
             <div class="section-divider"></div>
-            
+
             <!-- 五官量感分析放到最后 -->
             <h2>五官量感</h2>
             <div class="feature-container">
@@ -166,8 +272,7 @@
                 <p class="main-analysis">
                   {{ reportData?.facial_density.result_name }}
                 </p>
-                <p v-html="formatAdvice(reportData?.facial_density.advice)">
-                </p>
+                <p v-html="formatAdvice(reportData?.facial_density.advice)"></p>
               </div>
             </div>
 
@@ -204,6 +309,58 @@
                 }}</span>
               </div>
             </div>
+
+            <div class="section-divider"></div>
+
+            <h2>风格参考</h2>
+            <div class="style-reference">
+              <!-- 使用v-for循环遍历style_reference_list数组 -->
+              <div
+                v-for="(styleRef, index) in reportData?.style_reference_list ||
+                []"
+                :key="index"
+                class="style-card"
+              >
+                <div class="style-content">
+                  <!-- 左侧图片和颜色面板 -->
+                  <div class="style-image-section" v-if="styleRef.imageUrl">
+                    <img
+                      :src="styleRef.imageUrl || '../assets/baseDeepPic.png'"
+                      alt="风格参考"
+                      class="style-image"
+                    />
+                  </div>
+
+                  <!-- 右侧信息区 -->
+                  <div class="style-info">
+                    <div class="style-item">
+                      <div class="style-label">三庭比例:</div>
+                      <div class="style-value">
+                        {{ styleRef.threePartRatio || "" }}
+                      </div>
+                    </div>
+                    <div class="style-item">
+                      <div class="style-label">五眼比例:</div>
+                      <div class="style-value">
+                        {{ styleRef.fiveEyeRatio || "" }}
+                      </div>
+                    </div>
+                    <div class="style-item">
+                      <div class="style-label">风格定位:</div>
+                      <div class="style-value">
+                        {{ styleRef.stylePositioning || "" }}
+                      </div>
+                    </div>
+                    <div class="style-item">
+                      <div class="style-label">妆容重点:</div>
+                      <div class="style-value">
+                        {{ styleRef.makeupFocus || "" }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -234,7 +391,7 @@ const reportData = computed(() => {
     }
   }
   if (localStorage.getItem("reportData"))
-  try {
+    try {
       return JSON.parse(localStorage.getItem("reportData"));
     } catch (e) {
       console.error("解析报告数据失败:", e);
@@ -245,8 +402,8 @@ const reportData = computed(() => {
 
 // 处理advice文本，将句号替换为换行符
 const formatAdvice = (advice) => {
-  if (!advice) return '';
-  return advice.replace(/。/g, '。<br>').replace(/\.$/, '.<br>');
+  if (!advice) return "";
+  return advice.replace(/。/g, "。<br>").replace(/\.$/, ".<br>");
 };
 
 // 可以在组件初始化时打印一下数据
@@ -314,11 +471,11 @@ const changeRoute = (index) => {
     overflow-x: auto;
     white-space: nowrap;
     scrollbar-width: none;
-    
+
     &::-webkit-scrollbar {
       display: none;
     }
-    
+
     div {
       cursor: pointer;
       font-size: 18px;
@@ -363,7 +520,7 @@ const changeRoute = (index) => {
 
       .analysis-slider {
         height: 100%;
-        
+
         .analysis-slide {
           width: 100%;
           padding: 30px;
@@ -564,6 +721,72 @@ const changeRoute = (index) => {
               margin: 4px 0;
             }
           }
+
+          // 风格参考样式
+          .style-reference {
+            margin-top: 15px;
+          }
+
+          .style-card {
+            border-radius: 15px;
+            margin-bottom: 20px;
+          }
+
+          .style-content {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 10px;
+          }
+
+          .style-image-section {
+            min-width: 30%;
+            border-radius: 15px;
+            overflow: hidden;
+          }
+
+          .style-image {
+            width: 100%;
+            border-radius: 15px 15px 0 0;
+            display: block;
+          }
+
+          .color-palette {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 0 0 15px 15px;
+          }
+
+          .color-chip {
+            width: 18%;
+            height: 30px;
+            border-radius: 5px;
+          }
+
+          .style-info {
+            flex: 1;
+            text-align: left;
+            font-size: 12px;
+          }
+
+          .style-item {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: baseline;
+          }
+
+          .style-label {
+            font-weight: bold;
+            min-width: 100px;
+            text-align: left;
+          }
+
+          .style-value {
+            flex: 1;
+            text-align: left;
+          }
         }
       }
     }
@@ -587,5 +810,17 @@ const changeRoute = (index) => {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.5);
+}
+
+/* 响应式适配 */
+@media (max-width: 580px) {
+  .style-content {
+    flex-direction: column;
+  }
+
+  .style-image-section {
+    max-width: 100%;
+    margin-bottom: 15px;
+  }
 }
 </style>

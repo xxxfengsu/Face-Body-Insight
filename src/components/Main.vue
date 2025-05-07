@@ -13,7 +13,7 @@
             @click="changeRoute(2)"
             :class="activeRoute == 2 ? 'activeRoute' : ''"
           >
-            {{$t("main.report")}}
+            {{ $t("main.report") }}
           </div>
           <div
             @click="changeRoute(3)"
@@ -30,30 +30,32 @@
         </div>
       </div>
 
-
       <div class="changeMode">
         <div class="select-boxes">
           <div
             class="select-box"
-            :class="{ active: selectedBox === 1 }"
-            @click="selectBox(1)"
+            :class="{ active: selectedBox === 32 }"
+            @click="selectBox(32)"
           >
             <img src="../assets/face_icon.png" alt="Face portrait" />
           </div>
           <div
             class="select-box"
-            :class="{ active: selectedBox === 0 }"
-            @click="selectBox(0)"
+            :class="{ active: selectedBox === 33 }"
+            @click="selectBox(33)"
           >
             <img src="../assets/body_icon.png" alt="Face close-up" />
           </div>
-
         </div>
       </div>
     </div>
     <div class="formBox">
       <div class="input-number">
-        <input type="text" :placeholder="$t('main.inputPlaceholder')" v-model="uploadId"/>
+        <input
+          type="text"
+          :placeholder="$t('main.inputPlaceholder')"
+          v-model="uploadId"
+        />
       </div>
 
       <div class="upload-box" @click="triggerFileUpload">
@@ -93,8 +95,8 @@ const { t } = useI18n();
 const { currentLanguage, changeLanguage } = useLanguage();
 
 let activeRoute = ref(1);
-let selectedBox = ref(1);
-let uploadId = ref('')
+let selectedBox = ref(32);
+let uploadId = ref("");
 const fileInput = ref(null);
 const headScroll = ref(null);
 const router = useRouter();
@@ -141,10 +143,10 @@ const changeRoute = (index) => {
   } else if (index === 2) {
     // Report 选项
     if (!localStorage.getItem("reportData")) {
-      alert('请上传图片')
-      return
+      alert("请上传图片");
+      return;
     }
-      
+
     router.push("/report");
   } else if (index === 3) {
     // History 选项
@@ -163,38 +165,45 @@ const triggerFileUpload = () => {
 const handleFileUpload = (event) => {
   // 清空之前选择的文件
   const fileInputElement = fileInput.value;
-  
+
   // 验证主播编号
-  if (!uploadId.value || uploadId.value.trim() === '') {
-    alert('请输入主播编号');
+  if (!uploadId.value || uploadId.value.trim() === "") {
+    alert("请输入主播编号");
     if (fileInputElement) {
-      fileInputElement.value = ''; // 清空文件选择
+      fileInputElement.value = ""; // 清空文件选择
     }
     return;
   }
-  
+
   const file = event.target.files[0];
   if (file) {
     // 验证文件类型
-    if (!file.type.includes('image/')) {
-      alert('请上传图片文件（jpg、png等）');
+    if (!file.type.includes("image/")) {
+      alert("请上传图片文件（jpg、png等）");
       if (fileInputElement) {
-        fileInputElement.value = ''; // 清空文件选择
+        fileInputElement.value = ""; // 清空文件选择
       }
       return;
     }
-    
+
     // 验证文件大小（限制为10MB）
     if (file.size > 10 * 1024 * 1024) {
-      alert('图片大小不能超过10MB');
+      alert("图片大小不能超过10MB");
       if (fileInputElement) {
-        fileInputElement.value = ''; // 清空文件选择
+        fileInputElement.value = ""; // 清空文件选择
       }
       return;
     }
-    
-    console.log("已选择文件:", file.name, "大小:", (file.size / 1024 / 1024).toFixed(2) + "MB", "主播ID:", uploadId.value);
-    
+
+    console.log(
+      "已选择文件:",
+      file.name,
+      "大小:",
+      (file.size / 1024 / 1024).toFixed(2) + "MB",
+      "主播ID:",
+      uploadId.value
+    );
+
     // 创建一个临时URL用于图片预览
     uploadedImageUrl.value = URL.createObjectURL(file);
 
@@ -208,13 +217,17 @@ const showEditOptions = () => {
   if (uploadedImageUrl.value) {
     // 使用确认对话框询问用户是否要编辑图片
 
-      // // 将图片URL存储在本地存储中，以便在编辑页面加载
-      // localStorage.setItem("editImage", uploadedImageUrl.value);
-      // 导航到图片编辑页面
-      router.push({
-        path: "/image-editor",
-        query: { imageUrl: uploadedImageUrl.value, personId:uploadId.value },
-      });
+    // // 将图片URL存储在本地存储中，以便在编辑页面加载
+    // localStorage.setItem("editImage", uploadedImageUrl.value);
+    // 导航到图片编辑页面
+    router.push({
+      path: "/image-editor",
+      query: {
+        imageUrl: uploadedImageUrl.value,
+        personId: uploadId.value,
+        selectedBox: selectedBox.value,
+      },
+    });
   }
 };
 
@@ -367,11 +380,11 @@ const handleTouchEnd = () => {
             position: absolute;
             left: -25px;
             top: 50%;
-            transform:translateY(-50%);
+            transform: translateY(-50%);
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background-color: #fff
+            background-color: #fff;
           }
         }
       }
@@ -464,7 +477,7 @@ const handleTouchEnd = () => {
 
       .plus-icon {
         font-size: 40px;
-        color: #5B4F4F;
+        color: #5b4f4f;
         font-weight: bold;
       }
     }
