@@ -27,23 +27,24 @@ jobs:
       - name: 构建
         run: npm run build
 
-      # 安装sshpass工具
-      - name: 安装sshpass
-        run: sudo apt-get install -y sshpass
+      # 使用 SCP Action 上传文件
+      - name: 上传文件到服务器
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: 139.224.59.6
+          username: root
+          password: ${{ secrets.SERVER_PASSWORD }}
+          source: "dist/"
+          target: "/www/wwwroot/tyle.hxxd.tv/"
+          strip_components: 0  # 保留dist目录
+          rm: true
 
-      # 部署到服务器
-      - name: 部署到服务器
-        env:
-          SERVER_IP: 139.224.59.6
-          SERVER_USER: root
-          SERVER_PASS: ${{ secrets.SERVER_PASSWORD }}
-          SERVER_PATH: /www/wwwroot/tyle.hxxd.tv
-        run: |
-          # 压缩dist目录
-          tar -czvf dist.tar.gz dist/
-          
-          # 使用sshpass和scp上传文件
-          sshpass -p "$SERVER_PASS" scp -o StrictHostKeyChecking=no dist.tar.gz $SERVER_USER@$SERVER_IP:$SERVER_PATH/
-          
-          # 解压文件并设置权限
-          sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "cd $SERVER_PATH && rm -rf dist && tar -xzvf dist.tar.gz && chmod -R 755 dist && rm dist.tar.gz"
+      # 使用 SSH Action 设置权限
+      - name: 设置文件权限
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: 139.224.59.6
+          username: root
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            chmod -R 755 /www/wwwroot/tyle.hxxd.tv/dist
