@@ -27,6 +27,22 @@ jobs:
       - name: 构建
         run: npm run build
 
+      # 备份服务器上的现有 dist 目录
+      - name: 备份现有dist目录
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: 139.224.59.6
+          username: root
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            timestamp=$(date +%Y%m%d_%H%M%S)
+            if [ -d "/www/wwwroot/tyle.hxxd.tv/dist" ]; then
+              cp -r /www/wwwroot/tyle.hxxd.tv/dist /www/wwwroot/tyle.hxxd.tv/dist_backup_$timestamp
+              echo "已备份 dist 目录到 dist_backup_$timestamp"
+            else
+              echo "没有找到 dist 目录，跳过备份"
+            fi
+
       # 使用 SCP Action 上传文件
       - name: 上传文件到服务器
         uses: appleboy/scp-action@v0.1.4
