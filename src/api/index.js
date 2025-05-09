@@ -105,9 +105,9 @@ export const clothesApi = {
   },
 
   // 如果有文件上传
-  uploadClothes(formData) {
+  uploadImage(formData) {
     return service({
-      url: "/clothes/upload",
+      url: "/fileUploadAndDownload/upload",
       method: "post",
       data: formData,
       headers: {

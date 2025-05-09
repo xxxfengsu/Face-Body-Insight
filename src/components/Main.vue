@@ -22,6 +22,7 @@
             {{ $t("main.history") }}
           </div>
           <div
+            v-if="user?.authorityId === 1001"
             @click="changeRoute(4)"
             :class="activeRoute == 4 ? 'activeRoute' : ''"
           >
@@ -97,6 +98,7 @@ const { currentLanguage, changeLanguage } = useLanguage();
 let activeRoute = ref(1);
 let selectedBox = ref(32);
 let uploadId = ref("");
+const user = ref(JSON.parse(sessionStorage.getItem("user")));
 const fileInput = ref(null);
 const headScroll = ref(null);
 const router = useRouter();

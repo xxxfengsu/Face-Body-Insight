@@ -68,6 +68,7 @@ const login = async () => {
     // 登录成功，存储token到sessionStorage
     if (res && res.data && res.data.token) {
       sessionStorage.setItem("token", res.data.token);
+      sessionStorage.setItem("user", JSON.stringify(res.data.user));
       console.log("登录成功，token已保存");
 
       // 登录成功后跳转

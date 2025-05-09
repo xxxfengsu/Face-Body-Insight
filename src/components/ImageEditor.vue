@@ -213,7 +213,6 @@ const sliderPercentage = computed(() => {
 
 // 监视滑动百分比变化
 watch(sliderPercentage, (newValue) => {
-  console.log(`滑动百分比: ${newValue}%`);
   // 在X旋转模式下，调整X轴旋转
   if (xRotationMode.value) {
     rotateX.value = newValue * 0.3; // 将百分比转换为适当的角度
@@ -250,7 +249,6 @@ onMounted(() => {
   if (idFromRoute) {
     personId.value = idFromRoute;
     boxFromRoute.value = route.query.selectedBox;
-    console.log("设置personId:", personId.value);
   }
 
   if (urlFromRoute) {
@@ -832,12 +830,8 @@ const saveEdits = async () => {
       formData.append("token", token);
     }
 
-    console.log("准备上传文件:", file.name, file.size);
-
     // 调用API上传文件
     const res = await reportApi.getReport(formData);
-
-    console.log("上传结果:", res);
 
     // 上传成功后，取消loading，然后跳转
     isLoading.value = false;

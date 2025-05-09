@@ -21,7 +21,13 @@
           @change="handleFileUpload"
           style="display: none"
         />
-        <div class="plus-icon">+</div>
+        <img
+          v-if="uploadedImageUrl"
+          :src="uploadedImageUrl"
+          alt="预览"
+          class="preview-img"
+        />
+        <div v-else class="plus-icon">+</div>
       </div>
 
       <button class="go-button" @click="handleSubmit">
@@ -99,6 +105,11 @@
         </div>
       </div>
     </div>
+    <!-- 在 template 部分，添加加载指示器 -->
+    <div class="loading-overlay" v-if="isLoading">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">正在上传...</div>
+    </div>
   </div>
 </template>
 
@@ -107,6 +118,7 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useLanguage } from "../composables/useLanguage";
+import { clothesApi } from "../api";
 // import History from "./History.vue";
 // import Uploading from "./Uploading.vue";
 
@@ -122,6 +134,7 @@ const fileInput = ref(null);
 const headScroll = ref(null);
 const router = useRouter();
 const uploadedImageUrl = ref(null);
+const isLoading = ref(false);
 
 // 添加触摸滑动相关变量
 let touchStartX = 0;
@@ -129,7 +142,22 @@ let scrollLeft = 0;
 
 const gender = ref("female");
 const selectedOption = ref(0); // 0:发型 1:风格参考 2:上衣 3:下衣 4:全身
-
+const uploadDict = {
+  male: {
+    0: 15,
+    1: 29,
+    2: 9,
+    3: 10,
+    4: 11,
+  },
+  female: {
+    0: 16,
+    1: 30,
+    2: 12,
+    3: 13,
+    4: 14,
+  },
+};
 onMounted(() => {
   // 获取存储的语言设置
   const savedLanguage = localStorage.getItem("language");
@@ -187,45 +215,46 @@ const handleFileUpload = (event) => {
       return;
     }
 
-    console.log(
-      "已选择文件:",
-      file.name,
-      "大小:",
-      (file.size / 1024 / 1024).toFixed(2) + "MB",
-      "主播ID:",
-      uploadId.value
-    );
-
     // 创建一个临时URL用于图片预览
     uploadedImageUrl.value = URL.createObjectURL(file);
-
-    // 显示编辑选项
-    showEditOptions();
   }
 };
 
-// 添加新方法: 显示编辑选项
-const showEditOptions = () => {
-  if (uploadedImageUrl.value) {
-    // 使用确认对话框询问用户是否要编辑图片
-
-    // // 将图片URL存储在本地存储中，以便在编辑页面加载
-    // localStorage.setItem("editImage", uploadedImageUrl.value);
-    // 导航到图片编辑页面
-    router.push({
-      path: "/image-editor",
-      query: {
-        imageUrl: uploadedImageUrl.value,
-        personId: uploadId.value,
-        selectedBox: selectedBox.value,
-      },
-    });
+const handleSubmit = async () => {
+  const classId = uploadDict[gender.value][selectedOption.value];
+  if (!uploadedImageUrl.value) {
+    alert("请先上传图片");
+    return;
   }
-};
+  try {
+    // 开始加载
+    isLoading.value = true;
+    // 将base64数据转换为Blob
+    const base64Response = await fetch(uploadedImageUrl.value);
+    const blob = await base64Response.blob();
+    // 创建文件对象
+    const file = new File([blob], "edited_image.jpg", { type: "image/jpeg" });
 
-const handleSubmit = () => {
-  console.log("Form submitted");
-  // 可以在这里添加表单提交逻辑
+    // 创建FormData对象
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("classId", classId);
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      formData.append("token", token);
+    }
+
+    // 调用API上传文件
+    const res = await clothesApi.uploadImage(formData);
+
+    // 上传成功后，取消loading，然后跳转
+    isLoading.value = false;
+    // 跳转到报告页面
+  } catch (error) {
+    // 出错时也要取消loading
+    isLoading.value = false;
+    alert("图片保存失败，请重试");
+  }
 };
 
 // 触摸事件处理函数
@@ -638,7 +667,6 @@ body {
 .bottom-options {
   display: flex;
   justify-content: center;
-  gap: 32px;
   margin-bottom: 24px;
 }
 
@@ -677,5 +705,43 @@ body {
 .all-options {
   flex-wrap: wrap;
   row-gap: 20px;
+}
+
+.preview-img {
+  max-width: 100%;
+  max-height: 100px;
+  border-radius: 10px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+/* 在 style 部分添加加载样式 */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 20px;
+}
+
+.loading-text {
+  color: white;
+  font-size: 18px;
 }
 </style>
