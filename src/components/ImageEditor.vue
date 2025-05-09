@@ -1,5 +1,5 @@
 <template>
-  <div class="image-editor">
+  <div class="image-editor" :class="boxFromRoute == 32? 'bg' : 'bg1'">
     <div class="header">
       <div class="back" @click="goBack">
         <span></span>
@@ -856,14 +856,21 @@ const goBack = () => {
 </script>
 
 <style lang="less" scoped>
+ .bg{
+    background: url("../assets/edit_image_bg.png") no-repeat;
+    background-position: center;
+  }
+  .bg1{
+    background: url("../assets/edit_image_bg1.png") no-repeat;
+    background-position: center;
+  }
 .image-editor {
   display: flex;
   flex-direction: column;
   height: 100vh;
   width: 100%;
-  background: url("../assets/edit_image_bg.png") no-repeat;
-  background-position: center;
 
+ 
   .header {
     padding: 20px 0;
     height: 30px;
