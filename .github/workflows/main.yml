@@ -1,0 +1,50 @@
+name: 构建和部署
+
+on:
+  push:
+    branches: [ main ]  # 根据你的主分支名称调整，可能是master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 检出代码
+      - uses: actions/checkout@v4
+
+      # 设置Node.js环境
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      # 安装依赖
+      - name: 安装依赖
+        run: npm ci
+
+      # 构建项目
+      - name: 构建
+        run: npm run build
+
+      # 使用 SCP Action 上传文件
+      - name: 上传文件到服务器
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: 139.224.59.6
+          username: root
+          password: ${{ secrets.SERVER_PASSWORD }}
+          source: "dist/"
+          target: "/www/wwwroot/tyle.hxxd.tv/"
+          strip_components: 0  # 保留dist目录
+          rm: true
+
+      # 使用 SSH Action 设置权限
+      - name: 设置文件权限
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: 139.224.59.6
+          username: root
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            chmod -R 755 /www/wwwroot/tyle.hxxd.tv/dist
