@@ -43,6 +43,11 @@ const routes = [
     name: "imageEditor",
     component: () => import("../components/ImageEditor.vue"),
   },
+  {
+    path: "/upload-material",
+    name: "uploadMaterial",
+    component: () => import("../components/UploadMaterial.vue"),
+  },
 ];
 
 const router = createRouter({

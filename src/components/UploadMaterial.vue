@@ -1,62 +1,18 @@
 <template>
   <div class="main">
-    <div class="backPic">
-      <div class="head-container">
-        <div class="head" ref="headScroll">
-          <div
-            @click="changeRoute(1)"
-            :class="activeRoute == 1 ? 'activeRoute' : ''"
-          >
-            {{ $t("main.uploading") }}
-          </div>
-          <div
-            @click="changeRoute(2)"
-            :class="activeRoute == 2 ? 'activeRoute' : ''"
-          >
-            {{ $t("main.report") }}
-          </div>
-          <div
-            @click="changeRoute(3)"
-            :class="activeRoute == 3 ? 'activeRoute' : ''"
-          >
-            {{ $t("main.history") }}
-          </div>
-          <div
-            @click="changeRoute(4)"
-            :class="activeRoute == 4 ? 'activeRoute' : ''"
-          >
-            {{ $t("main.uploadMaterial") }}
-          </div>
-        </div>
-      </div>
-
-      <div class="changeMode">
-        <div class="select-boxes">
-          <div
-            class="select-box"
-            :class="{ active: selectedBox === 32 }"
-            @click="selectBox(32)"
-          >
-            <img src="../assets/face_icon.png" alt="Face portrait" />
-          </div>
-          <div
-            class="select-box"
-            :class="{ active: selectedBox === 33 }"
-            @click="selectBox(33)"
-          >
-            <img src="../assets/body_icon.png" alt="Face close-up" />
-          </div>
-        </div>
-      </div>
+    <div class="back" @click="goBack">
+      <span></span>
     </div>
+
+    <div class="backPic"></div>
     <div class="formBox">
-      <div class="input-number">
+      <!-- <div class="input-number">
         <input
           type="text"
           :placeholder="$t('main.inputPlaceholder')"
           v-model="uploadId"
         />
-      </div>
+      </div> -->
 
       <div class="upload-box" @click="triggerFileUpload">
         <input
@@ -73,10 +29,75 @@
       </button>
     </div>
 
-    <!-- 内容容器 -->
-    <div class="content-container">
-      <Uploading v-if="activeRoute === 1" />
-      <History v-if="activeRoute === 3" />
+    <div class="center-layout">
+      <!-- 性别切换 -->
+      <div class="gender-switch">
+        <div
+          :class="['gender-btn', { active: gender === 'female' }]"
+          @click="gender = 'female'"
+        >
+          <i class="female-icon"></i> 女
+        </div>
+        <div
+          :class="['gender-btn', { active: gender === 'male' }]"
+          @click="gender = 'male'"
+        >
+          <i class="male-icon"></i>男
+        </div>
+      </div>
+
+      <!-- 发型/风格参考 -->
+      <div class="top-options">
+        <div
+          class="option-block"
+          :class="{ selected: selectedOption === 0 }"
+          @click="selectedOption = 0"
+        >
+          <div class="option-label">发型</div>
+          <img src="../assets/icon/hair_icon.png" alt="发型" />
+          <div v-if="selectedOption === 0" class="select-dot"></div>
+        </div>
+        <div
+          class="option-block"
+          :class="{ selected: selectedOption === 1 }"
+          @click="selectedOption = 1"
+        >
+          <div class="option-label">风格参考</div>
+          <img src="../assets/icon/style_icon.png" alt="风格参考" />
+          <div v-if="selectedOption === 1" class="select-dot"></div>
+        </div>
+      </div>
+
+      <!-- 上衣/下衣/全身 -->
+      <div class="bottom-options">
+        <div
+          class="option-block"
+          :class="{ selected: selectedOption === 2 }"
+          @click="selectedOption = 2"
+        >
+          <div class="option-label">上衣</div>
+          <img src="../assets/icon/top_icon.png" alt="上衣" />
+          <div v-if="selectedOption === 2" class="select-dot"></div>
+        </div>
+        <div
+          class="option-block"
+          :class="{ selected: selectedOption === 3 }"
+          @click="selectedOption = 3"
+        >
+          <div class="option-label">下衣</div>
+          <img src="../assets/icon/bottom_icon.png" alt="下衣" />
+          <div v-if="selectedOption === 3" class="select-dot"></div>
+        </div>
+        <div
+          class="option-block"
+          :class="{ selected: selectedOption === 4 }"
+          @click="selectedOption = 4"
+        >
+          <div class="option-label">全身</div>
+          <img src="../assets/icon/full_icon.png" alt="全身" />
+          <div v-if="selectedOption === 4" class="select-dot"></div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -105,6 +126,9 @@ const uploadedImageUrl = ref(null);
 // 添加触摸滑动相关变量
 let touchStartX = 0;
 let scrollLeft = 0;
+
+const gender = ref("female");
+const selectedOption = ref(0); // 0:发型 1:风格参考 2:上衣 3:下衣 4:全身
 
 onMounted(() => {
   // 获取存储的语言设置
@@ -135,29 +159,6 @@ onMounted(() => {
   }
 });
 
-const changeRoute = (index) => {
-  activeRoute.value = index;
-  if (index === 4) {
-    // Change Clothes 选项
-    router.push("/upload-material");
-  } else if (index === 2) {
-    // Report 选项
-    if (!localStorage.getItem("reportData")) {
-      alert("请上传图片");
-      return;
-    }
-
-    router.push("/report");
-  } else if (index === 3) {
-    // History 选项
-    router.push("/history");
-  }
-};
-
-const selectBox = (index) => {
-  selectedBox.value = index;
-};
-
 const triggerFileUpload = () => {
   fileInput.value.click();
 };
@@ -165,15 +166,6 @@ const triggerFileUpload = () => {
 const handleFileUpload = (event) => {
   // 清空之前选择的文件
   const fileInputElement = fileInput.value;
-
-  // 验证主播编号
-  if (!uploadId.value || uploadId.value.trim() === "") {
-    alert("请输入主播编号");
-    if (fileInputElement) {
-      fileInputElement.value = ""; // 清空文件选择
-    }
-    return;
-  }
 
   const file = event.target.files[0];
   if (file) {
@@ -251,6 +243,9 @@ const handleTouchMove = (e) => {
 
 const handleTouchEnd = () => {
   touchStartX = null;
+};
+const goBack = () => {
+  router.push("/main");
 };
 </script>
 
@@ -571,5 +566,116 @@ body {
   .main .formBox .go-button {
     margin-bottom: 15px;
   }
+}
+
+.back {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1;
+  span {
+    background: url(../assets/icon/back_icon.png) no-repeat center center;
+    width: 12px;
+    height: 21px;
+  }
+}
+
+.center-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 4rem;
+}
+
+.gender-switch {
+  display: flex;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 30px;
+  overflow: hidden;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.gender-btn {
+  padding: 10px 32px;
+  font-size: 14px;
+  color: #fff;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  outline: none;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  i {
+    width: 30px;
+    height: 30px;
+    margin-right: 5px;
+  }
+  .male-icon {
+    background: url(../assets/icon/Boy_Light_Skin_Tone.png) no-repeat 100% 100%;
+  }
+  .female-icon {
+    background: url(../assets/icon/Girl_Light_Skin_Tone.png) no-repeat 100% 100%;
+  }
+}
+.gender-btn.active {
+  background: rgba(255, 255, 255, 0.5);
+  color: #222;
+  font-weight: bold;
+}
+
+.top-options,
+.bottom-options {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 24px;
+}
+
+.option-block {
+  border-radius: 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  width: 110px;
+  height: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+  color: #fff;
+}
+.option-block img {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 8px;
+}
+.option-label {
+  font-size: 16px;
+  color: #fff;
+  text-align: center;
+}
+
+.select-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff;
+  margin: 6px auto 0 auto;
+}
+
+.all-options {
+  flex-wrap: wrap;
+  row-gap: 20px;
 }
 </style>
