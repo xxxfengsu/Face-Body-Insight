@@ -147,6 +147,16 @@ export const reportApi = {
       },
     });
   },
+  createRecord(data) {
+    return service({
+      url: "/analysis/record/create",
+      method: "post",
+      data,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
 };
 
 // 统一导出
