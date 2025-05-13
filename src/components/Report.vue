@@ -456,6 +456,7 @@ const generateAndUploadImage = async () => {
     for (const section of sections) {
       const canvas = await html2canvas(section, {
         scale: 2,
+        dpi: 400,
         useCORS: true,
         allowTaint: true,
         backgroundColor: "rgba(128, 128, 128, 0.5)",
