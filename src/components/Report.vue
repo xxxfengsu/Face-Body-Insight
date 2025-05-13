@@ -508,7 +508,11 @@ onMounted(async () => {
   if (reportData.value) {
     // 给页面一个加载时间，确保所有图片都加载完成
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    await generateAndUploadImage();
+
+    // 只有当从 ImageEditor 进入时才生成和上传图片
+    if (route.query.fromImageEditor === "true") {
+      await generateAndUploadImage();
+    }
   }
 });
 </script>
