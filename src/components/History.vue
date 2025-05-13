@@ -7,7 +7,7 @@
     </div>
     <div class="navigation">
       <div @click="changeRoute(1)">{{ $t("main.uploading") }}</div>
-      <!-- <div @click="changeRoute(2)">{{ $t("report.title") }}</div> -->
+      <div @click="changeRoute(2)">{{ $t("report.title") }}</div>
       <div @click="changeRoute(3)" class="active">
         {{ $t("history.title") }}
       </div>
@@ -171,7 +171,7 @@ const handleSearch = () => {
   fetchHistoryData();
 };
 
-// 添加下载处理函数
+// 修改下载处理函数为查看函数
 const handleDownload = async (item) => {
   if (!item.fileUrl) {
     console.error("No file URL available");
@@ -179,24 +179,10 @@ const handleDownload = async (item) => {
   }
 
   try {
-    // 使用 fetch 获取文件
-    const response = await fetch(item.fileUrl);
-    const blob = await response.blob();
-
-    // 创建一个临时的a标签来下载文件
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    // 从URL中获取文件名，如果没有则使用默认名称
-    const fileName = item.fileUrl.split("/").pop() || "download";
-    link.download = fileName;
-    link.style.display = "none";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    // 清理创建的 URL 对象
-    URL.revokeObjectURL(link.href);
+    // 直接在新标签页中打开文件URL
+    window.open(item.fileUrl, "_blank");
   } catch (error) {
-    console.error("Download failed:", error);
+    console.error("Failed to open report:", error);
   }
 };
 
@@ -264,12 +250,22 @@ const changeRoute = (index) => {
   .navigation {
     display: flex;
     justify-content: center;
-    gap: 80px;
+    gap: 40px;
     height: 30px;
+    padding: 0 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
     div {
       cursor: pointer;
       font-size: 18px;
       opacity: 0.7;
+      flex-shrink: 0;
 
       &.active {
         opacity: 1;
