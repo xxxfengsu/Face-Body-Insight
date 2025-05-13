@@ -157,6 +157,13 @@ export const reportApi = {
       },
     });
   },
+  getHistory(params) {
+    return service({
+      url: "/analysis/record/getList",
+      method: "get",
+      params,
+    });
+  },
 };
 
 // 统一导出
