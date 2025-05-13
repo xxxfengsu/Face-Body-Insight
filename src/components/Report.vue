@@ -484,12 +484,7 @@ const generateAndUploadImage = async () => {
     // 上传到后台
     const response = await reportApi.createRecord(formData);
 
-    if (!response.ok) {
-      throw new Error("图片上传失败");
-    }
-
-    const result = await response.json();
-    console.log("图片上传成功:", result);
+    console.log("图片上传成功:", response.msg);
   } catch (err) {
     console.error("图片生成或上传失败:", err);
   }
@@ -509,9 +504,13 @@ onMounted(async () => {
     // 给页面一个加载时间，确保所有图片都加载完成
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // 只有当从 ImageEditor 进入时才生成和上传图片
-    if (route.query.fromImageEditor === "true") {
+    // 检查是否从 ImageEditor 进入（通过 URL 参数或 localStorage）
+    const fromImageEditor = localStorage.getItem("fromImageEditor") === "true";
+
+    if (fromImageEditor) {
       await generateAndUploadImage();
+      // 清除标志，防止刷新页面时再次生成
+      localStorage.removeItem("fromImageEditor");
     }
   }
 });

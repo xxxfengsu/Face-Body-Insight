@@ -836,14 +836,15 @@ const saveEdits = async () => {
     // 上传成功后，取消loading，然后跳转
     isLoading.value = false;
     localStorage.setItem("reportData", JSON.stringify(res.data));
-    // 跳转到报告页面，添加 fromImageEditor 参数
+    localStorage.setItem("fromImageEditor", "true");
+    // 跳转到报告页面
     router.push({
       path: "/report",
       query: {
         reportData: JSON.stringify(res.data),
         personId: personId.value,
         classId: boxFromRoute.value,
-        fromImageEditor: "true", // 添加这个参数
+        fromImageEditor: "true",
       },
     });
   } catch (error) {
