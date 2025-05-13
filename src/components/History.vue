@@ -7,7 +7,7 @@
     </div>
     <div class="navigation">
       <div @click="changeRoute(1)">{{ $t("main.uploading") }}</div>
-      <div @click="changeRoute(2)">{{ $t("report.title") }}</div>
+      <!-- <div @click="changeRoute(2)">{{ $t("report.title") }}</div> -->
       <div @click="changeRoute(3)" class="active">
         {{ $t("history.title") }}
       </div>
