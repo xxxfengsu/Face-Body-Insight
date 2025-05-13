@@ -138,7 +138,6 @@ onMounted(() => {
 });
 
 const changeRoute = (index) => {
-  activeRoute.value = index;
   if (index === 4) {
     // Change Clothes 选项
     router.push("/upload-material");
@@ -154,6 +153,7 @@ const changeRoute = (index) => {
     // History 选项
     router.push("/history");
   }
+  activeRoute.value = index;
 };
 
 const selectBox = (index) => {
