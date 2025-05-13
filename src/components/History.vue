@@ -94,7 +94,7 @@ const { currentLanguage, changeLanguage } = useLanguage();
 
 // 分页相关数据
 const page = ref(1);
-const pageSize = 3;
+const pageSize = 10;
 const loading = ref(false);
 const noMore = ref(false);
 const historyItems = ref([]);
