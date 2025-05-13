@@ -105,9 +105,9 @@ export const clothesApi = {
   },
 
   // 如果有文件上传
-  uploadClothes(formData) {
+  uploadImage(formData) {
     return service({
-      url: "/clothes/upload",
+      url: "/fileUploadAndDownload/upload",
       method: "post",
       data: formData,
       headers: {
@@ -145,6 +145,23 @@ export const reportApi = {
       headers: {
         "Content-Type": "multipart/form-data",
       },
+    });
+  },
+  createRecord(data) {
+    return service({
+      url: "/analysis/record/create",
+      method: "post",
+      data,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
+  getHistory(params) {
+    return service({
+      url: "/analysis/record/getList",
+      method: "get",
+      params,
     });
   },
 };

@@ -19,8 +19,8 @@
           <!-- 第一个分析：整体分析（包含肤色、比例、面部留白） -->
           <div class="analysis-slide">
             <!-- 风格参考放到第一位 -->
-            <h2>风格参考</h2>
-            <div class="style-reference">
+            <div class="style-reference html2pic">
+              <h2>风格参考</h2>
               <!-- 使用v-for循环遍历style_reference_list数组 -->
               <div
                 v-for="(styleRef, index) in reportData?.style_reference_list ||
@@ -71,7 +71,7 @@
 
             <div class="section-divider"></div>
 
-            <section class="skin-section">
+            <section class="skin-section html2pic">
               <h2>皮肤分析</h2>
               <div class="skin-analysis">
                 <div class="image-container">
@@ -137,7 +137,7 @@
 
             <section class="proportion-section">
               <h2>比例分析</h2>
-              <div class="proportion-analysis">
+              <div class="proportion-analysis html2pic">
                 <div class="comparison-images">
                   <div class="comparison-item">
                     <img
@@ -268,7 +268,7 @@
                 </div>
               </div>
               <div class="section-divider"></div>
-              <div class="proportion-analysis">
+              <div class="proportion-analysis html2pic">
                 <div class="comparison-images">
                   <div class="comparison-item">
                     <img
@@ -309,8 +309,8 @@
             <div class="section-divider"></div>
 
             <!-- 五官量感分析 -->
-            <h2>五官量感</h2>
-            <div class="feature-container">
+            <div class="feature-container html2pic">
+              <h2>五官量感</h2>
               <div class="user-image-container">
                 <img
                   :src="
@@ -329,8 +329,8 @@
               </div>
             </div>
 
-            <h3>五官类型</h3>
-            <div class="features-list">
+            <div class="features-list html2pic">
+              <h3>五官类型</h3>
               <div class="feature-item">
                 <span class="feature-label">眉毛:</span>
                 <span class="feature-value">{{
@@ -370,17 +370,19 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useLanguage } from "../composables/useLanguage";
+import html2canvas from "html2canvas";
+import { reportApi } from "@/api";
 
 const router = useRouter();
 const route = useRoute();
 const { t } = useI18n();
-// 使用语言钩子确保语言一致性
-const { currentLanguage } = useLanguage();
 
+const personId = ref("");
+const classId = ref("");
 // 添加这段代码来接收参数
 const reportData = computed(() => {
   if (route.query.reportData) {
@@ -431,6 +433,88 @@ const changeRoute = (index) => {
     router.push("/change-clothes");
   }
 };
+
+// 修改生成图片方法
+const generateAndUploadImage = async () => {
+  try {
+    // 等待下一个渲染周期，确保所有内容都已渲染
+    await nextTick();
+
+    // 给页面一个短暂的加载时间，确保所有图片都加载完成
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    const element = document.querySelector(".face-analysis");
+    if (!element) {
+      throw new Error("找不到报告内容");
+    }
+
+    // 获取所有需要生成图片的内容块
+    const sections = element.querySelectorAll(".html2pic");
+    const imagePromises = [];
+
+    // 遍历每个部分生成图片
+    for (const section of sections) {
+      const canvas = await html2canvas(section, {
+        scale: 2,
+        dpi: 400,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: "rgba(128, 128, 128, 0.5)",
+        logging: false,
+      });
+
+      // 转换为base64
+      const imageData = canvas.toDataURL("image/png");
+
+      // 转换为Blob
+      const blob = await (await fetch(imageData)).blob();
+      imagePromises.push(blob);
+    }
+
+    // 等待所有图片生成完成
+    const imageBlobs = await Promise.all(imagePromises);
+
+    // 创建FormData并添加所有图片
+    const formData = new FormData();
+    imageBlobs.forEach((blob, index) => {
+      formData.append("files", blob, `report_${index + 1}.png`);
+    });
+    formData.append("personId", personId.value);
+    formData.append("classId", classId.value);
+
+    // 上传到后台
+    const response = await reportApi.createRecord(formData);
+
+    console.log("图片上传成功:", response.msg);
+  } catch (err) {
+    console.error("图片生成或上传失败:", err);
+  }
+};
+
+// 修改 onMounted
+onMounted(async () => {
+  if (route.query.personId) {
+    personId.value = route.query.personId;
+  }
+  if (route.query.classId) {
+    classId.value = route.query.classId;
+  }
+
+  // 等待报告数据加载完成
+  if (reportData.value) {
+    // 给页面一个加载时间，确保所有图片都加载完成
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // 检查是否从 ImageEditor 进入（通过 URL 参数或 localStorage）
+    const fromImageEditor = localStorage.getItem("fromImageEditor") === "true";
+
+    if (fromImageEditor) {
+      await generateAndUploadImage();
+      // 清除标志，防止刷新页面时再次生成
+      localStorage.removeItem("fromImageEditor");
+    }
+  }
+});
 </script>
 
 <style lang="less" scoped>

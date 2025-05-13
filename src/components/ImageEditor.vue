@@ -1,5 +1,5 @@
 <template>
-  <div class="image-editor">
+  <div class="image-editor" :class="boxFromRoute == 32 ? 'bg' : 'bg1'">
     <div class="header">
       <div class="back" @click="goBack">
         <span></span>
@@ -213,7 +213,6 @@ const sliderPercentage = computed(() => {
 
 // 监视滑动百分比变化
 watch(sliderPercentage, (newValue) => {
-  console.log(`滑动百分比: ${newValue}%`);
   // 在X旋转模式下，调整X轴旋转
   if (xRotationMode.value) {
     rotateX.value = newValue * 0.3; // 将百分比转换为适当的角度
@@ -250,7 +249,6 @@ onMounted(() => {
   if (idFromRoute) {
     personId.value = idFromRoute;
     boxFromRoute.value = route.query.selectedBox;
-    console.log("设置personId:", personId.value);
   }
 
   if (urlFromRoute) {
@@ -832,20 +830,22 @@ const saveEdits = async () => {
       formData.append("token", token);
     }
 
-    console.log("准备上传文件:", file.name, file.size);
-
     // 调用API上传文件
     const res = await reportApi.getReport(formData);
-
-    console.log("上传结果:", res);
 
     // 上传成功后，取消loading，然后跳转
     isLoading.value = false;
     localStorage.setItem("reportData", JSON.stringify(res.data));
+    localStorage.setItem("fromImageEditor", "true");
     // 跳转到报告页面
     router.push({
       path: "/report",
-      query: { reportData: JSON.stringify(res.data) },
+      query: {
+        reportData: JSON.stringify(res.data),
+        personId: personId.value,
+        classId: boxFromRoute.value,
+        fromImageEditor: "true",
+      },
     });
   } catch (error) {
     // 出错时也要取消loading
@@ -862,13 +862,19 @@ const goBack = () => {
 </script>
 
 <style lang="less" scoped>
+.bg {
+  background: url("../assets/edit_image_bg.png") no-repeat;
+  background-position: center;
+}
+.bg1 {
+  background: url("../assets/edit_image_bg1.png") no-repeat;
+  background-position: center;
+}
 .image-editor {
   display: flex;
   flex-direction: column;
   height: 100vh;
   width: 100%;
-  background: url("../assets/edit_image_bg.png") no-repeat;
-  background-position: center;
 
   .header {
     padding: 20px 0;

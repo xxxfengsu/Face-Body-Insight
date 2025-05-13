@@ -2,9 +2,11 @@ export default {
   main: {
     uploading: "上传照片",
     history: "历史记录",
-    report: '分析报告',
+    report: "分析报告",
     changeClothes: "换装",
     inputPlaceholder: "主播编号",
+    // 上传素材
+    uploadMaterial: "上传素材",
     go: "确定",
   },
   report: {
@@ -34,6 +36,6 @@ export default {
   home: {
     title: "Let Your Beauty",
     subtitle: "Have A Trace To Follow",
-    go: "GO"
+    go: "GO",
   },
 };

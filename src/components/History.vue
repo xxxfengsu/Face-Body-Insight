@@ -7,7 +7,7 @@
     </div>
     <div class="navigation">
       <div @click="changeRoute(1)">{{ $t("main.uploading") }}</div>
-      <!-- <div @click="changeRoute(2)">{{ $t("report.title") }}</div> -->
+      <div @click="changeRoute(2)">{{ $t("report.title") }}</div>
       <div @click="changeRoute(3)" class="active">
         {{ $t("history.title") }}
       </div>
@@ -31,17 +31,26 @@
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
           </div>
-          <input type="text" placeholder="Number" />
+          <input
+            type="text"
+            v-model="searchNumber"
+            placeholder="主播编号"
+            @input="handleSearch"
+          />
         </div>
       </div>
 
-      <div class="history-list">
+      <div class="history-list" ref="historyListRef" @scroll="handleScroll">
         <div
           class="history-item"
           v-for="(item, index) in historyItems"
-          :key="index"
+          :key="item.id || index"
         >
-          <div class="document-icon">
+          <div class="item-content">
+            <div class="item-title">{{ item.title || "No Title" }}</div>
+            <div class="item-date">{{ item.createTime || "No Date" }}</div>
+          </div>
+          <div class="document-icon" @click="handleDownload(item)">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="22"
@@ -59,35 +68,128 @@
               <polyline points="14 2 14 8 20 8"></polyline>
             </svg>
           </div>
-          <div class="separator"></div>
         </div>
+
+        <!-- 加载状态 -->
+        <div v-if="loading" class="loading">Loading...</div>
+
+        <!-- 没有更多数据提示 -->
+        <div v-if="noMore" class="no-more">No more data</div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useLanguage } from "../composables/useLanguage";
+import { reportApi } from "@/api";
 
 const router = useRouter();
 const { t } = useI18n();
 // 使用语言钩子
 const { currentLanguage, changeLanguage } = useLanguage();
 
-const historyItems = ref([
-  {},
-  {},
-  {},
-  {},
-  {},
-  {},
-  {},
-  {},
-  {}, // 9 empty items to represent the document icons
-]);
+// 分页相关数据
+const page = ref(1);
+const pageSize = 10;
+const loading = ref(false);
+const noMore = ref(false);
+const historyItems = ref([]);
+const searchNumber = ref("");
+const historyListRef = ref(null);
+
+// 获取历史记录数据
+const fetchHistoryData = async () => {
+  if (noMore.value) return;
+
+  try {
+    loading.value = true;
+
+    const params = {
+      page: page.value,
+      pageSize,
+      personId: 1,
+    };
+
+    const response = await reportApi.getHistory(params);
+
+    if (response.data.list) {
+      // 追加数据而不是替换
+      historyItems.value = [...historyItems.value, ...response.data.list];
+
+      // 等待内容完全渲染后再检查高度
+      await nextTick();
+      const listElement = historyListRef.value;
+      const reportContent = document.querySelector(".report-content");
+
+      if (listElement && reportContent) {
+        const listHeight = listElement.scrollHeight;
+        const containerHeight = reportContent.clientHeight;
+
+        // 判断是否还有更多数据
+        noMore.value = response.data.list.length < pageSize;
+
+        // 只有当列表高度小于容器高度且还有更多数据时才继续加载
+        if (listHeight < containerHeight && !noMore.value) {
+          page.value++;
+          fetchHistoryData();
+        }
+      }
+    }
+  } catch (error) {
+    console.error("获取历史记录失败:", error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+// 处理滚动事件
+const handleScroll = (e) => {
+  console.log("Scroll event triggered");
+  const { scrollTop, scrollHeight, clientHeight } = e.target;
+  // 当滚动到距离底部20px时加载更多
+  if (
+    scrollHeight - scrollTop - clientHeight < 20 &&
+    !loading.value &&
+    !noMore.value
+  ) {
+    page.value++;
+    fetchHistoryData();
+  }
+};
+
+// 处理搜索
+const handleSearch = () => {
+  // 重置分页数据
+  page.value = 1;
+  noMore.value = false;
+  historyItems.value = []; // 清空现有数据
+  // 重新获取数据
+  fetchHistoryData();
+};
+
+// 修改下载处理函数为查看函数
+const handleDownload = async (item) => {
+  if (!item.fileUrl) {
+    console.error("No file URL available");
+    return;
+  }
+
+  try {
+    // 直接在新标签页中打开文件URL
+    window.open(item.fileUrl, "_blank");
+  } catch (error) {
+    console.error("Failed to open report:", error);
+  }
+};
+
+// 初始化
+onMounted(() => {
+  fetchHistoryData();
+});
 
 const goBack = () => {
   router.push("/main");
@@ -148,12 +250,22 @@ const changeRoute = (index) => {
   .navigation {
     display: flex;
     justify-content: center;
-    gap: 80px;
+    gap: 40px;
     height: 30px;
+    padding: 0 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
     div {
       cursor: pointer;
       font-size: 18px;
       opacity: 0.7;
+      flex-shrink: 0;
 
       &.active {
         opacity: 1;
@@ -185,12 +297,12 @@ const changeRoute = (index) => {
     padding: 0;
     backdrop-filter: blur(1px);
     position: absolute;
-    overflow: auto;
+    overflow: hidden;
     bottom: 1rem;
     top: 8rem;
     left: 2rem;
     right: 2rem;
-    padding: 2rem;
+    padding: 1rem;
 
     .search-container {
       width: 100%;
@@ -229,12 +341,15 @@ const changeRoute = (index) => {
       max-width: 400px;
       display: flex;
       flex-direction: column;
+      overflow-y: auto;
+      height: 100%;
 
       .history-item {
         display: flex;
-        flex-direction: column;
         align-items: center;
         margin: 15px 0;
+        width: 100%;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 
         .document-icon {
           width: 40px;
@@ -246,11 +361,28 @@ const changeRoute = (index) => {
           margin: 8px 0;
         }
 
-        .separator {
+        .item-content {
           width: 100%;
-          height: 1px;
-          background-color: rgba(255, 255, 255, 0.3);
+          padding: 10px;
+          text-align: left;
+
+          .item-title {
+            font-size: 16px;
+            margin-bottom: 5px;
+          }
+
+          .item-date {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+          }
         }
+      }
+
+      .loading,
+      .no-more {
+        text-align: center;
+        padding: 20px;
+        color: rgba(255, 255, 255, 0.7);
       }
     }
   }
