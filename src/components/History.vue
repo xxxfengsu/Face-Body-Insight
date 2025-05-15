@@ -48,7 +48,7 @@
         >
           <div class="item-content">
             <div class="item-title">{{ item.title || "No Title" }}</div>
-            <div class="item-date">{{ item.createTime || "No Date" }}</div>
+            <div class="item-date">{{ item.CreatedAt || "No Date" }}</div>
           </div>
           <div class="document-icon" @click="handleDownload(item)">
             <svg

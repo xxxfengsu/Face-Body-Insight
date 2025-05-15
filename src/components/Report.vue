@@ -366,6 +366,11 @@
         </div>
       </div>
     </div>
+    <!-- 在 template 部分，添加加载指示器 -->
+    <div class="loading-overlay" v-if="isLoading">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">正在生成报告...</div>
+    </div>
   </div>
 </template>
 
@@ -380,6 +385,7 @@ import { reportApi } from "@/api";
 const router = useRouter();
 const route = useRoute();
 const { t } = useI18n();
+const isLoading = ref(false);
 
 const personId = ref("");
 const classId = ref("");
@@ -434,59 +440,74 @@ const changeRoute = (index) => {
   }
 };
 
-// 修改生成图片方法
+const waitImagesLoaded = (container) => {
+  const imgs = container.querySelectorAll("img");
+  return Promise.all(
+    Array.from(imgs).map((img) =>
+      img.complete
+        ? Promise.resolve()
+        : new Promise((resolve) => {
+            img.onload = img.onerror = resolve;
+          })
+    )
+  );
+};
+
 const generateAndUploadImage = async () => {
   try {
-    // 等待下一个渲染周期，确保所有内容都已渲染
     await nextTick();
-
-    // 给页面一个短暂的加载时间，确保所有图片都加载完成
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
+    isLoading.value = true;
     const element = document.querySelector(".face-analysis");
-    if (!element) {
-      throw new Error("找不到报告内容");
-    }
+    if (!element) throw new Error("找不到报告内容");
 
-    // 获取所有需要生成图片的内容块
-    const sections = element.querySelectorAll(".html2pic");
-    const imagePromises = [];
+    // 1. 记录原始样式
+    const originalOverflow = element.style.overflow;
+    const originalPosition = element.style.position;
 
-    // 遍历每个部分生成图片
-    for (const section of sections) {
-      const canvas = await html2canvas(section, {
-        scale: 2,
-        dpi: 400,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "rgba(128, 128, 128, 0.5)",
-        logging: false,
-      });
+    // 2. 展开所有内容
+    element.style.overflow = "visible";
+    element.style.position = "static";
+    element.scrollTop = 0;
 
-      // 转换为base64
-      const imageData = canvas.toDataURL("image/png");
+    // 3. 等待图片加载
+    await waitImagesLoaded(element);
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-      // 转换为Blob
-      const blob = await (await fetch(imageData)).blob();
-      imagePromises.push(blob);
-    }
-
-    // 等待所有图片生成完成
-    const imageBlobs = await Promise.all(imagePromises);
-
-    // 创建FormData并添加所有图片
-    const formData = new FormData();
-    imageBlobs.forEach((blob, index) => {
-      formData.append("files", blob, `report_${index + 1}.png`);
+    // 4. 截图
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      dpi: 400,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: "rgba(128, 128, 128, 0.5)",
+      logging: false,
     });
+    const imageData = canvas.toDataURL("image/png");
+    const blob = await (await fetch(imageData)).blob();
+
+    // 5. 恢复原样式
+    element.style.overflow = originalOverflow;
+    element.style.position = originalPosition;
+
+    // 6. 下载图片
+    const link = document.createElement("a");
+    link.href = imageData;
+    link.download = "report.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // 7. 上传
+    const formData = new FormData();
+    formData.append("files", blob, "report.png");
     formData.append("personId", personId.value);
     formData.append("classId", classId.value);
 
-    // 上传到后台
     const response = await reportApi.createRecord(formData);
-
+    isLoading.value = false;
     console.log("图片上传成功:", response.msg);
   } catch (err) {
+    isLoading.value = false;
     console.error("图片生成或上传失败:", err);
   }
 };
@@ -503,16 +524,17 @@ onMounted(async () => {
   // 等待报告数据加载完成
   if (reportData.value) {
     // 给页面一个加载时间，确保所有图片都加载完成
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setTimeout(async () => {
+      // 检查是否从 ImageEditor 进入（通过 URL 参数或 localStorage）
+      const fromImageEditor =
+        localStorage.getItem("fromImageEditor") === "true";
 
-    // 检查是否从 ImageEditor 进入（通过 URL 参数或 localStorage）
-    const fromImageEditor = localStorage.getItem("fromImageEditor") === "true";
-
-    if (fromImageEditor) {
-      await generateAndUploadImage();
-      // 清除标志，防止刷新页面时再次生成
-      localStorage.removeItem("fromImageEditor");
-    }
+      if (fromImageEditor) {
+        await generateAndUploadImage();
+        // 清除标志，防止刷新页面时再次生成
+        localStorage.removeItem("fromImageEditor");
+      }
+    }, 3000);
   }
 });
 </script>
@@ -568,7 +590,6 @@ onMounted(async () => {
 
     div {
       cursor: pointer;
-      font-size: 18px;
       opacity: 0.7;
       flex-shrink: 0;
 
@@ -594,7 +615,7 @@ onMounted(async () => {
     display: flex;
     justify-content: center;
     padding: 0 20px;
-
+    font-size: 12px;
     .face-analysis {
       max-width: 600px;
       background: rgba(128, 128, 128, 0.5);
@@ -619,7 +640,6 @@ onMounted(async () => {
           h2 {
             text-align: center;
             margin-bottom: 20px;
-            font-size: 24px;
             font-weight: normal;
           }
 
@@ -666,7 +686,6 @@ onMounted(async () => {
             text-align: left;
             margin: 20px 0 10px 0;
             font-weight: normal;
-            font-size: 18px;
           }
 
           .features-list {
@@ -753,12 +772,10 @@ onMounted(async () => {
                 }
 
                 .proportion-label {
-                  font-size: 14px;
                   margin-bottom: 5px;
                 }
 
                 .proportion-data {
-                  font-size: 12px;
                   opacity: 0.8;
                 }
               }
@@ -766,7 +783,6 @@ onMounted(async () => {
 
             .proportion-text {
               margin-bottom: 15px;
-              font-size: 14px;
             }
 
             .improvement-steps {
@@ -805,7 +821,6 @@ onMounted(async () => {
 
           .analysis-text {
             line-height: 1.6;
-            font-size: 14px;
             text-align: left;
             p {
               margin: 4px 0;
@@ -824,15 +839,12 @@ onMounted(async () => {
 
           .style-content {
             display: flex;
-            flex-direction: row;
             align-items: flex-start;
             gap: 10px;
             overflow: hidden;
           }
 
           .style-image-section {
-            max-width: 40%;
-            min-width: 40%;
             border-radius: 15px;
             overflow: hidden;
           }
@@ -860,7 +872,6 @@ onMounted(async () => {
           .style-info {
             flex: 1;
             text-align: left;
-            font-size: 12px;
           }
 
           .style-item {
@@ -914,5 +925,35 @@ onMounted(async () => {
     max-width: 100%;
     margin-bottom: 15px;
   }
+}
+
+/* 在 style 部分添加加载样式 */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 20px;
+}
+
+.loading-text {
+  color: white;
+  font-size: 18px;
 }
 </style>
