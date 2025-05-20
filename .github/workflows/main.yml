@@ -36,9 +36,9 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             timestamp=$(date +%Y%m%d_%H%M%S)
-            if [ -d "/www/wwwroot/tyle.hxxd.tv/dist" ]; then
-              cp -r /www/wwwroot/tyle.hxxd.tv/dist /www/wwwroot/tyle.hxxd.tv/dist_backup_$timestamp
-              rm -rf /www/wwwroot/tyle.hxxd.tv/dist
+            if [ -d "/www/wwwroot/style.hxxd.tv/dist" ]; then
+              cp -r /www/wwwroot/style.hxxd.tv/dist /www/wwwroot/style.hxxd.tv/dist_backup_$timestamp
+              rm -rf /www/wwwroot/style.hxxd.tv/dist
               echo "已备份 dist 目录到 dist_backup_$timestamp 并删除原目录"
             else
               echo "没有找到 dist 目录，跳过备份"
@@ -52,7 +52,7 @@ jobs:
           username: root
           password: ${{ secrets.SERVER_PASSWORD }}
           source: "dist/"
-          target: "/www/wwwroot/tyle.hxxd.tv/"
+          target: "/www/wwwroot/style.hxxd.tv/"
           strip_components: 0  # 保留dist目录
           rm: false  # 不删除目标目录，因为我们已经手动处理了
 
@@ -64,4 +64,4 @@ jobs:
           username: root
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            chmod -R 755 /www/wwwroot/tyle.hxxd.tv/dist
+            chmod -R 755 /www/wwwroot/style.hxxd.tv/dist
