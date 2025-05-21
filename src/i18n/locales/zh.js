@@ -4,7 +4,7 @@ export default {
     history: "历史记录",
     report: "分析报告",
     changeClothes: "换装",
-    inputPlaceholder: "主播编号",
+    inputPlaceholder: "主播姓名",
     // 上传素材
     uploadMaterial: "上传素材",
     go: "确定",

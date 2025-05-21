@@ -1,16 +1,39 @@
 <template>
   <div class="report">
-    <div class="header">
-      <div class="back" @click="goBack">
-        <span></span>
+    <div class="head-container">
+      <div class="head" ref="headScroll">
+        <div
+          @click="changeRoute(1)"
+          :class="activeRoute == 1 ? 'activeRoute' : ''"
+        >
+          {{ $t("main.uploading") }}
+        </div>
+        <div
+          @click="changeRoute(2)"
+          :class="activeRoute == 2 ? 'activeRoute' : ''"
+        >
+          {{ $t("main.report") }}
+        </div>
+        <div
+          @click="changeRoute(3)"
+          :class="activeRoute == 3 ? 'activeRoute' : ''"
+        >
+          {{ $t("main.history") }}
+        </div>
+        <div
+          v-if="user?.authorityId === 1001"
+          @click="changeRoute(4)"
+          :class="activeRoute == 4 ? 'activeRoute' : ''"
+        >
+          {{ $t("main.uploadMaterial") }}
+        </div>
       </div>
-    </div>
-    <div class="navigation">
-      <div @click="changeRoute(1)">{{ $t("main.uploading") }}</div>
-      <!-- <div @click="changeRoute(2)">{{ $t("report.title") }}</div> -->
-      <div @click="changeRoute(3)" class="active">
-        {{ $t("history.title") }}
-      </div>
+      <img
+        src="../assets/logo.png"
+        style="width: 50px; height: 50px"
+        class="top-icon"
+        alt="icon"
+      />
     </div>
     <div class="report-content">
       <div class="search-container">
@@ -91,7 +114,7 @@ const router = useRouter();
 const { t } = useI18n();
 // 使用语言钩子
 const { currentLanguage, changeLanguage } = useLanguage();
-
+let activeRoute = ref(3);
 // 分页相关数据
 const page = ref(1);
 const pageSize = 10;
@@ -191,21 +214,23 @@ onMounted(() => {
   fetchHistoryData();
 });
 
-const goBack = () => {
-  router.push("/main");
-};
-
 const changeRoute = (index) => {
-  if (index === 1) {
+  if (index === 4) {
     // Change Clothes 选项
-    router.push("/main");
+    router.push("/upload-material");
   } else if (index === 2) {
     // Report 选项
+    if (!localStorage.getItem("reportData")) {
+      alert("请上传图片");
+      return;
+    }
+
     router.push("/report");
-  } else if (index === 3) {
+  } else if (index === 1) {
     // History 选项
-    router.push("/history");
+    router.push("/main");
   }
+  activeRoute.value = index;
 };
 </script>
 
@@ -214,7 +239,7 @@ const changeRoute = (index) => {
   width: 100%;
   height: 100vh;
   background-position: center center;
-  background-image: url(/src/assets/baseDeepPic.png);
+  background-image: url(/src/assets/pc_bg.png);
   background-size: cover;
   background-repeat: no-repeat;
   color: white;
@@ -246,41 +271,79 @@ const changeRoute = (index) => {
       }
     }
   }
-
-  .navigation {
+  .head-container {
+    width: 100%;
+    background: #666;
     display: flex;
+    box-sizing: border-box;
+    height: 100px;
+    padding: 0 20px;
+    align-items: center;
+    position: relative;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    z-index: 2;
+
+    @media (max-width: 1600px) {
+      height: 100px;
+    }
+
+    @media (max-width: 1200px) {
+      height: 100px;
+    }
+  }
+
+  .head {
+    display: flex;
+    flex: 1;
     justify-content: center;
-    gap: 40px;
-    height: 30px;
-    padding: 0 10px;
+    height: 100%;
+    align-items: center;
+    gap: 150px;
+    font-size: 1.3rem;
+    color: #fff;
     overflow-x: auto;
-    white-space: nowrap;
     scrollbar-width: none;
+    -ms-overflow-style: none;
+    white-space: nowrap;
 
     &::-webkit-scrollbar {
       display: none;
     }
 
+    @media (max-width: 1600px) {
+      gap: 100px;
+      font-size: 1.2rem;
+    }
+
+    @media (max-width: 1200px) {
+      gap: 60px;
+      font-size: 1.1rem;
+    }
+
+    @media (max-width: 992px) {
+      gap: 40px;
+      font-size: 1rem;
+      justify-content: flex-start;
+      padding-left: 20px;
+    }
+
+    .activeRoute {
+      border-bottom: 3px solid #fff;
+      font-weight: bold;
+      padding-bottom: 8px;
+    }
+
     div {
       cursor: pointer;
-      font-size: 18px;
-      opacity: 0.7;
-      flex-shrink: 0;
+      padding: 18px 0 10px 0;
+      border-bottom: 3px solid transparent;
+      transition: border 0.2s;
 
-      &.active {
-        opacity: 1;
-        position: relative;
-        font-weight: 500;
-
-        &:after {
-          content: "";
-          position: absolute;
-          bottom: -5px;
-          left: 0;
-          right: 0;
-          height: 2px;
-          background-color: white;
-        }
+      @media (max-width: 1200px) {
+        padding: 14px 0 8px 0;
       }
     }
   }
@@ -291,7 +354,6 @@ const changeRoute = (index) => {
     align-items: center;
     padding: 0 20px;
     margin-top: 20px;
-    max-width: 600px;
     background: rgba(128, 128, 128, 0.3);
     border-radius: 20px;
     padding: 0;
@@ -306,7 +368,6 @@ const changeRoute = (index) => {
 
     .search-container {
       width: 100%;
-      max-width: 400px;
       margin-bottom: 20px;
 
       .search-bar {
@@ -338,7 +399,6 @@ const changeRoute = (index) => {
 
     .history-list {
       width: 100%;
-      max-width: 400px;
       display: flex;
       flex-direction: column;
       overflow-y: auto;
@@ -405,5 +465,25 @@ const changeRoute = (index) => {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.5);
+}
+.top-icon {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+
+  @media (min-width: 1600px) {
+    width: 70px;
+    height: 70px;
+    right: 60px;
+  }
+
+  @media (max-width: 992px) {
+    width: 30px;
+    height: 30px;
+    right: 20px;
+  }
 }
 </style>

@@ -1,6 +1,23 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import Home from "../components/Home.vue";
+import { deviceUtils } from "../utils/deviceUtils";
 import { languageUtils } from "../utils/languageUtils";
+
+// 获取当前设备类型
+const isPC = deviceUtils.isPC();
+
+// 动态组件加载函数，根据设备类型选择不同目录的组件
+const loadComponent = (componentName) => {
+  if (isPC) {
+    return () => import(`../pc/${componentName}.vue`);
+  } else {
+    return () => import(`../components/${componentName}.vue`);
+  }
+};
+
+// 动态加载首页组件
+const HomeComponent = isPC
+  ? () => import("../pc/Home.vue")
+  : () => import("../components/Home.vue");
 
 // 引入其他页面组件
 // 例如: import Main from '../components/Main.vue'
@@ -9,44 +26,42 @@ const routes = [
   {
     path: "/",
     name: "home",
-    component: Home,
+    component: HomeComponent,
   },
   {
     path: "/login",
     name: "login",
-    // 懒加载路由
-    component: () => import("../components/Login.vue"),
+    component: loadComponent("Login"),
   },
   {
     path: "/main",
     name: "main",
-    // 懒加载路由
-    component: () => import("../components/Main.vue"),
+    component: loadComponent("Main"),
   },
   {
     path: "/change-clothes",
     name: "changeClothes",
-    component: () => import("../components/ChangeClothes.vue"),
+    component: loadComponent("ChangeClothes"),
   },
   {
     path: "/report",
     name: "report",
-    component: () => import("../components/Report.vue"),
+    component: loadComponent("Report"),
   },
   {
     path: "/history",
     name: "history",
-    component: () => import("../components/History.vue"),
+    component: loadComponent("History"),
   },
   {
     path: "/image-editor",
     name: "imageEditor",
-    component: () => import("../components/ImageEditor.vue"),
+    component: loadComponent("ImageEditor"),
   },
   {
     path: "/upload-material",
     name: "uploadMaterial",
-    component: () => import("../components/UploadMaterial.vue"),
+    component: loadComponent("UploadMaterial"),
   },
 ];
 

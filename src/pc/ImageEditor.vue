@@ -1,123 +1,125 @@
 <template>
-  <div class="image-editor" :class="boxFromRoute == 32 ? 'bg' : 'bg1'">
-    <div class="header">
-      <div class="back" @click="goBack">
-        <span></span>
-      </div>
+  <div class="image-editor">
+    <div class="head-container">
+      <div class="head" ref="headScroll"></div>
+      <img
+        src="../assets/logo.png"
+        style="width: 50px; height: 50px"
+        class="top-icon"
+        alt="icon"
+      />
     </div>
+    <div class="content_box" :class="boxFromRoute == 32 ? 'bg' : 'bg1'">
+      <div class="editArea">
+        <div class="image-container" ref="imageContainer">
+          <div
+            v-if="imageUrl"
+            class="image-wrapper"
+            @wheel="handleZoom"
+            @mousedown="startPan"
+            @touchstart.prevent="startPan"
+            @mousemove="pan"
+            @touchmove.prevent="pan"
+            @mouseup="endPan"
+            @touchend="endPan"
+            @mouseleave="endPan"
+          >
+            <img
+              :src="imageUrl"
+              ref="imageElement"
+              :style="imageStyle"
+              @load="initializeEditor"
+            />
 
-    <div class="image-container" ref="imageContainer">
-      <!-- 图片区域 -->
-      <div
-        v-if="imageUrl"
-        class="image-wrapper"
-        @wheel="handleZoom"
-        @mousedown="startPan"
-        @touchstart.prevent="startPan"
-        @mousemove="pan"
-        @touchmove.prevent="pan"
-        @mouseup="endPan"
-        @touchend="endPan"
-        @mouseleave="endPan"
-      >
-        <img
-          :src="imageUrl"
-          ref="imageElement"
-          :style="imageStyle"
-          @load="initializeEditor"
-        />
-        <!-- 裁剪框 -->
+            <div
+              v-if="cropMode"
+              class="crop-box"
+              :style="cropBoxStyle"
+              ref="cropBox"
+            >
+              <div
+                class="crop-handle top-left"
+                @mousedown="startResize($event, 'topLeft')"
+                @touchstart="startResize($event, 'topLeft')"
+              ></div>
+              <div
+                class="crop-handle top-right"
+                @mousedown="startResize($event, 'topRight')"
+                @touchstart="startResize($event, 'topRight')"
+              ></div>
+              <div
+                class="crop-handle bottom-left"
+                @mousedown="startResize($event, 'bottomLeft')"
+                @touchstart="startResize($event, 'bottomLeft')"
+              ></div>
+              <div
+                class="crop-handle bottom-right"
+                @mousedown="startResize($event, 'bottomRight')"
+                @touchstart="startResize($event, 'bottomRight')"
+              ></div>
+            </div>
+          </div>
+          <div v-else class="no-image">
+            <p>请先上传图片</p>
+          </div>
+          <div class="grid-overlay" v-if="imageUrl && !cropMode"></div>
+        </div>
         <div
-          v-if="cropMode"
-          class="crop-box"
-          :style="cropBoxStyle"
-          ref="cropBox"
+          class="ruler-container"
+          ref="rulerContainer"
+          @touchstart="startDrag"
+          @touchmove="drag"
+          @touchend="endDrag"
+          @mousedown="startDrag"
+          @mousemove="drag"
+          @mouseup="endDrag"
+          @mouseleave="endDrag"
         >
-          <!-- 裁剪框角落控制点 -->
+          <div class="ruler-marks" :style="marksStyle">
+            <div class="mark" v-for="i in 41" :key="i"></div>
+
+            <div class="center-mark"></div>
+          </div>
+        </div>
+
+        <div class="iconBar">
           <div
-            class="crop-handle top-left"
-            @mousedown="startResize($event, 'topLeft')"
-            @touchstart="startResize($event, 'topLeft')"
+            class="cutOut_icon"
+            :class="{ active: cropMode }"
+            @click="toggleCropMode"
+          ></div>
+          <div class="rotate_icon" @click="rotateRight"></div>
+          <div
+            class="xR_icon"
+            :class="{ active: xRotationMode }"
+            @click="toggleXrotationMode"
           ></div>
           <div
-            class="crop-handle top-right"
-            @mousedown="startResize($event, 'topRight')"
-            @touchstart="startResize($event, 'topRight')"
-          ></div>
-          <div
-            class="crop-handle bottom-left"
-            @mousedown="startResize($event, 'bottomLeft')"
-            @touchstart="startResize($event, 'bottomLeft')"
-          ></div>
-          <div
-            class="crop-handle bottom-right"
-            @mousedown="startResize($event, 'bottomRight')"
-            @touchstart="startResize($event, 'bottomRight')"
+            class="yRicon"
+            :class="{ active: yRotationMode }"
+            @click="toggleYrotationMode"
           ></div>
         </div>
       </div>
-      <div v-else class="no-image">
-        <p>请先上传图片</p>
-      </div>
-      <div class="grid-overlay" v-if="imageUrl && !cropMode"></div>
-    </div>
 
-    <!-- 可滑动的刻度尺 -->
-    <div
-      class="ruler-container"
-      ref="rulerContainer"
-      @touchstart="startDrag"
-      @touchmove="drag"
-      @touchend="endDrag"
-      @mousedown="startDrag"
-      @mousemove="drag"
-      @mouseup="endDrag"
-      @mouseleave="endDrag"
-    >
-      <div class="ruler-marks" :style="marksStyle">
-        <!-- 白色刻度线 -->
-        <div class="mark" v-for="i in 41" :key="i"></div>
-        <!-- 中间特殊黄色刻度线 -->
-        <div class="center-mark"></div>
-      </div>
-    </div>
-
-    <div class="iconBar">
-      <div
-        class="cutOut_icon"
-        :class="{ active: cropMode }"
-        @click="toggleCropMode"
-      ></div>
-      <div class="rotate_icon" @click="rotateRight"></div>
-      <div
-        class="xR_icon"
-        :class="{ active: xRotationMode }"
-        @click="toggleXrotationMode"
-      ></div>
-      <div
-        class="yRicon"
-        :class="{ active: yRotationMode }"
-        @click="toggleYrotationMode"
-      ></div>
-    </div>
-
-    <div class="btnBar">
-      <div class="btn" @click="resetEdits">重置</div>
-      <div
-        class="btn"
-        v-if="cropMode"
-        @click="applyCrop"
-        :class="{ disabled: isLoading }"
-      >
-        确认裁剪
-      </div>
-      <div
-        class="btn"
-        v-else
-        @click="saveEdits"
-        :class="{ disabled: isLoading }"
-      >
-        {{ isLoading ? "分析中..." : "分析" }}
+      <div class="btnBar">
+        <div class="btn" @click="resetEdits">重置</div>
+        <div
+          class="btn"
+          v-if="cropMode"
+          @click="applyCrop"
+          :class="{ disabled: isLoading }"
+        >
+          确认裁剪
+        </div>
+        <div
+          class="btn"
+          v-else
+          @click="saveEdits"
+          :class="{ disabled: isLoading }"
+        >
+          {{ isLoading ? "分析中..." : "分析" }}
+        </div>
       </div>
     </div>
 
@@ -277,9 +279,9 @@ const imageStyle = computed(() => {
   return {
     transform: `
       translate(${translateX.value}px, ${translateY.value}px)
-      rotate(${rotation.value}deg) 
-      rotateX(${rotateX.value}deg) 
-      rotateY(${rotateY.value}deg) 
+      rotate(${rotation.value}deg)
+      rotateX(${rotateX.value}deg)
+      rotateY(${rotateY.value}deg)
       scale(${scale.value / 100})
     `,
     transformOrigin: "center center",
@@ -816,27 +818,41 @@ const saveEdits = async () => {
 
     // 创建文件对象
     const file = new File([blob], "edited_image.jpg", { type: "image/jpeg" });
+    let res;
+    if (boxFromRoute.value == 32) {
+      // 创建FormData对象
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("classId", boxFromRoute.value);
+      formData.append("force", "false");
+      formData.append("personId", personId.value);
 
-    // 创建FormData对象
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("classId", boxFromRoute.value);
-    formData.append("force", "false");
-    formData.append("personId", personId.value);
+      // 获取token并添加到formData
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        formData.append("token", token);
+      }
 
-    // 获取token并添加到formData
-    const token = sessionStorage.getItem("token");
-    if (token) {
-      formData.append("token", token);
+      // 调用API上传文件
+      res = await reportApi.getReport(formData);
+    } else {
+      // 创建FormData对象
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("provider", "bailian");
+
+      // 获取token并添加到formData
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        formData.append("token", token);
+      }
+      res = await reportApi.getBodyReport(formData);
     }
-
-    // 调用API上传文件
-    const res = await reportApi.getReport(formData);
-
     // 上传成功后，取消loading，然后跳转
     isLoading.value = false;
     localStorage.setItem("reportData", JSON.stringify(res.data));
     localStorage.setItem("fromImageEditor", "true");
+    localStorage.setItem("classId", boxFromRoute.value);
     // 跳转到报告页面
     router.push({
       path: "/report",
@@ -875,6 +891,7 @@ const goBack = () => {
   flex-direction: column;
   height: 100vh;
   width: 100%;
+  background: #000;
 
   .header {
     padding: 20px 0;
@@ -908,10 +925,11 @@ const goBack = () => {
     position: relative;
     overflow: hidden;
     background-color: rgba(255, 255, 255, 0.3);
-    height: 55%;
+    height: 70%;
+    min-height: 500px;
     width: 80%;
     margin: 0 auto;
-    perspective: 1000px; /* 为3D旋转添加透视效果 */
+    perspective: 1000px;
     border-radius: 1rem;
     backdrop-filter: blur(2px);
 
@@ -1058,25 +1076,29 @@ const goBack = () => {
   }
 
   .btnBar {
-    width: 100%;
-    height: 2rem;
+    position: absolute;
+    right: 0;
+    top: 50%;
     display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin-top: 1rem;
-
+    flex-direction: column;
+    gap: 80px;
+    transform: translateY(-50%);
+    width: 40%;
+    align-items: center;
     .btn {
-      padding: 12px 34px;
+      width: 30%;
+      height: 80px;
+      /* padding: 22px 74px; */
       display: flex;
       align-items: center;
       color: white;
       border: 1px solid #fff;
-      border-radius: 1rem;
+      border-radius: 50px;
       cursor: pointer;
-
-      &:active {
-        background-color: rgba(255, 255, 255, 0.2);
-      }
+      background: rgba(255, 255, 255, 0.7);
+      text-align: center;
+      justify-content: center;
+      font-size: 26px;
     }
   }
 
@@ -1191,6 +1213,101 @@ const goBack = () => {
 
     .action-buttons {
       padding: 0.5rem 1rem;
+    }
+  }
+}
+.content_box {
+  flex: 1;
+  background-position: right;
+  background-size: contain;
+  position: relative;
+  .editArea {
+    position: absolute;
+    top: 100px;
+    left: 10%;
+    width: 50%;
+    height: calc(100% - 100px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+}
+.head-container {
+  width: 100%;
+  background: #666;
+  display: flex;
+  height: 80px;
+  align-items: center;
+  position: relative;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  z-index: 2;
+  padding: 0 20px;
+  position: absolute;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.3);
+
+  @media (max-width: 1600px) {
+    height: 80px;
+  }
+
+  @media (max-width: 1200px) {
+    height: 90px;
+  }
+}
+
+.head {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  height: 100%;
+  align-items: center;
+  gap: 150px;
+  font-size: 1.3rem;
+  color: #fff;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  white-space: nowrap;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (max-width: 1600px) {
+    gap: 100px;
+    font-size: 1.2rem;
+  }
+
+  @media (max-width: 1200px) {
+    gap: 60px;
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 992px) {
+    gap: 40px;
+    font-size: 1rem;
+    justify-content: flex-start;
+    padding-left: 20px;
+  }
+
+  .activeRoute {
+    border-bottom: 3px solid #fff;
+    font-weight: bold;
+    padding-bottom: 8px;
+  }
+
+  div {
+    cursor: pointer;
+    padding: 18px 0 10px 0;
+    border-bottom: 3px solid transparent;
+    transition: border 0.2s;
+
+    @media (max-width: 1200px) {
+      padding: 14px 0 8px 0;
     }
   }
 }
