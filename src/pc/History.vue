@@ -466,4 +466,24 @@ const changeRoute = (index) => {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.5);
 }
+.top-icon {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+
+  @media (min-width: 1600px) {
+    width: 70px;
+    height: 70px;
+    right: 60px;
+  }
+
+  @media (max-width: 992px) {
+    width: 30px;
+    height: 30px;
+    right: 20px;
+  }
+}
 </style>

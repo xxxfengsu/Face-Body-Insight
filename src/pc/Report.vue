@@ -1003,6 +1003,7 @@ const handleRightScroll = (event) => {
   position: relative;
   max-height: calc(100vh - 100px); /* 添加最大高度限制 */
   padding: 20px;
+  box-sizing: border-box;
   .report_left {
     width: 50%;
     height: 100%;
@@ -1013,6 +1014,7 @@ const handleRightScroll = (event) => {
     &::-webkit-scrollbar {
       display: none; /* Chrome, Safari and Opera */
     }
+    box-sizing: border-box;
   }
   .report_right {
     width: 50%;
@@ -1021,6 +1023,7 @@ const handleRightScroll = (event) => {
     overflow: auto;
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
+    box-sizing: border-box;
     &::-webkit-scrollbar {
       display: none; /* Chrome, Safari and Opera */
     }
@@ -1084,6 +1087,26 @@ const handleRightScroll = (event) => {
     @media (max-width: 1200px) {
       padding: 14px 0 8px 0;
     }
+  }
+}
+.top-icon {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+
+  @media (min-width: 1600px) {
+    width: 70px;
+    height: 70px;
+    right: 60px;
+  }
+
+  @media (max-width: 992px) {
+    width: 30px;
+    height: 30px;
+    right: 20px;
   }
 }
 </style>
