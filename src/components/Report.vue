@@ -656,8 +656,8 @@ onMounted(async () => {
           }
 
           .circle-image {
-            width: 200px;
-            height: 200px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 8px;
@@ -733,8 +733,8 @@ onMounted(async () => {
               justify-content: center;
               width: 100%;
               .circle-image {
-                width: 200px;
-                height: 200px;
+                width: 120px;
+                height: 120px;
                 border-radius: 50%;
                 object-fit: cover;
                 margin-bottom: 8px;
@@ -765,8 +765,8 @@ onMounted(async () => {
                 text-align: center;
 
                 .circle-image {
-                  width: 200px;
-                  height: 200px;
+                  width: 120px;
+                  height: 120px;
                   border-radius: 50%;
                   object-fit: cover;
                   margin-bottom: 8px;
@@ -812,8 +812,8 @@ onMounted(async () => {
 
             .image-container {
               .circle-image {
-                width: 200px;
-                height: 200px;
+                width: 120px;
+                height: 120px;
                 border-radius: 50%;
                 object-fit: cover;
                 margin-bottom: 8px;

@@ -87,23 +87,28 @@
             class="cutOut_icon"
             :class="{ active: cropMode }"
             @click="toggleCropMode"
+            :title="cropMode ? '取消裁剪' : '裁剪'"
           ></div>
-          <div class="rotate_icon" @click="rotateRight"></div>
+          <div class="rotate_icon" @click="rotateRight" title="旋转"></div>
           <div
             class="xR_icon"
             :class="{ active: xRotationMode }"
             @click="toggleXrotationMode"
+            title="X轴旋转"
           ></div>
           <div
             class="yRicon"
             :class="{ active: yRotationMode }"
             @click="toggleYrotationMode"
+            title="Y轴旋转"
           ></div>
+          <div class="reset_icon" @click="resetEdits" title="重置"></div>
         </div>
       </div>
 
       <div class="btnBar">
-        <div class="btn" @click="resetEdits">重置</div>
+        <!-- <div class="btn" @click="resetEdits">重置</div> -->
+        <div class="btn">换装</div>
         <div
           class="btn"
           v-if="cropMode"
@@ -1083,7 +1088,7 @@ const goBack = () => {
     flex-direction: column;
     gap: 80px;
     transform: translateY(-50%);
-    width: 40%;
+    width: 50%;
     align-items: center;
     .btn {
       width: 30%;
@@ -1146,6 +1151,9 @@ const goBack = () => {
     }
     .yRicon {
       background-image: url(../assets/icon/yRicon.png);
+    }
+    .reset_icon {
+      background-image: url(../assets/icon/reset_icon.png);
     }
   }
 
@@ -1224,7 +1232,7 @@ const goBack = () => {
   .editArea {
     position: absolute;
     top: 100px;
-    left: 10%;
+    left: 0;
     width: 50%;
     height: calc(100% - 100px);
     display: flex;

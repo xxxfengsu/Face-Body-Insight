@@ -99,10 +99,12 @@
         :class="{ active: yRotationMode }"
         @click="toggleYrotationMode"
       ></div>
+      <div class="reset_icon" @click="resetEdits"></div>
     </div>
 
     <div class="btnBar">
-      <div class="btn" @click="resetEdits">重置</div>
+      <div class="btn">换装</div>
+
       <div
         class="btn"
         v-if="cropMode"
@@ -1124,6 +1126,9 @@ const goBack = () => {
     }
     .yRicon {
       background-image: url(../assets/icon/yRicon.png);
+    }
+    .reset_icon {
+      background-image: url(../assets/icon/reset_icon.png);
     }
   }
 
