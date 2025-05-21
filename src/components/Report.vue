@@ -318,7 +318,7 @@
                     '../assets/baseDeepPic.png'
                   "
                   alt="用户照片"
-                  class="user-image"
+                  class="circle-image"
                 />
               </div>
               <div class="analysis-content">
@@ -490,12 +490,12 @@ const generateAndUploadImage = async () => {
     element.style.position = originalPosition;
 
     // 6. 下载图片
-    const link = document.createElement("a");
-    link.href = imageData;
-    link.download = "report.png";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // const link = document.createElement("a");
+    // link.href = imageData;
+    // link.download = "report.png";
+    // document.body.appendChild(link);
+    // link.click();
+    // document.body.removeChild(link);
 
     // 7. 上传
     const formData = new FormData();
@@ -655,11 +655,12 @@ onMounted(async () => {
             margin-bottom: 15px;
           }
 
-          .user-image {
-            width: 120px;
-            height: 120px;
+          .circle-image {
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
             object-fit: cover;
+            margin-bottom: 8px;
             border: 2px solid white;
           }
 
@@ -732,10 +733,11 @@ onMounted(async () => {
               justify-content: center;
               width: 100%;
               .circle-image {
-                width: 130px;
-                height: 130px;
+                width: 200px;
+                height: 200px;
                 border-radius: 50%;
                 object-fit: cover;
+                margin-bottom: 8px;
                 border: 2px solid white;
               }
 
@@ -810,10 +812,11 @@ onMounted(async () => {
 
             .image-container {
               .circle-image {
-                width: 150px;
-                height: 150px;
+                width: 200px;
+                height: 200px;
                 border-radius: 50%;
                 object-fit: cover;
+                margin-bottom: 8px;
                 border: 2px solid white;
               }
             }

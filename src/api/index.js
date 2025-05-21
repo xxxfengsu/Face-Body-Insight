@@ -147,6 +147,16 @@ export const reportApi = {
       },
     });
   },
+  getBodyReport(data) {
+    return service({
+      url: "/analysis/body",
+      method: "post",
+      data,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
   createRecord(data) {
     return service({
       url: "/analysis/record/create",

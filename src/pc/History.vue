@@ -57,7 +57,7 @@
           <input
             type="text"
             v-model="searchNumber"
-            placeholder="主播编号"
+            placeholder="主播姓名"
             @input="handleSearch"
           />
         </div>

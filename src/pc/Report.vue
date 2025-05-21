@@ -28,7 +28,7 @@
         alt="icon"
       />
     </div>
-    <div class="content">
+    <div class="content" v-if="classId == 32">
       <div class="report_left" ref="leftContainer" @scroll="handleLeftScroll">
         <div class="face-analysis">
           <!-- 滑动容器，改为垂直布局 -->
@@ -359,7 +359,7 @@
                       '../assets/baseDeepPic.png'
                     "
                     alt="用户照片"
-                    class="user-image"
+                    class="circle-image"
                   />
                 </div>
                 <div class="analysis-content">
@@ -566,6 +566,9 @@ onMounted(async () => {
   if (route.query.classId) {
     classId.value = route.query.classId;
   }
+  if (localStorage.getItem("classId")) {
+    classId.value = localStorage.getItem("classId");
+  }
 });
 
 // 添加滚动同步的引用和处理函数
@@ -667,12 +670,12 @@ const handleRightScroll = (event) => {
         .user-image-container {
           margin-bottom: 15px;
         }
-
-        .user-image {
-          width: 120px;
-          height: 120px;
+        .circle-image {
+          width: 200px;
+          height: 200px;
           border-radius: 50%;
           object-fit: cover;
+          margin-bottom: 8px;
           border: 2px solid white;
         }
 
@@ -735,7 +738,6 @@ const handleRightScroll = (event) => {
         // 肤色分析
         .skin-analysis {
           display: flex;
-          flex-direction: column;
           align-items: start;
 
           .image-container {
@@ -743,12 +745,13 @@ const handleRightScroll = (event) => {
             margin-bottom: 15px;
             display: flex;
             justify-content: center;
-            width: 100%;
+            width: 50%;
             .circle-image {
-              width: 130px;
-              height: 130px;
+              width: 200px;
+              height: 200px;
               border-radius: 50%;
               object-fit: cover;
+              margin-bottom: 8px;
               border: 2px solid white;
             }
 
@@ -823,10 +826,11 @@ const handleRightScroll = (event) => {
 
           .image-container {
             .circle-image {
-              width: 150px;
-              height: 150px;
+              width: 200px;
+              height: 200px;
               border-radius: 50%;
               object-fit: cover;
+              margin-bottom: 8px;
               border: 2px solid white;
             }
           }
@@ -835,6 +839,9 @@ const handleRightScroll = (event) => {
         .analysis-text {
           line-height: 1.6;
           text-align: left;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
           p {
             margin: 4px 0;
           }
@@ -860,6 +867,7 @@ const handleRightScroll = (event) => {
         .style-image-section {
           border-radius: 15px;
           overflow: hidden;
+          width: 50%;
         }
 
         .style-image {
@@ -885,6 +893,9 @@ const handleRightScroll = (event) => {
         .style-info {
           flex: 1;
           text-align: left;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
         }
 
         .style-item {

@@ -168,9 +168,9 @@ const handleFileUpload = (event) => {
   // 清空之前选择的文件
   const fileInputElement = fileInput.value;
 
-  // 验证主播编号
+  // 验证主播姓名
   if (!uploadId.value || uploadId.value.trim() === "") {
-    alert("请输入主播编号");
+    alert("请输入主播姓名");
     if (fileInputElement) {
       fileInputElement.value = ""; // 清空文件选择
     }
