@@ -828,7 +828,7 @@ const saveEdits = async () => {
       // 创建FormData对象
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("classId", boxFromRoute.value);
+      formData.append("cateId", boxFromRoute.value);
       formData.append("force", "false");
       formData.append("personId", personId.value);
 
@@ -857,14 +857,14 @@ const saveEdits = async () => {
     isLoading.value = false;
     localStorage.setItem("reportData", JSON.stringify(res.data));
     localStorage.setItem("fromImageEditor", "true");
-    localStorage.setItem("classId", boxFromRoute.value);
+    localStorage.setItem("cateId", boxFromRoute.value);
     // 跳转到报告页面
     router.push({
       path: "/report",
       query: {
         reportData: JSON.stringify(res.data),
         personId: personId.value,
-        classId: boxFromRoute.value,
+        cateId: boxFromRoute.value,
         fromImageEditor: "true",
       },
     });

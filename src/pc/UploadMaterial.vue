@@ -221,7 +221,7 @@ const handleFileUpload = (event) => {
 };
 
 const handleSubmit = async () => {
-  const classId = uploadDict[gender.value][selectedOption.value];
+  const cateId = uploadDict[gender.value][selectedOption.value];
   if (!uploadedImageUrl.value) {
     alert("请先上传图片");
     return;
@@ -238,7 +238,7 @@ const handleSubmit = async () => {
     // 创建FormData对象
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("classId", classId);
+    formData.append("cateId", cateId);
     const token = sessionStorage.getItem("token");
     if (token) {
       formData.append("token", token);

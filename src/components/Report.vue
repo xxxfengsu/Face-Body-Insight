@@ -388,7 +388,7 @@ const { t } = useI18n();
 const isLoading = ref(false);
 
 const personId = ref("");
-const classId = ref("");
+const cateId = ref("");
 // 添加这段代码来接收参数
 const reportData = computed(() => {
   if (route.query.reportData) {
@@ -501,7 +501,7 @@ const generateAndUploadImage = async () => {
     const formData = new FormData();
     formData.append("files", blob, "report.png");
     formData.append("personId", personId.value);
-    formData.append("classId", classId.value);
+    formData.append("cateId", cateId.value);
 
     const response = await reportApi.createRecord(formData);
     isLoading.value = false;
@@ -517,8 +517,8 @@ onMounted(async () => {
   if (route.query.personId) {
     personId.value = route.query.personId;
   }
-  if (route.query.classId) {
-    classId.value = route.query.classId;
+  if (route.query.cateId) {
+    cateId.value = route.query.cateId;
   }
 
   // 等待报告数据加载完成
