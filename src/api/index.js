@@ -67,7 +67,10 @@ service.interceptors.response.use(
     return res;
   },
   (error) => {
-    console.error("Response error:", error);
+    if (error.response.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
     // 处理网络错误
     if (!error.response) {
       // 网络错误
