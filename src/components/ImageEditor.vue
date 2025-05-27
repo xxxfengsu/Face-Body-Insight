@@ -822,7 +822,7 @@ const saveEdits = async () => {
     // 创建FormData对象
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("classId", boxFromRoute.value);
+    formData.append("cateId", boxFromRoute.value);
     formData.append("force", "false");
     formData.append("personId", personId.value);
 
@@ -845,7 +845,7 @@ const saveEdits = async () => {
       query: {
         reportData: JSON.stringify(res.data),
         personId: personId.value,
-        classId: boxFromRoute.value,
+        cateId: boxFromRoute.value,
         fromImageEditor: "true",
       },
     });

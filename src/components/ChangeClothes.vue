@@ -74,7 +74,7 @@ const clothesTypeDic = {
 // 获取衣服列表
 const fetchClothes = async () => {
   let params = {
-    classId: 2,
+    cateId: 2,
     page: 1,
     pageSize: 20,
   };
@@ -93,7 +93,7 @@ const handleChangeClothes = async (item) => {
       modelUrl:
         "http://suuqjbby1.hn-bkt.clouddn.com/tryon/origin/uploads/2025-04-18/changeclothes.png",
       clothesUrl: item.url,
-      classId: item.classId,
+      cateId: item.cateId,
     };
     let res = await clothesApi.changeClothes(params);
     activeImage.value = res.data.resultImage;
