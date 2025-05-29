@@ -825,21 +825,36 @@ const saveEdits = async () => {
     // 创建文件对象
     const file = new File([blob], "edited_image.jpg", { type: "image/jpeg" });
 
-    // 创建FormData对象
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("cateId", boxFromRoute.value);
-    formData.append("force", "false");
-    formData.append("personId", personId.value);
+    let res;
+    if (boxFromRoute.value == 32) {
+      // 创建FormData对象
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("cateId", boxFromRoute.value);
+      formData.append("force", "false");
+      formData.append("personId", personId.value);
 
-    // 获取token并添加到formData
-    const token = sessionStorage.getItem("token");
-    if (token) {
-      formData.append("token", token);
+      // 获取token并添加到formData
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        formData.append("token", token);
+      }
+
+      // 调用API上传文件
+      res = await reportApi.getReport(formData);
+    } else {
+      // 创建FormData对象
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("provider", "bailian");
+
+      // 获取token并添加到formData
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        formData.append("token", token);
+      }
+      res = await reportApi.getBodyReport(formData);
     }
-
-    // 调用API上传文件
-    const res = await reportApi.getReport(formData);
 
     // 上传成功后，取消loading，然后跳转
     isLoading.value = false;
