@@ -631,9 +631,7 @@ onMounted(async () => {
   if (route.query.personId) {
     personId.value = route.query.personId;
   }
-  if (route.query.cateId) {
-    cateId.value = route.query.cateId;
-  }
+  cateId.value = route.query.cateId || localStorage.getItem("cateId");
 
   // 等待报告数据加载完成
   if (reportData.value) {

@@ -860,6 +860,7 @@ const saveEdits = async () => {
     isLoading.value = false;
     localStorage.setItem("reportData", JSON.stringify(res.data));
     localStorage.setItem("fromImageEditor", "true");
+    localStorage.setItem("cateId", boxFromRoute.value);
     // 跳转到报告页面
     router.push({
       path: "/report",
