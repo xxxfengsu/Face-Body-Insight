@@ -73,12 +73,6 @@
         {{ $t("main.go") }}
       </button>
     </div>
-
-    <!-- 内容容器 -->
-    <div class="content-container">
-      <Uploading v-if="activeRoute === 1" />
-      <History v-if="activeRoute === 3" />
-    </div>
   </div>
 </template>
 
