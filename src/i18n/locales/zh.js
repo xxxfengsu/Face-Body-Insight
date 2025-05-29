@@ -8,6 +8,8 @@ export default {
     // 上传素材
     uploadMaterial: "上传素材",
     go: "确定",
+    cancel: "取消",
+    confirm: "确认",
   },
   report: {
     title: "分析报告",

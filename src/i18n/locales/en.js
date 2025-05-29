@@ -5,6 +5,8 @@ export default {
     changeClothes: "Change Clothes",
     inputPlaceholder: "Type Id",
     go: "GO",
+    cancel: "Cancel",
+    confirm: "Confirm",
   },
   report: {
     title: "Report",

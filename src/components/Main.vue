@@ -66,10 +66,25 @@
           @change="handleFileUpload"
           style="display: none"
         />
-        <div class="plus-icon">+</div>
+        <div class="plus-icon" v-if="!previewImage">+</div>
+        <img
+          v-if="previewImage"
+          :src="previewImage"
+          class="preview-image"
+          alt="Preview"
+        />
       </div>
 
-      <button class="go-button" @click="handleSubmit">
+      <div class="action-buttons" v-if="previewImage">
+        <button class="cancel-button" @click="cancelPreview">
+          {{ $t("main.cancel") }}
+        </button>
+        <button class="confirm-button" @click="confirmUpload">
+          {{ $t("main.confirm") }}
+        </button>
+      </div>
+
+      <button v-else class="go-button" @click="handleSubmit">
         {{ $t("main.go") }}
       </button>
     </div>
@@ -97,6 +112,8 @@ const fileInput = ref(null);
 const headScroll = ref(null);
 const router = useRouter();
 const uploadedImageUrl = ref(null);
+const previewImage = ref(null);
+const selectedFile = ref(null);
 
 // 添加触摸滑动相关变量
 let touchStartX = 0;
@@ -200,12 +217,32 @@ const handleFileUpload = (event) => {
       uploadId.value
     );
 
-    // 创建一个临时URL用于图片预览
-    uploadedImageUrl.value = URL.createObjectURL(file);
+    // 存储所选文件
+    selectedFile.value = file;
 
-    // 显示编辑选项
-    showEditOptions();
+    // 创建一个临时URL用于图片预览
+    previewImage.value = URL.createObjectURL(file);
   }
+};
+
+const cancelPreview = () => {
+  // 清除预览图和选择的文件
+  if (previewImage.value) {
+    URL.revokeObjectURL(previewImage.value);
+  }
+  previewImage.value = null;
+  selectedFile.value = null;
+  if (fileInput.value) {
+    fileInput.value.value = "";
+  }
+};
+
+const confirmUpload = () => {
+  // 确认上传，创建uploadedImageUrl并继续原有逻辑
+  uploadedImageUrl.value = previewImage.value;
+
+  // 显示编辑选项
+  showEditOptions();
 };
 
 // 添加新方法: 显示编辑选项
@@ -475,6 +512,47 @@ const handleTouchEnd = () => {
         font-size: 40px;
         color: #5b4f4f;
         font-weight: bold;
+      }
+
+      .preview-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 13px;
+      }
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: space-between;
+      width: 80%;
+      max-width: 400px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+
+      .cancel-button,
+      .confirm-button {
+        color: #000;
+        width: 48%;
+        height: 40px;
+        border-radius: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+
+        &:hover {
+          background-color: #f8f8f8;
+          box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        &:active {
+          transform: translateY(2px);
+          box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+        }
       }
     }
 

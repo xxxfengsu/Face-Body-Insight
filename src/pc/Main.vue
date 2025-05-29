@@ -72,10 +72,25 @@
             @change="handleFileUpload"
             style="display: none"
           />
-          <div class="plus-icon">+</div>
+          <div class="plus-icon" v-if="!previewImage">+</div>
+          <img
+            v-if="previewImage"
+            :src="previewImage"
+            class="preview-image"
+            alt="Preview"
+          />
         </div>
 
-        <button class="go-button" @click="handleSubmit">
+        <div class="action-buttons" v-if="previewImage">
+          <button class="cancel-button" @click="cancelPreview">
+            {{ $t("main.cancel") }}
+          </button>
+          <button class="confirm-button" @click="confirmUpload">
+            {{ $t("main.confirm") }}
+          </button>
+        </div>
+
+        <button v-else class="go-button" @click="handleSubmit">
           {{ $t("main.go") }}
         </button>
       </div>
@@ -106,6 +121,8 @@ const headScroll = ref(null);
 const router = useRouter();
 const uploadedImageUrl = ref(null);
 const windowWidth = ref(window.innerWidth);
+const previewImage = ref(null);
+const selectedFile = ref(null);
 
 // 添加触摸滑动相关变量
 let touchStartX = 0;
@@ -240,12 +257,32 @@ const handleFileUpload = (event) => {
       uploadId.value
     );
 
-    // 创建一个临时URL用于图片预览
-    uploadedImageUrl.value = URL.createObjectURL(file);
+    // 存储所选文件
+    selectedFile.value = file;
 
-    // 显示编辑选项
-    showEditOptions();
+    // 创建一个临时URL用于图片预览
+    previewImage.value = URL.createObjectURL(file);
   }
+};
+
+const cancelPreview = () => {
+  // 清除预览图和选择的文件
+  if (previewImage.value) {
+    URL.revokeObjectURL(previewImage.value);
+  }
+  previewImage.value = null;
+  selectedFile.value = null;
+  if (fileInput.value) {
+    fileInput.value.value = "";
+  }
+};
+
+const confirmUpload = () => {
+  // 确认上传，创建uploadedImageUrl并继续原有逻辑
+  uploadedImageUrl.value = previewImage.value;
+
+  // 显示编辑选项
+  showEditOptions();
 };
 
 // 添加新方法: 显示编辑选项
@@ -521,7 +558,7 @@ const handleTouchEnd = () => {
   .upload-box {
     width: 100%;
     max-width: 340px;
-    height: 160px;
+    height: 200px;
     background: #8883;
     border-radius: 18px;
     display: flex;
@@ -532,13 +569,13 @@ const handleTouchEnd = () => {
 
     @media (max-width: 1600px) {
       max-width: 320px;
-      height: 140px;
+      height: 180px;
       margin-bottom: 28px;
     }
 
     @media (max-width: 1200px) {
       max-width: 280px;
-      height: 120px;
+      height: 160px;
       margin-bottom: 24px;
       border-radius: 14px;
     }
@@ -550,6 +587,61 @@ const handleTouchEnd = () => {
       @media (max-width: 1200px) {
         font-size: 2.5rem;
       }
+    }
+
+    .preview-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 14px;
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 340px;
+
+    @media (max-width: 1600px) {
+      max-width: 320px;
+    }
+
+    @media (max-width: 1200px) {
+      max-width: 280px;
+      gap: 15px;
+    }
+
+    .cancel-button,
+    .confirm-button {
+      background-color: white;
+      color: black;
+      border: none;
+      border-radius: 50px;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+
+      @media (max-width: 1600px) {
+        padding: 0.9rem 1.8rem;
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 1200px) {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.8rem;
+      }
+    }
+
+    .cancel-button:hover,
+    .confirm-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     }
   }
 
