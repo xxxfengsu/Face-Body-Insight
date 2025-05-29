@@ -1,12 +1,12 @@
 <template>
   <div class="change-clothes">
-    <div class="header">
-      <div class="back" @click="goBack">
-        <span></span>
-      </div>
-      <!-- <div class="title">
-        <span class="active">{{ $t("changeClothes.title") }}</span>
-      </div> -->
+    <div class="head-container">
+      <img
+        src="../assets/logo.png"
+        style="width: 50px; height: 50px"
+        class="top-icon"
+        alt="icon"
+      />
     </div>
 
     <div class="carousel-container">
@@ -74,7 +74,7 @@ const clothesTypeDic = {
 // 获取衣服列表
 const fetchClothes = async () => {
   let params = {
-    classId: 2,
+    cateId: 2,
     page: 1,
     pageSize: 20,
   };
@@ -93,7 +93,7 @@ const handleChangeClothes = async (item) => {
       modelUrl:
         "http://suuqjbby1.hn-bkt.clouddn.com/tryon/origin/uploads/2025-04-18/changeclothes.png",
       clothesUrl: item.url,
-      classId: item.classId,
+      cateId: item.cateId,
     };
     let res = await clothesApi.changeClothes(params);
     activeImage.value = res.data.resultImage;
@@ -169,45 +169,27 @@ const handleTouchEnd = async (e) => {
   top: 0;
   left: 0;
 
-  .header {
+  .head-container {
+    width: 100%;
+    box-sizing: border-box;
+    background: #666;
     display: flex;
+    padding: 0 20px;
+    height: 100px;
     align-items: center;
-    padding: 20px;
-    color: white;
-    justify-content: space-between;
+    position: relative;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    z-index: 2;
 
-    .back {
-      position: absolute;
-      left: 20px;
-      top: 20px;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      span {
-        background: url(../assets/icon/back_icon.png) no-repeat center center;
-        width: 12px;
-        height: 21px;
-      }
+    @media (max-width: 1600px) {
+      height: 100px;
     }
 
-    .title {
-      display: flex;
-      gap: 20px;
-      flex-grow: 1;
-
-      span {
-        opacity: 0.6;
-
-        &.active {
-          opacity: 1;
-          text-decoration: underline;
-        }
-      }
+    @media (max-width: 1200px) {
+      height: 100px;
     }
   }
 
@@ -286,6 +268,26 @@ const handleTouchEnd = async (e) => {
     padding: 1rem;
     border-radius: 0.5rem;
     z-index: 100;
+  }
+}
+.top-icon {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+
+  @media (min-width: 1600px) {
+    width: 70px;
+    height: 70px;
+    right: 60px;
+  }
+
+  @media (max-width: 992px) {
+    width: 30px;
+    height: 30px;
+    right: 20px;
   }
 }
 </style>

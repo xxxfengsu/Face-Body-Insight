@@ -99,10 +99,12 @@
         :class="{ active: yRotationMode }"
         @click="toggleYrotationMode"
       ></div>
+      <div class="reset_icon" @click="resetEdits"></div>
     </div>
 
     <div class="btnBar">
-      <div class="btn" @click="resetEdits">重置</div>
+      <div class="btn" @click="changeClothes">换装</div>
+
       <div
         class="btn"
         v-if="cropMode"
@@ -202,6 +204,12 @@ const marksStyle = computed(() => {
   };
 });
 
+const changeClothes = () => {
+  router.push({
+    path: "/change-clothes",
+    query: { imageUrl: imageUrl.value, personId: personId.value },
+  });
+};
 // 计算滑动百分比值
 const sliderPercentage = computed(() => {
   // 将偏移值转换为百分比，范围从-maxOffset到+maxOffset
@@ -817,33 +825,49 @@ const saveEdits = async () => {
     // 创建文件对象
     const file = new File([blob], "edited_image.jpg", { type: "image/jpeg" });
 
-    // 创建FormData对象
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("classId", boxFromRoute.value);
-    formData.append("force", "false");
-    formData.append("personId", personId.value);
+    let res;
+    if (boxFromRoute.value == 32) {
+      // 创建FormData对象
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("cateId", boxFromRoute.value);
+      formData.append("force", "false");
+      formData.append("personId", personId.value);
 
-    // 获取token并添加到formData
-    const token = sessionStorage.getItem("token");
-    if (token) {
-      formData.append("token", token);
+      // 获取token并添加到formData
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        formData.append("token", token);
+      }
+
+      // 调用API上传文件
+      res = await reportApi.getReport(formData);
+    } else {
+      // 创建FormData对象
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("provider", "bailian");
+
+      // 获取token并添加到formData
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        formData.append("token", token);
+      }
+      res = await reportApi.getBodyReport(formData);
     }
-
-    // 调用API上传文件
-    const res = await reportApi.getReport(formData);
 
     // 上传成功后，取消loading，然后跳转
     isLoading.value = false;
     localStorage.setItem("reportData", JSON.stringify(res.data));
     localStorage.setItem("fromImageEditor", "true");
+    localStorage.setItem("cateId", boxFromRoute.value);
     // 跳转到报告页面
     router.push({
       path: "/report",
       query: {
         reportData: JSON.stringify(res.data),
         personId: personId.value,
-        classId: boxFromRoute.value,
+        cateId: boxFromRoute.value,
         fromImageEditor: "true",
       },
     });
@@ -1124,6 +1148,9 @@ const goBack = () => {
     }
     .yRicon {
       background-image: url(../assets/icon/yRicon.png);
+    }
+    .reset_icon {
+      background-image: url(../assets/icon/reset_icon.png);
     }
   }
 

@@ -111,7 +111,7 @@ const fetchHistoryData = async () => {
     const params = {
       page: page.value,
       pageSize,
-      personId: 1,
+      personId: searchNumber.value,
     };
 
     const response = await reportApi.getHistory(params);

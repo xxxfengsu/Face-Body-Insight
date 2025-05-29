@@ -11,7 +11,7 @@
       <div @click="changeRoute(3)">{{ $t("main.history") }}</div>
       <div @click="changeRoute(4)">{{ $t("main.changeClothes") }}</div>
     </div>
-    <div class="report-content">
+    <div class="report-content" v-if="cateId == 32">
       <!-- 内容区域可滑动，现在使用垂直滚动 -->
       <div class="face-analysis">
         <!-- 滑动容器，改为垂直布局 -->
@@ -366,6 +366,120 @@
         </div>
       </div>
     </div>
+
+    <!-- 新增身材分析报告区域 - 当cateId为33时显示 -->
+    <div class="report-content" v-if="cateId == 33">
+      <div class="body-analysis">
+        <div class="analysis-slider">
+          <div class="analysis-slide">
+            <!-- 身材类型部分 -->
+            <section class="body-type-section html2pic">
+              <h2>身材类型</h2>
+              <div class="body-type-analysis">
+                <div class="image-container">
+                  <img
+                    :src="
+                      reportData?.body_type?.image_url ||
+                      '../assets/baseDeepPic.png'
+                    "
+                    alt="身材类型"
+                    class="body-image"
+                  />
+                </div>
+                <div class="body-type-info">
+                  <div class="info-item">
+                    <span class="info-label">身材类型:</span>
+                    <span class="info-value">{{
+                      reportData?.body_type || ""
+                    }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">特性特征:</span>
+                    <span class="info-value">{{
+                      reportData?.body_type || ""
+                    }}</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <div class="section-divider"></div>
+
+            <!-- 身材比例部分 -->
+            <section class="body-proportion-section html2pic">
+              <h2>身材比例</h2>
+              <div class="body-proportion-analysis">
+                <div class="image-container">
+                  <img
+                    :src="
+                      reportData?.body_proportion?.image_url ||
+                      '../assets/baseDeepPic.png'
+                    "
+                    alt="身材比例"
+                    class="body-image"
+                  />
+                </div>
+                <div class="proportion-info">
+                  <div class="info-item">
+                    <span class="info-label">头身比例:</span>
+                    <span class="info-value">{{
+                      reportData?.proportions?.head_to_body || ""
+                    }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">头肩比例:</span>
+                    <span class="info-value">{{
+                      reportData?.proportions?.head_to_shoulders || ""
+                    }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">上下身比例:</span>
+                    <span class="info-value">{{
+                      reportData?.proportions?.upper_to_lower_body || ""
+                    }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">腰臀比例:</span>
+                    <span class="info-value">{{
+                      reportData?.proportions?.waist_to_hip_ratio || ""
+                    }}</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <div class="section-divider"></div>
+
+            <!-- 穿搭建议 -->
+            <section class="style-suggestion-section html2pic">
+              <h2>穿搭建议</h2>
+              <div class="style-suggestions-list">
+                <div
+                  v-for="(suggestion, index) in reportData?.suggestions || []"
+                  :key="index"
+                  class="suggestion-item"
+                >
+                  <p v-if="suggestion" v-html="formatAdvice(suggestion)"></p>
+                  <div
+                    class="suggestion-images"
+                    v-if="suggestion.images && suggestion.images.length > 0"
+                  >
+                    <img
+                      v-for="(image, imgIndex) in suggestion.images"
+                      :key="imgIndex"
+                      :src="image"
+                      alt="穿搭建议"
+                      class="suggestion-image"
+                    />
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- 在 template 部分，添加加载指示器 -->
     <div class="loading-overlay" v-if="isLoading">
       <div class="loading-spinner"></div>
@@ -388,7 +502,7 @@ const { t } = useI18n();
 const isLoading = ref(false);
 
 const personId = ref("");
-const classId = ref("");
+const cateId = ref("");
 // 添加这段代码来接收参数
 const reportData = computed(() => {
   if (route.query.reportData) {
@@ -501,7 +615,7 @@ const generateAndUploadImage = async () => {
     const formData = new FormData();
     formData.append("files", blob, "report.png");
     formData.append("personId", personId.value);
-    formData.append("classId", classId.value);
+    formData.append("cateId", cateId.value);
 
     const response = await reportApi.createRecord(formData);
     isLoading.value = false;
@@ -517,9 +631,7 @@ onMounted(async () => {
   if (route.query.personId) {
     personId.value = route.query.personId;
   }
-  if (route.query.classId) {
-    classId.value = route.query.classId;
-  }
+  cateId.value = route.query.cateId || localStorage.getItem("cateId");
 
   // 等待报告数据加载完成
   if (reportData.value) {
@@ -656,8 +768,8 @@ onMounted(async () => {
           }
 
           .circle-image {
-            width: 200px;
-            height: 200px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 8px;
@@ -733,8 +845,8 @@ onMounted(async () => {
               justify-content: center;
               width: 100%;
               .circle-image {
-                width: 200px;
-                height: 200px;
+                width: 120px;
+                height: 120px;
                 border-radius: 50%;
                 object-fit: cover;
                 margin-bottom: 8px;
@@ -765,8 +877,8 @@ onMounted(async () => {
                 text-align: center;
 
                 .circle-image {
-                  width: 200px;
-                  height: 200px;
+                  width: 120px;
+                  height: 120px;
                   border-radius: 50%;
                   object-fit: cover;
                   margin-bottom: 8px;
@@ -812,8 +924,8 @@ onMounted(async () => {
 
             .image-container {
               .circle-image {
-                width: 200px;
-                height: 200px;
+                width: 120px;
+                height: 120px;
                 border-radius: 50%;
                 object-fit: cover;
                 margin-bottom: 8px;
@@ -927,6 +1039,116 @@ onMounted(async () => {
   .style-image-section {
     max-width: 100%;
     margin-bottom: 15px;
+  }
+}
+
+/* 身材分析样式 */
+.body-analysis {
+  max-width: 600px;
+  background: rgba(128, 128, 128, 0.5);
+  border-radius: 20px;
+  padding: 0;
+  backdrop-filter: blur(10px);
+  position: absolute;
+  overflow-y: auto;
+  bottom: 1rem;
+  top: 8rem;
+  left: 2rem;
+  right: 2rem;
+
+  .analysis-slider {
+    height: 100%;
+
+    .analysis-slide {
+      width: 100%;
+      padding: 10px 20px;
+      box-sizing: border-box;
+
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-weight: normal;
+      }
+    }
+  }
+}
+
+.body-type-analysis,
+.body-proportion-analysis {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .image-container {
+    margin-bottom: 20px;
+    text-align: center;
+
+    .body-image {
+      max-width: 160px;
+      max-height: 240px;
+      object-fit: contain;
+      border: 2px solid white;
+      border-radius: 10px;
+    }
+  }
+}
+
+.body-type-info,
+.proportion-info {
+  width: 100%;
+
+  .info-item {
+    display: flex;
+    margin-bottom: 10px;
+    align-items: baseline;
+    text-align: left;
+  }
+
+  .info-label {
+    font-weight: bold;
+    min-width: 80px;
+  }
+
+  .info-value {
+    flex: 1;
+  }
+}
+
+.style-suggestions-list {
+  text-align: left;
+
+  .suggestion-item {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    h3 {
+      font-size: 14px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    p {
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+  }
+
+  .suggestion-images {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+
+    .suggestion-image {
+      width: calc(50% - 5px);
+      border-radius: 8px;
+      object-fit: cover;
+    }
   }
 }
 

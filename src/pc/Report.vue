@@ -28,7 +28,7 @@
         alt="icon"
       />
     </div>
-    <div class="content" v-if="classId == 32">
+    <div class="content" v-if="cateId == 32">
       <div class="report_left" ref="leftContainer" @scroll="handleLeftScroll">
         <div class="face-analysis">
           <!-- 滑动容器，改为垂直布局 -->
@@ -411,6 +411,124 @@
       </div>
       <div class="centerLine"></div>
     </div>
+    <div class="content" v-if="cateId == 33">
+      <div class="report_left" ref="leftContainer" @scroll="handleLeftScroll">
+        <div class="face-analysis">
+          <div class="analysis-slider">
+            <div class="analysis-slide">
+              <section>
+                <h2>身材类型</h2>
+                <div class="body-type-analysis">
+                  <div class="image-container">
+                    <img
+                      :src="
+                        reportData?.body_type?.image_url ||
+                        '../assets/baseDeepPic.png'
+                      "
+                      alt="身材类型"
+                      class="body-image"
+                    />
+                  </div>
+                  <div class="body-type-info">
+                    <div class="info-item">
+                      <span class="info-label">身材类型:</span>
+                      <span class="info-value">{{
+                        reportData?.body_type || ""
+                      }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">特性特征:</span>
+                      <span class="info-value">{{
+                        reportData?.body_type || ""
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <div class="section-divider"></div>
+              <section>
+                <h2>身材比例</h2>
+                <div class="body-proportion-analysis">
+                  <div class="image-container">
+                    <img
+                      :src="
+                        reportData?.body_proportion?.image_url ||
+                        '../assets/baseDeepPic.png'
+                      "
+                      alt="身材比例"
+                      class="body-image"
+                    />
+                  </div>
+                  <div class="proportion-info">
+                    <div class="info-item">
+                      <span class="info-label">头身比例:</span>
+                      <span class="info-value">{{
+                        reportData?.proportions?.head_to_body || ""
+                      }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">头肩比例:</span>
+                      <span class="info-value">{{
+                        reportData?.proportions?.head_to_shoulders || ""
+                      }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">上下身比例:</span>
+                      <span class="info-value">{{
+                        reportData?.proportions?.upper_to_lower_body || ""
+                      }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">腰臀比例:</span>
+                      <span class="info-value">{{
+                        reportData?.proportions?.waist_to_hip_ratio || ""
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="report_right"
+        ref="rightContainer"
+        @scroll="handleRightScroll"
+      >
+        <div class="face-analysis">
+          <div class="analysis-slider">
+            <div class="analysis-slide">
+              <section>
+                <h2>穿搭建议</h2>
+                <div class="style-suggestions-list">
+                  <div
+                    v-for="(suggestion, index) in reportData?.suggestions || []"
+                    :key="index"
+                    class="suggestion-item"
+                  >
+                    <p v-if="suggestion" v-html="formatAdvice(suggestion)"></p>
+                    <div
+                      class="suggestion-images"
+                      v-if="suggestion.images && suggestion.images.length > 0"
+                    >
+                      <img
+                        v-for="(image, imgIndex) in suggestion.images"
+                        :key="imgIndex"
+                        :src="image"
+                        alt="穿搭建议"
+                        class="suggestion-image"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="centerLine"></div>
+    </div>
     <!-- 在 template 部分，添加加载指示器 -->
     <div class="loading-overlay" v-if="isLoading">
       <div class="loading-spinner"></div>
@@ -434,7 +552,7 @@ const { t } = useI18n();
 const isLoading = ref(false);
 
 const personId = ref("");
-const classId = ref("");
+const cateId = ref("");
 // 添加这段代码来接收参数
 const reportData = computed(() => {
   if (route.query.reportData) {
@@ -466,10 +584,6 @@ if (reportData.value) {
   console.log("接收到的报告数据:", reportData.value);
 }
 
-const goBack = () => {
-  router.push("/main");
-};
-
 const changeRoute = (index) => {
   if (index === 1) {
     // Uploading 选项
@@ -499,75 +613,16 @@ const waitImagesLoaded = (container) => {
   );
 };
 
-const generateAndUploadImage = async () => {
-  try {
-    await nextTick();
-    isLoading.value = true;
-    const element = document.querySelector(".face-analysis");
-    if (!element) throw new Error("找不到报告内容");
-
-    // 1. 记录原始样式
-    const originalOverflow = element.style.overflow;
-    const originalPosition = element.style.position;
-
-    // 2. 展开所有内容
-    element.style.overflow = "visible";
-    element.style.position = "static";
-    element.scrollTop = 0;
-
-    // 3. 等待图片加载
-    await waitImagesLoaded(element);
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // 4. 截图
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      dpi: 400,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: "rgba(128, 128, 128, 0.5)",
-      logging: false,
-    });
-    const imageData = canvas.toDataURL("image/png");
-    const blob = await (await fetch(imageData)).blob();
-
-    // 5. 恢复原样式
-    element.style.overflow = originalOverflow;
-    element.style.position = originalPosition;
-
-    // 6. 下载图片
-    const link = document.createElement("a");
-    link.href = imageData;
-    link.download = "report.png";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // 7. 上传
-    const formData = new FormData();
-    formData.append("files", blob, "report.png");
-    formData.append("personId", personId.value);
-    formData.append("classId", classId.value);
-
-    const response = await reportApi.createRecord(formData);
-    isLoading.value = false;
-    console.log("图片上传成功:", response.msg);
-  } catch (err) {
-    isLoading.value = false;
-    console.error("图片生成或上传失败:", err);
-  }
-};
-
 // 修改 onMounted
 onMounted(async () => {
   if (route.query.personId) {
     personId.value = route.query.personId;
   }
-  if (route.query.classId) {
-    classId.value = route.query.classId;
+  if (route.query.cateId) {
+    cateId.value = route.query.cateId;
   }
-  if (localStorage.getItem("classId")) {
-    classId.value = localStorage.getItem("classId");
+  if (localStorage.getItem("cateId")) {
+    cateId.value = localStorage.getItem("cateId");
   }
 });
 
