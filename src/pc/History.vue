@@ -111,9 +111,7 @@ import { useLanguage } from "../composables/useLanguage";
 import { reportApi } from "@/api";
 
 const router = useRouter();
-const { t } = useI18n();
-// 使用语言钩子
-const { currentLanguage, changeLanguage } = useLanguage();
+
 let activeRoute = ref(3);
 // 分页相关数据
 const page = ref(1);

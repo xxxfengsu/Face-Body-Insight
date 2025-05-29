@@ -538,17 +538,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { useI18n } from "vue-i18n";
-import { useLanguage } from "../composables/useLanguage";
-import html2canvas from "html2canvas";
-import { reportApi } from "@/api";
 
 let activeRoute = ref(2);
 const router = useRouter();
 const route = useRoute();
-const { t } = useI18n();
 const isLoading = ref(false);
 
 const personId = ref("");
@@ -598,19 +593,6 @@ const changeRoute = (index) => {
     // Change Clothes 选项
     router.push("/change-clothes");
   }
-};
-
-const waitImagesLoaded = (container) => {
-  const imgs = container.querySelectorAll("img");
-  return Promise.all(
-    Array.from(imgs).map((img) =>
-      img.complete
-        ? Promise.resolve()
-        : new Promise((resolve) => {
-            img.onload = img.onerror = resolve;
-          })
-    )
-  );
 };
 
 // 修改 onMounted

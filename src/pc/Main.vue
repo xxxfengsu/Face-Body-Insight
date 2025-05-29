@@ -107,10 +107,8 @@ import { useLanguage } from "../composables/useLanguage";
 // import History from "./History.vue";
 // import Uploading from "./Uploading.vue";
 
-// 获取i18n实例
-const { t } = useI18n();
 // 使用语言钩子
-const { currentLanguage, changeLanguage } = useLanguage();
+const { changeLanguage } = useLanguage();
 
 let activeRoute = ref(1);
 let selectedBox = ref(32);
@@ -127,13 +125,6 @@ const selectedFile = ref(null);
 // 添加触摸滑动相关变量
 let touchStartX = 0;
 let scrollLeft = 0;
-
-// 计算属性来判断不同的屏幕尺寸
-const isLargeScreen = computed(() => windowWidth.value >= 1921);
-const isMediumScreen = computed(
-  () => windowWidth.value >= 1200 && windowWidth.value < 1921
-);
-const isSmallScreen = computed(() => windowWidth.value < 1200);
 
 // 监听窗口大小变化的函数
 const handleResize = () => {
