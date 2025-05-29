@@ -108,7 +108,7 @@
 
       <div class="btnBar">
         <!-- <div class="btn" @click="resetEdits">重置</div> -->
-        <div class="btn">换装</div>
+        <div class="btn" @click="changeClothes">换装</div>
         <div
           class="btn"
           v-if="cropMode"
@@ -208,6 +208,13 @@ const marksStyle = computed(() => {
     transition: dragging.value ? "none" : "transform 0.3s ease",
   };
 });
+
+const changeClothes = () => {
+  router.push({
+    path: "/change-clothes",
+    query: { imageUrl: imageUrl.value, personId: personId.value },
+  });
+};
 
 // 计算滑动百分比值
 const sliderPercentage = computed(() => {

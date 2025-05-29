@@ -103,7 +103,7 @@
     </div>
 
     <div class="btnBar">
-      <div class="btn">换装</div>
+      <div class="btn" @click="changeClothes">换装</div>
 
       <div
         class="btn"
@@ -204,6 +204,12 @@ const marksStyle = computed(() => {
   };
 });
 
+const changeClothes = () => {
+  router.push({
+    path: "/change-clothes",
+    query: { imageUrl: imageUrl.value, personId: personId.value },
+  });
+};
 // 计算滑动百分比值
 const sliderPercentage = computed(() => {
   // 将偏移值转换为百分比，范围从-maxOffset到+maxOffset
