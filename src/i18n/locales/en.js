@@ -16,6 +16,8 @@ export default {
   changeClothes: {
     title: "Change Clothes",
     loading: "Loading...",
+    male: "Male",
+    female: "Female",
   },
   history: {
     title: "History",

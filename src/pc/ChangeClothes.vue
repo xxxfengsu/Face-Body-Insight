@@ -9,34 +9,56 @@
       />
     </div>
 
-    <div class="carousel-container">
-      <div
-        class="carousel"
-        ref="carousel"
-        @touchstart="handleTouchStart"
-        @touchmove="handleTouchMove"
-        @touchend="handleTouchEnd"
-      >
-        <div class="carousel-track" :style="carouselStyle">
-          <div
-            v-for="(item, index) in images"
-            :key="index"
-            class="carousel-item"
-          >
-            <img :src="item.url" alt="Dress preview" class="carousel-image" />
-          </div>
+    <div class="content_box">
+      <div class="gender-tabs">
+        <div
+          class="tab-item"
+          :class="{ active: activeGender === 'male' }"
+          @click="activeGender = 'male'"
+        >
+          {{ t("changeClothes.male") }}
         </div>
-        <div class="mainBox">
-          <img :src="activeImage" alt="Dress preview" class="carousel-image" />
+        <div
+          class="tab-item"
+          :class="{ active: activeGender === 'female' }"
+          @click="activeGender = 'female'"
+        >
+          {{ t("changeClothes.female") }}
         </div>
       </div>
-    </div>
 
-    <div v-if="loading" class="loading-overlay">
-      {{ $t("changeClothes.loading") }}
-    </div>
-    <div v-if="error" class="error-message">
-      {{ error }}
+      <div class="try-on-area">
+        <div class="preview-container">
+          <img :src="activeImage || ''" alt="Preview" class="preview-image" />
+        </div>
+        <div class="clothes-carousel">
+          <div class="carousel-container" ref="carousel">
+            <div
+              v-for="(item, index) in images"
+              :key="index"
+              class="carousel-item"
+              :class="{ active: currentIndex === index }"
+              @click="handleItemClick(index)"
+            >
+              <img :src="item.url || ''" :alt="item.name || 'Item'" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="material-selection">
+        <div class="material-tabs">
+          <div
+            v-for="(label, key) in clothesTypeDic"
+            :key="key"
+            class="material-tab"
+            :class="{ active: selectedType === Number(key) }"
+            @click="selectedType = Number(key)"
+          >
+            {{ label }}
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -66,10 +88,21 @@ let activeImage = ref(
 const loading = ref(false);
 const error = ref(null);
 const clothesTypeDic = {
-  1: "Upper-body",
-  2: "Lower-body",
-  3: "Dress",
+  1: "长发",
+  2: "短发",
+  3: "盘发",
 };
+
+// 性别选择
+const activeGender = ref("female");
+
+// 选中的材料类型
+const selectedType = ref(1); // 默认选择上衣
+
+// 过滤后的材料列表
+const filteredMaterials = computed(() => {
+  return images.value.filter((item) => item.clothesType === selectedType.value);
+});
 
 // 获取衣服列表
 const fetchClothes = async () => {
@@ -82,7 +115,21 @@ const fetchClothes = async () => {
   console.log(response);
   console.log(1);
   // 直接使用返回的数据，每个item中已经包含了完整的url
-  images.value = response.data.list;
+  images.value = response.data.list.map((item, index) => ({
+    ...item,
+    clothesType: (index % 3) + 1, // 临时添加类型属性用于筛选
+  }));
+};
+
+// 处理轮播项点击
+const handleItemClick = (index) => {
+  currentIndex.value = index;
+  handleChangeClothes(images.value[index]);
+};
+
+// 处理材料选择
+const handleMaterialSelect = (item) => {
+  handleChangeClothes(item);
 };
 
 // 切换衣服
@@ -163,16 +210,18 @@ const handleTouchEnd = async (e) => {
 .change-clothes {
   width: 100%;
   height: 100vh;
-  background-image: url(../assets/baseDeepPic.png);
+  background-image: url(../assets/pc_bg.png);
   background-size: cover;
   position: fixed;
   top: 0;
   left: 0;
+  display: flex;
+  flex-direction: column;
+  color: white;
 
   .head-container {
     width: 100%;
     box-sizing: border-box;
-    background: #666;
     display: flex;
     padding: 0 20px;
     height: 100px;
@@ -193,83 +242,188 @@ const handleTouchEnd = async (e) => {
     }
   }
 
-  .carousel-container {
-    width: 100%;
-    height: calc(100% - 76px);
-    position: relative;
-    overflow: hidden;
+  .content_box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 100px);
+    padding: 0 40px;
+    box-sizing: border-box;
 
-    .carousel {
-      width: 100%;
-      height: 100%;
-      position: relative;
+    .gender-tabs {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+      width: 220px;
+      height: 40px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 20px;
       overflow: hidden;
-      touch-action: pan-x;
+      align-self: center;
 
-      .mainBox {
-        position: absolute;
-        top: 20%;
-        bottom: 20%;
-        left: 20%;
-        right: 20%;
-        border-radius: 2rem;
-        img {
-          width: 100%;
-          height: 100%;
+      .tab-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50%;
+        cursor: pointer;
+        transition: all 0.3s;
+        position: relative;
+
+        &.active {
+          background: rgba(255, 255, 255, 0.2);
+          font-weight: bold;
+        }
+      }
+    }
+
+    .try-on-area {
+      display: flex;
+      flex: 1;
+      margin-bottom: 20px;
+      min-height: 0;
+
+      .preview-container {
+        flex: 1;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 15px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.1);
+
+        .preview-image {
+          max-width: 100%;
+          max-height: 100%;
           object-fit: contain;
         }
       }
 
-      .carousel-track {
-        display: flex;
-        height: 100%;
-        align-items: center;
-        gap: 10px;
+      .clothes-carousel {
+        width: 150px;
+        margin-left: 20px;
+        overflow: hidden;
 
-        .carousel-item {
-          flex: 0 0 33.333%;
+        .carousel-container {
           display: flex;
-          justify-content: center;
-          align-items: center;
+          flex-direction: column;
+          gap: 15px;
+          height: 100%;
+          overflow-y: auto;
+          padding-right: 10px;
 
-          .carousel-image {
+          &::-webkit-scrollbar {
+            width: 3px;
+          }
+
+          &::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+          }
+
+          .carousel-item {
+            width: 100%;
+            height: 100px;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+
+            &:hover {
+              transform: scale(1.05);
+              transition: transform 0.2s;
+            }
+
+            &.active {
+              border: 2px solid white;
+
+              &:after {
+                content: "";
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                background: #4caf50;
+              }
+            }
+
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+          }
+        }
+      }
+    }
+
+    .material-selection {
+      margin-top: auto;
+
+      .material-tabs {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 15px;
+
+        .material-tab {
+          padding: 8px 20px;
+          cursor: pointer;
+          position: relative;
+          opacity: 0.7;
+
+          &.active {
+            opacity: 1;
+
+            &:after {
+              content: "";
+              position: absolute;
+              bottom: -5px;
+              left: 0;
+              width: 100%;
+              height: 2px;
+              background-color: white;
+            }
+          }
+        }
+      }
+
+      .material-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 15px;
+        overflow-x: auto;
+        padding-bottom: 20px;
+
+        .material-item {
+          width: 100%;
+          aspect-ratio: 1/1;
+          border-radius: 10px;
+          overflow: hidden;
+          cursor: pointer;
+          background: rgba(255, 255, 255, 0.1);
+
+          &:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s;
+          }
+
+          img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
-            border-radius: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            object-fit: cover;
           }
         }
       }
     }
   }
-
-  .loading-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    z-index: 100;
-  }
-
-  .error-message {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: red;
-    background: white;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    z-index: 100;
-  }
 }
+
 .top-icon {
   position: absolute;
   right: 40px;

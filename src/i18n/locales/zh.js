@@ -19,6 +19,8 @@ export default {
   changeClothes: {
     title: "换装",
     loading: "加载中...",
+    male: "男",
+    female: "女",
   },
   history: {
     title: "历史记录",
