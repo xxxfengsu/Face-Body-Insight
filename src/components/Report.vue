@@ -390,14 +390,22 @@
                   <div class="info-item">
                     <span class="info-label">身材类型:</span>
                     <span class="info-value">{{
-                      reportData?.body_type || ""
+                      reportData?.body_type?.body_type || ""
                     }}</span>
                   </div>
                   <div class="info-item">
                     <span class="info-label">特性特征:</span>
-                    <span class="info-value">{{
-                      reportData?.body_type || ""
-                    }}</span>
+                    <span
+                      class="info-value"
+                      v-for="(item, index) in reportData?.body_type?.features"
+                      :key="index"
+                      >{{ item
+                      }}{{
+                        index < reportData?.body_type?.features.length - 1
+                          ? "、"
+                          : ""
+                      }}</span
+                    >
                   </div>
                 </div>
               </div>
@@ -423,25 +431,25 @@
                   <div class="info-item">
                     <span class="info-label">头身比例:</span>
                     <span class="info-value">{{
-                      reportData?.proportions?.head_to_body || ""
+                      reportData?.body_proportion?.head_to_body || ""
                     }}</span>
                   </div>
                   <div class="info-item">
                     <span class="info-label">头肩比例:</span>
                     <span class="info-value">{{
-                      reportData?.proportions?.head_to_shoulders || ""
+                      reportData?.body_proportion?.head_to_shoulders || ""
                     }}</span>
                   </div>
                   <div class="info-item">
                     <span class="info-label">上下身比例:</span>
                     <span class="info-value">{{
-                      reportData?.proportions?.upper_to_lower_body || ""
+                      reportData?.body_proportion?.upper_to_lower_body || ""
                     }}</span>
                   </div>
                   <div class="info-item">
                     <span class="info-label">腰臀比例:</span>
                     <span class="info-value">{{
-                      reportData?.proportions?.waist_to_hip_ratio || ""
+                      reportData?.body_proportion?.waist_to_hip_ratio || ""
                     }}</span>
                   </div>
                 </div>
@@ -1107,10 +1115,6 @@ onMounted(async () => {
   .info-label {
     font-weight: bold;
     min-width: 80px;
-  }
-
-  .info-value {
-    flex: 1;
   }
 }
 

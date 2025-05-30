@@ -427,20 +427,29 @@
                       "
                       alt="身材类型"
                       class="body-image"
+                      style="width: 100%; height: 100%"
                     />
                   </div>
                   <div class="body-type-info">
                     <div class="info-item">
                       <span class="info-label">身材类型:</span>
                       <span class="info-value">{{
-                        reportData?.body_type || ""
+                        reportData?.body_type?.body_type || ""
                       }}</span>
                     </div>
                     <div class="info-item">
                       <span class="info-label">特性特征:</span>
-                      <span class="info-value">{{
-                        reportData?.body_type || ""
-                      }}</span>
+                      <span
+                        class="info-value"
+                        v-for="(item, index) in reportData?.body_type?.features"
+                        :key="index"
+                        >{{ item
+                        }}{{
+                          index < reportData?.body_type?.features.length - 1
+                            ? "、"
+                            : ""
+                        }}</span
+                      >
                     </div>
                   </div>
                 </div>
@@ -457,31 +466,32 @@
                       "
                       alt="身材比例"
                       class="body-image"
+                      style="width: 100%; height: 100%"
                     />
                   </div>
                   <div class="proportion-info">
                     <div class="info-item">
                       <span class="info-label">头身比例:</span>
                       <span class="info-value">{{
-                        reportData?.proportions?.head_to_body || ""
+                        reportData?.body_proportion?.head_to_body || ""
                       }}</span>
                     </div>
                     <div class="info-item">
                       <span class="info-label">头肩比例:</span>
                       <span class="info-value">{{
-                        reportData?.proportions?.head_to_shoulders || ""
+                        reportData?.body_proportion?.head_to_shoulders || ""
                       }}</span>
                     </div>
                     <div class="info-item">
                       <span class="info-label">上下身比例:</span>
                       <span class="info-value">{{
-                        reportData?.proportions?.upper_to_lower_body || ""
+                        reportData?.body_proportion?.upper_to_lower_body || ""
                       }}</span>
                     </div>
                     <div class="info-item">
                       <span class="info-label">腰臀比例:</span>
                       <span class="info-value">{{
-                        reportData?.proportions?.waist_to_hip_ratio || ""
+                        reportData?.body_proportion?.waist_to_hip_ratio || ""
                       }}</span>
                     </div>
                   </div>
@@ -624,19 +634,26 @@ const handleLeftScroll = (event) => {
       event.target.scrollTop /
       (event.target.scrollHeight - event.target.clientHeight || 1);
 
-    // 根据百分比计算右侧应该滚动的位置
-    const rightTargetScroll =
-      leftScrollPercentage *
-      (rightContainer.value.scrollHeight - rightContainer.value.clientHeight ||
-        1);
-
-    // 设置右侧容器的滚动位置
-    rightContainer.value.scrollTop = rightTargetScroll;
+    // 确保滚动到底部时，右侧也滚动到底部
+    if (
+      Math.abs(leftScrollPercentage - 1) < 0.05 ||
+      leftScrollPercentage > 0.95
+    ) {
+      // 如果左侧接近或已达到底部，强制右侧滚动到底部
+      rightContainer.value.scrollTop = rightContainer.value.scrollHeight;
+    } else {
+      // 否则按比例滚动
+      const rightTargetScroll =
+        leftScrollPercentage *
+        (rightContainer.value.scrollHeight -
+          rightContainer.value.clientHeight || 1);
+      rightContainer.value.scrollTop = rightTargetScroll;
+    }
   }
 
   setTimeout(() => {
     isScrolling = false;
-  }, 20);
+  }, 1); // 增加防抖时间
 };
 
 // 处理右侧滚动时同步左侧
@@ -650,19 +667,26 @@ const handleRightScroll = (event) => {
       event.target.scrollTop /
       (event.target.scrollHeight - event.target.clientHeight || 1);
 
-    // 根据百分比计算左侧应该滚动的位置
-    const leftTargetScroll =
-      rightScrollPercentage *
-      (leftContainer.value.scrollHeight - leftContainer.value.clientHeight ||
-        1);
-
-    // 设置左侧容器的滚动位置
-    leftContainer.value.scrollTop = leftTargetScroll;
+    // 确保滚动到底部时，左侧也滚动到底部
+    if (
+      Math.abs(rightScrollPercentage - 1) < 0.05 ||
+      rightScrollPercentage > 0.95
+    ) {
+      // 如果右侧接近或已达到底部，强制左侧滚动到底部
+      leftContainer.value.scrollTop = leftContainer.value.scrollHeight;
+    } else {
+      // 否则按比例滚动
+      const leftTargetScroll =
+        rightScrollPercentage *
+        (leftContainer.value.scrollHeight - leftContainer.value.clientHeight ||
+          1);
+      leftContainer.value.scrollTop = leftTargetScroll;
+    }
   }
 
   setTimeout(() => {
     isScrolling = false;
-  }, 20);
+  }, 1); // 增加防抖时间
 };
 </script>
 
