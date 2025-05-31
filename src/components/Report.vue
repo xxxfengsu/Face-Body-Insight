@@ -624,8 +624,8 @@ const generateAndUploadImage = async () => {
     formData.append("personId", personId.value);
     formData.append("cateId", cateId.value);
 
-    const response = await reportApi.createRecord(formData);
     isLoading.value = false;
+    const response = await reportApi.createRecord(formData);
     console.log("图片上传成功:", response.msg);
   } catch (err) {
     isLoading.value = false;
