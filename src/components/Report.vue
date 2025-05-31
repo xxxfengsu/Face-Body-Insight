@@ -53,16 +53,17 @@
                     </div>
                     <div class="style-item">
                       <div class="style-label">风格定位:</div>
-                      <div class="style-value">
-                        {{ styleRef.stylePositioning || "" }}
-                      </div>
+                    </div>
+                    <div class="style-value">
+                      {{ styleRef.stylePositioning || "" }}
                     </div>
                     <div class="style-item">
                       <div class="style-label">妆容重点:</div>
-                      <div class="style-value">
-                        {{ styleRef.makeupFocus || "" }}
-                      </div>
                     </div>
+                    <div
+                      class="style-value"
+                      v-html="formatAdvice(styleRef.makeupFocus)"
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -998,7 +999,7 @@ onMounted(async () => {
 
           .style-item {
             display: flex;
-            margin-bottom: 10px;
+            margin-top: 10px;
             align-items: baseline;
           }
 
