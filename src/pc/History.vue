@@ -70,7 +70,7 @@
           :key="item.id || index"
         >
           <div class="item-content">
-            <div class="item-title">{{ item.ID || "No Title" }}</div>
+            <div class="item-title">{{ item.personId || "No Title" }}</div>
             <div class="item-date">
               {{ formatDate(item.CreatedAt) || "No Date" }}
             </div>

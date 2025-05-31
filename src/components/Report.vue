@@ -9,7 +9,6 @@
       <div @click="changeRoute(1)">{{ $t("main.uploading") }}</div>
       <div @click="changeRoute(2)" class="active">{{ $t("report.title") }}</div>
       <div @click="changeRoute(3)">{{ $t("main.history") }}</div>
-      <div @click="changeRoute(4)">{{ $t("main.changeClothes") }}</div>
     </div>
     <div class="report-content" v-if="cateId == 32">
       <!-- 内容区域可滑动，现在使用垂直滚动 -->
