@@ -70,8 +70,10 @@
           :key="item.id || index"
         >
           <div class="item-content">
-            <div class="item-title">{{ item.title || "No Title" }}</div>
-            <div class="item-date">{{ item.CreatedAt || "No Date" }}</div>
+            <div class="item-title">{{ item.personId || "No Title" }}</div>
+            <div class="item-date">
+              {{ formatDate(item.CreatedAt) || "No Date" }}
+            </div>
           </div>
           <div class="document-icon" @click="handleDownload(item)">
             <svg
@@ -111,9 +113,7 @@ import { useLanguage } from "../composables/useLanguage";
 import { reportApi } from "@/api";
 
 const router = useRouter();
-const { t } = useI18n();
-// 使用语言钩子
-const { currentLanguage, changeLanguage } = useLanguage();
+
 let activeRoute = ref(3);
 // 分页相关数据
 const page = ref(1);
@@ -123,6 +123,29 @@ const noMore = ref(false);
 const historyItems = ref([]);
 const searchNumber = ref("");
 const historyListRef = ref(null);
+
+// 格式化日期
+const formatDate = (dateString) => {
+  if (!dateString) return "No Date";
+
+  try {
+    const date = new Date(dateString);
+
+    // 检查日期是否有效
+    if (isNaN(date.getTime())) return dateString;
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+  } catch (error) {
+    console.error("Date formatting error:", error);
+    return dateString;
+  }
+};
 
 // 获取历史记录数据
 const fetchHistoryData = async () => {

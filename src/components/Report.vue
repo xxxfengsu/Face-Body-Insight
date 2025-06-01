@@ -9,7 +9,6 @@
       <div @click="changeRoute(1)">{{ $t("main.uploading") }}</div>
       <div @click="changeRoute(2)" class="active">{{ $t("report.title") }}</div>
       <div @click="changeRoute(3)">{{ $t("main.history") }}</div>
-      <div @click="changeRoute(4)">{{ $t("main.changeClothes") }}</div>
     </div>
     <div class="report-content" v-if="cateId == 32">
       <!-- 内容区域可滑动，现在使用垂直滚动 -->
@@ -54,16 +53,17 @@
                     </div>
                     <div class="style-item">
                       <div class="style-label">风格定位:</div>
-                      <div class="style-value">
-                        {{ styleRef.stylePositioning || "" }}
-                      </div>
+                    </div>
+                    <div class="style-value">
+                      {{ styleRef.stylePositioning || "" }}
                     </div>
                     <div class="style-item">
                       <div class="style-label">妆容重点:</div>
-                      <div class="style-value">
-                        {{ styleRef.makeupFocus || "" }}
-                      </div>
                     </div>
+                    <div
+                      class="style-value"
+                      v-html="formatAdvice(styleRef.makeupFocus)"
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -390,14 +390,22 @@
                   <div class="info-item">
                     <span class="info-label">身材类型:</span>
                     <span class="info-value">{{
-                      reportData?.body_type || ""
+                      reportData?.body_type?.body_type || ""
                     }}</span>
                   </div>
                   <div class="info-item">
                     <span class="info-label">特性特征:</span>
-                    <span class="info-value">{{
-                      reportData?.body_type || ""
-                    }}</span>
+                    <span
+                      class="info-value"
+                      v-for="(item, index) in reportData?.body_type?.features"
+                      :key="index"
+                      >{{ item
+                      }}{{
+                        index < reportData?.body_type?.features.length - 1
+                          ? "、"
+                          : ""
+                      }}</span
+                    >
                   </div>
                 </div>
               </div>
@@ -423,25 +431,25 @@
                   <div class="info-item">
                     <span class="info-label">头身比例:</span>
                     <span class="info-value">{{
-                      reportData?.proportions?.head_to_body || ""
+                      reportData?.body_proportion?.head_to_body || ""
                     }}</span>
                   </div>
                   <div class="info-item">
                     <span class="info-label">头肩比例:</span>
                     <span class="info-value">{{
-                      reportData?.proportions?.head_to_shoulders || ""
+                      reportData?.body_proportion?.head_to_shoulders || ""
                     }}</span>
                   </div>
                   <div class="info-item">
                     <span class="info-label">上下身比例:</span>
                     <span class="info-value">{{
-                      reportData?.proportions?.upper_to_lower_body || ""
+                      reportData?.body_proportion?.upper_to_lower_body || ""
                     }}</span>
                   </div>
                   <div class="info-item">
                     <span class="info-label">腰臀比例:</span>
                     <span class="info-value">{{
-                      reportData?.proportions?.waist_to_hip_ratio || ""
+                      reportData?.body_proportion?.waist_to_hip_ratio || ""
                     }}</span>
                   </div>
                 </div>
@@ -617,8 +625,8 @@ const generateAndUploadImage = async () => {
     formData.append("personId", personId.value);
     formData.append("cateId", cateId.value);
 
-    const response = await reportApi.createRecord(formData);
     isLoading.value = false;
+    const response = await reportApi.createRecord(formData);
     console.log("图片上传成功:", response.msg);
   } catch (err) {
     isLoading.value = false;
@@ -991,7 +999,7 @@ onMounted(async () => {
 
           .style-item {
             display: flex;
-            margin-bottom: 10px;
+            margin-top: 10px;
             align-items: baseline;
           }
 
@@ -1107,10 +1115,6 @@ onMounted(async () => {
   .info-label {
     font-weight: bold;
     min-width: 80px;
-  }
-
-  .info-value {
-    flex: 1;
   }
 }
 

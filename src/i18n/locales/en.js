@@ -5,6 +5,8 @@ export default {
     changeClothes: "Change Clothes",
     inputPlaceholder: "Type Id",
     go: "GO",
+    cancel: "Cancel",
+    confirm: "Confirm",
   },
   report: {
     title: "Report",
@@ -14,6 +16,8 @@ export default {
   changeClothes: {
     title: "Change Clothes",
     loading: "Loading...",
+    male: "Male",
+    female: "Female",
   },
   history: {
     title: "History",

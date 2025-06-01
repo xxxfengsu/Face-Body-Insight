@@ -72,16 +72,17 @@
                       </div>
                       <div class="style-item">
                         <div class="style-label">风格定位:</div>
-                        <div class="style-value">
-                          {{ styleRef.stylePositioning || "" }}
-                        </div>
+                      </div>
+                      <div class="style-value">
+                        {{ styleRef.stylePositioning || "" }}
                       </div>
                       <div class="style-item">
                         <div class="style-label">妆容重点:</div>
-                        <div class="style-value">
-                          {{ styleRef.makeupFocus || "" }}
-                        </div>
                       </div>
+                      <div
+                        class="style-value"
+                        v-html="formatAdvice(styleRef.makeupFocus)"
+                      ></div>
                     </div>
                   </div>
                 </div>
@@ -418,71 +419,94 @@
             <div class="analysis-slide">
               <section>
                 <h2>身材类型</h2>
-                <div class="body-type-analysis">
-                  <div class="image-container">
+                <!-- 使用v-for循环遍历style_reference_list数组 -->
+
+                <div class="style-content">
+                  <!-- 左侧图片和颜色面板 -->
+                  <div class="style-image-section">
                     <img
                       :src="
                         reportData?.body_type?.image_url ||
                         '../assets/baseDeepPic.png'
                       "
-                      alt="身材类型"
-                      class="body-image"
+                      alt="风格参考"
+                      class="style-image"
                     />
                   </div>
-                  <div class="body-type-info">
-                    <div class="info-item">
-                      <span class="info-label">身材类型:</span>
-                      <span class="info-value">{{
-                        reportData?.body_type || ""
-                      }}</span>
+
+                  <!-- 右侧信息区 -->
+                  <div class="style-info">
+                    <div class="style-item">
+                      <div class="style-label">身材类型:</div>
+                      <div class="style-value">
+                        {{ reportData?.body_type?.body_type || "" }}
+                      </div>
                     </div>
-                    <div class="info-item">
-                      <span class="info-label">特性特征:</span>
-                      <span class="info-value">{{
-                        reportData?.body_type || ""
-                      }}</span>
+                    <div class="style-item">
+                      <div class="style-label">特性特征:</div>
+                      <span
+                        class="info-value"
+                        v-for="(item, index) in reportData?.body_type?.features"
+                        :key="index"
+                        >{{ item
+                        }}{{
+                          index < reportData?.body_type?.features.length - 1
+                            ? "、"
+                            : ""
+                        }}</span
+                      >
                     </div>
                   </div>
                 </div>
               </section>
+
               <div class="section-divider"></div>
               <section>
                 <h2>身材比例</h2>
-                <div class="body-proportion-analysis">
-                  <div class="image-container">
+                <div class="style-content">
+                  <!-- 左侧图片和颜色面板 -->
+                  <div class="style-image-section">
                     <img
                       :src="
                         reportData?.body_proportion?.image_url ||
                         '../assets/baseDeepPic.png'
                       "
-                      alt="身材比例"
-                      class="body-image"
+                      alt="风格参考"
+                      class="style-image"
                     />
                   </div>
-                  <div class="proportion-info">
-                    <div class="info-item">
-                      <span class="info-label">头身比例:</span>
-                      <span class="info-value">{{
-                        reportData?.proportions?.head_to_body || ""
-                      }}</span>
+
+                  <!-- 右侧信息区 -->
+                  <div class="style-info">
+                    <div class="style-item">
+                      <div class="style-label">头身比例:</div>
+                      <div class="style-value">
+                        {{ reportData?.body_proportion?.head_to_body || "" }}
+                      </div>
                     </div>
-                    <div class="info-item">
-                      <span class="info-label">头肩比例:</span>
-                      <span class="info-value">{{
-                        reportData?.proportions?.head_to_shoulders || ""
-                      }}</span>
+                    <div class="style-item">
+                      <div class="style-label">头肩比例:</div>
+                      <div class="style-value">
+                        {{
+                          reportData?.body_proportion?.head_to_shoulders || ""
+                        }}
+                      </div>
                     </div>
-                    <div class="info-item">
-                      <span class="info-label">上下身比例:</span>
-                      <span class="info-value">{{
-                        reportData?.proportions?.upper_to_lower_body || ""
-                      }}</span>
+                    <div class="style-item">
+                      <div class="style-label">上下身比例:</div>
+                      <div class="style-value">
+                        {{
+                          reportData?.body_proportion?.upper_to_lower_body || ""
+                        }}
+                      </div>
                     </div>
-                    <div class="info-item">
-                      <span class="info-label">腰臀比例:</span>
-                      <span class="info-value">{{
-                        reportData?.proportions?.waist_to_hip_ratio || ""
-                      }}</span>
+                    <div class="style-item">
+                      <div class="style-label">腰臀比例:</div>
+                      <div class="style-value">
+                        {{
+                          reportData?.body_proportion?.waist_to_hip_ratio || ""
+                        }}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -538,17 +562,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { useI18n } from "vue-i18n";
-import { useLanguage } from "../composables/useLanguage";
-import html2canvas from "html2canvas";
-import { reportApi } from "@/api";
 
 let activeRoute = ref(2);
 const router = useRouter();
 const route = useRoute();
-const { t } = useI18n();
 const isLoading = ref(false);
 
 const personId = ref("");
@@ -600,19 +619,6 @@ const changeRoute = (index) => {
   }
 };
 
-const waitImagesLoaded = (container) => {
-  const imgs = container.querySelectorAll("img");
-  return Promise.all(
-    Array.from(imgs).map((img) =>
-      img.complete
-        ? Promise.resolve()
-        : new Promise((resolve) => {
-            img.onload = img.onerror = resolve;
-          })
-    )
-  );
-};
-
 // 修改 onMounted
 onMounted(async () => {
   if (route.query.personId) {
@@ -642,19 +648,26 @@ const handleLeftScroll = (event) => {
       event.target.scrollTop /
       (event.target.scrollHeight - event.target.clientHeight || 1);
 
-    // 根据百分比计算右侧应该滚动的位置
-    const rightTargetScroll =
-      leftScrollPercentage *
-      (rightContainer.value.scrollHeight - rightContainer.value.clientHeight ||
-        1);
-
-    // 设置右侧容器的滚动位置
-    rightContainer.value.scrollTop = rightTargetScroll;
+    // 确保滚动到底部时，右侧也滚动到底部
+    if (
+      Math.abs(leftScrollPercentage - 1) < 0.05 ||
+      leftScrollPercentage > 0.95
+    ) {
+      // 如果左侧接近或已达到底部，强制右侧滚动到底部
+      rightContainer.value.scrollTop = rightContainer.value.scrollHeight;
+    } else {
+      // 否则按比例滚动
+      const rightTargetScroll =
+        leftScrollPercentage *
+        (rightContainer.value.scrollHeight -
+          rightContainer.value.clientHeight || 1);
+      rightContainer.value.scrollTop = rightTargetScroll;
+    }
   }
 
   setTimeout(() => {
     isScrolling = false;
-  }, 20);
+  }, 1); // 增加防抖时间
 };
 
 // 处理右侧滚动时同步左侧
@@ -668,19 +681,26 @@ const handleRightScroll = (event) => {
       event.target.scrollTop /
       (event.target.scrollHeight - event.target.clientHeight || 1);
 
-    // 根据百分比计算左侧应该滚动的位置
-    const leftTargetScroll =
-      rightScrollPercentage *
-      (leftContainer.value.scrollHeight - leftContainer.value.clientHeight ||
-        1);
-
-    // 设置左侧容器的滚动位置
-    leftContainer.value.scrollTop = leftTargetScroll;
+    // 确保滚动到底部时，左侧也滚动到底部
+    if (
+      Math.abs(rightScrollPercentage - 1) < 0.05 ||
+      rightScrollPercentage > 0.95
+    ) {
+      // 如果右侧接近或已达到底部，强制左侧滚动到底部
+      leftContainer.value.scrollTop = leftContainer.value.scrollHeight;
+    } else {
+      // 否则按比例滚动
+      const leftTargetScroll =
+        rightScrollPercentage *
+        (leftContainer.value.scrollHeight - leftContainer.value.clientHeight ||
+          1);
+      leftContainer.value.scrollTop = leftTargetScroll;
+    }
   }
 
   setTimeout(() => {
     isScrolling = false;
-  }, 20);
+  }, 1); // 增加防抖时间
 };
 </script>
 
@@ -955,7 +975,7 @@ const handleRightScroll = (event) => {
 
         .style-item {
           display: flex;
-          margin-bottom: 10px;
+          margin-top: 10px;
           align-items: baseline;
         }
 

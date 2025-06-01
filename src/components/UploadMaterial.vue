@@ -246,10 +246,14 @@ const handleSubmit = async () => {
 
     // 调用API上传文件
     const res = await clothesApi.uploadImage(formData);
-
-    // 上传成功后，取消loading，然后跳转
+    if (res.code == 0) {
+      // 上传成功后，取消loading，然后跳转
+      // 跳转到报告页面
+      alert("图片保存成功");
+    } else {
+      alert("图片保存失败，请重试");
+    }
     isLoading.value = false;
-    // 跳转到报告页面
   } catch (error) {
     // 出错时也要取消loading
     isLoading.value = false;

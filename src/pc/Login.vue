@@ -62,16 +62,9 @@ import { useLanguage } from "../composables/useLanguage";
 import { userApi } from "../api";
 
 const router = useRouter();
-const { t } = useI18n();
-// 使用语言钩子获取当前语言和切换语言方法
-const { currentLanguage, changeLanguage } = useLanguage();
 
 const username = ref("");
 const password = ref("");
-
-const goBack = () => {
-  router.push("/");
-};
 
 const login = async () => {
   try {
