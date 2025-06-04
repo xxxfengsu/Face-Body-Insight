@@ -49,7 +49,7 @@
       <div class="material-selection">
         <div class="material-tabs">
           <div
-            v-for="(label, key) in clothesTypeDic"
+            v-for="(label, key) in clothesTypeDic[activeGender]"
             :key="key"
             class="material-tab"
             :class="{ active: selectedType === Number(key) }"
@@ -88,16 +88,23 @@ let activeImage = ref(
 const loading = ref(false);
 const error = ref(null);
 const clothesTypeDic = {
-  1: "长发",
-  2: "短发",
-  3: "盘发",
+  male: {
+    9: "上衣",
+    10: "下装",
+    11: "连体",
+  },
+  female: {
+    12: "上衣",
+    13: "下装",
+    14: "连体",
+  },
 };
 
 // 性别选择
 const activeGender = ref("female");
 
 // 选中的材料类型
-const selectedType = ref(1); // 默认选择上衣
+const selectedType = ref(12); // 默认选择女上衣
 
 // 过滤后的材料列表
 const filteredMaterials = computed(() => {
@@ -107,9 +114,9 @@ const filteredMaterials = computed(() => {
 // 获取衣服列表
 const fetchClothes = async () => {
   let params = {
-    cateId: 2,
+    cateId: selectedType.value,
     page: 1,
-    pageSize: 20,
+    pageSize: 999,
   };
   const response = await clothesApi.getClothes(params);
   console.log(response);
@@ -212,6 +219,7 @@ const handleTouchEnd = async (e) => {
   height: 100vh;
   background-image: url(../assets/pc_bg.png);
   background-size: cover;
+  background-position: right;
   position: fixed;
   top: 0;
   left: 0;

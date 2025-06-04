@@ -426,8 +426,10 @@
                   <div class="style-image-section">
                     <img
                       :src="
-                        reportData?.body_type?.image_url ||
-                        '../assets/baseDeepPic.png'
+                        (reportData?.body_type?.image_url ||
+                          '../assets/baseDeepPic.png') +
+                        '?t=' +
+                        new Date().getTime()
                       "
                       alt="风格参考"
                       class="style-image"
@@ -444,17 +446,18 @@
                     </div>
                     <div class="style-item">
                       <div class="style-label">特性特征:</div>
-                      <span
-                        class="info-value"
-                        v-for="(item, index) in reportData?.body_type?.features"
-                        :key="index"
-                        >{{ item
-                        }}{{
-                          index < reportData?.body_type?.features.length - 1
-                            ? "、"
-                            : ""
-                        }}</span
-                      >
+                    </div>
+                    <div
+                      class="info-value"
+                      v-for="(item, index) in reportData?.body_type?.features"
+                      :key="index"
+                    >
+                      {{ item
+                      }}{{
+                        index < reportData?.body_type?.features.length - 1
+                          ? "、"
+                          : ""
+                      }}
                     </div>
                   </div>
                 </div>
@@ -468,8 +471,10 @@
                   <div class="style-image-section">
                     <img
                       :src="
-                        reportData?.body_proportion?.image_url ||
-                        '../assets/baseDeepPic.png'
+                        (reportData?.body_proportion?.image_url ||
+                          '../assets/baseDeepPic.png') +
+                        '?t=' +
+                        new Date().getTime()
                       "
                       alt="风格参考"
                       class="style-image"
@@ -934,7 +939,7 @@ const handleRightScroll = (event) => {
 
         .style-content {
           display: flex;
-          align-items: flex-start;
+          // align-items: flex-start;
           gap: 10px;
           overflow: hidden;
         }
@@ -981,7 +986,7 @@ const handleRightScroll = (event) => {
 
         .style-label {
           font-weight: bold;
-          min-width: 65px;
+          min-width: 90px;
           text-align: left;
         }
 
