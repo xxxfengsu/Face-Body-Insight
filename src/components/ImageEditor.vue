@@ -858,17 +858,25 @@ const saveEdits = async () => {
 
     // 上传成功后，取消loading，然后跳转
     isLoading.value = false;
-    localStorage.setItem("reportData", JSON.stringify(res.data));
+    let reportData;
+    if (boxFromRoute.value == 32) {
+      reportData = res.data.rawData;
+    } else {
+      reportData = res.data;
+    }
+
+    localStorage.setItem("reportData", JSON.stringify(reportData));
     localStorage.setItem("fromImageEditor", "true");
     localStorage.setItem("cateId", boxFromRoute.value);
     // 跳转到报告页面
     router.push({
       path: "/report",
       query: {
-        reportData: JSON.stringify(res.data),
+        reportData: JSON.stringify(reportData),
         personId: personId.value,
         cateId: boxFromRoute.value,
         fromImageEditor: "true",
+        ID: res.data.ID,
       },
     });
   } catch (error) {

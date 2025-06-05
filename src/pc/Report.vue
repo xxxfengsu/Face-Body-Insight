@@ -991,7 +991,6 @@ const handleRightScroll = (event) => {
         }
 
         .style-value {
-          flex: 1;
           text-align: left;
         }
       }

@@ -511,6 +511,7 @@ const isLoading = ref(false);
 
 const personId = ref("");
 const cateId = ref("");
+const ID = ref("");
 // 添加这段代码来接收参数
 const reportData = computed(() => {
   if (route.query.reportData) {
@@ -624,7 +625,7 @@ const generateAndUploadImage = async () => {
     formData.append("files", blob, "report.png");
     formData.append("personId", personId.value);
     formData.append("cateId", cateId.value);
-
+    formData.append("id", ID.value);
     isLoading.value = false;
     const response = await reportApi.createRecord(formData);
     console.log("图片上传成功:", response.msg);
@@ -640,7 +641,7 @@ onMounted(async () => {
     personId.value = route.query.personId;
   }
   cateId.value = route.query.cateId || localStorage.getItem("cateId");
-
+  ID.value = route.query.ID;
   // 等待报告数据加载完成
   if (reportData.value) {
     // 给页面一个加载时间，确保所有图片都加载完成
