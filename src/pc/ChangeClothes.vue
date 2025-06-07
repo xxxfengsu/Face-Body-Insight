@@ -13,36 +13,64 @@
       <div class="gender-tabs">
         <div
           class="tab-item"
-          :class="{ active: activeGender === 'male' }"
-          @click="activeGender = 'male'"
+          :class="{ active: activeGender === 'female' }"
+          @click="changeGender('female')"
         >
-          {{ t("changeClothes.male") }}
+          <img
+            src="../assets/icon/Girl_Light_Skin_Tone.png"
+            style="margin-right: 10px"
+            alt="female"
+          />
+          {{ t("changeClothes.female") }}
         </div>
         <div
           class="tab-item"
-          :class="{ active: activeGender === 'female' }"
-          @click="activeGender = 'female'"
+          :class="{ active: activeGender === 'male' }"
+          @click="changeGender('male')"
         >
-          {{ t("changeClothes.female") }}
+          <img
+            src="../assets/icon/Boy_Light_Skin_Tone.png"
+            style="margin-right: 10px"
+            alt="male"
+          />
+          {{ t("changeClothes.male") }}
         </div>
       </div>
 
       <div class="try-on-area">
-        <div class="preview-container">
-          <img :src="activeImage || ''" alt="Preview" class="preview-image" />
-        </div>
         <div class="clothes-carousel">
-          <div class="carousel-container" ref="carousel">
+          <div
+            class="carousel-container"
+            ref="carousel"
+            :style="{
+              padding: images.length < visibleCount ? '30px 30%' : '30px',
+            }"
+          >
             <div
-              v-for="(item, index) in images"
+              v-for="(item, index) in loopImages"
               :key="index"
               class="carousel-item"
-              :class="{ active: currentIndex === index }"
+              :class="{ active: index === currentIndex }"
+              :style="getItemStyle(index)"
               @click="handleItemClick(index)"
             >
               <img :src="item.url || ''" :alt="item.name || 'Item'" />
             </div>
           </div>
+          <button
+            class="confirm-btn"
+            v-if="images.length > 0"
+            @click="handleConfirm"
+          >
+            确定
+          </button>
+        </div>
+        <div class="preview-container">
+          <img
+            :src="changeActiveImage ? changeActiveImage : activeImage"
+            alt="Preview"
+            class="preview-image"
+          />
         </div>
       </div>
 
@@ -60,31 +88,30 @@
         </div>
       </div>
     </div>
+    <!-- 在 template 部分，添加加载指示器 -->
+    <div class="loading-overlay" v-if="isLoading">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">正在处理图片...</div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref, computed, onMounted, watch, nextTick } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { useLanguage } from "../composables/useLanguage";
 import { clothesApi } from "@/api";
-import changeclothes from "../assets/changeclothes.png";
-import changeclothes1 from "../assets/changeclothes1.png";
-import changeclothes2 from "../assets/changeclothes2.png";
 
 const router = useRouter();
 const { t } = useI18n();
-// 使用语言钩子
-const { currentLanguage, changeLanguage } = useLanguage();
+const route = useRoute();
 
 const carousel = ref(null);
 const currentIndex = ref(0);
-let touchStartX = 0;
+
 const images = ref([]);
-let activeImage = ref(
-  "http://suuqjbby1.hn-bkt.clouddn.com/tryon/origin/uploads/2025-04-18/changeclothes.png"
-);
+const activeImage = ref("");
+const changeActiveImage = ref("");
 const loading = ref(false);
 const error = ref(null);
 const clothesTypeDic = {
@@ -99,118 +126,174 @@ const clothesTypeDic = {
     14: "连体",
   },
 };
-
+// 在 script setup 部分的顶部添加一个 loading 状态
+const isLoading = ref(false);
 // 性别选择
 const activeGender = ref("female");
 
 // 选中的材料类型
 const selectedType = ref(12); // 默认选择女上衣
 
-// 过滤后的材料列表
-const filteredMaterials = computed(() => {
-  return images.value.filter((item) => item.clothesType === selectedType.value);
-});
+const visibleCount = 5; // 可视区域显示的item数，需为奇数
+const cloneCount = Math.floor(visibleCount / 2);
 
-// 获取衣服列表
-const fetchClothes = async () => {
-  let params = {
-    cateId: selectedType.value,
-    page: 1,
-    pageSize: 999,
-  };
-  const response = await clothesApi.getClothes(params);
-  console.log(response);
-  console.log(1);
-  // 直接使用返回的数据，每个item中已经包含了完整的url
-  images.value = response.data.list.map((item, index) => ({
-    ...item,
-    clothesType: (index % 3) + 1, // 临时添加类型属性用于筛选
-  }));
-};
-
-// 处理轮播项点击
-const handleItemClick = (index) => {
-  currentIndex.value = index;
-  handleChangeClothes(images.value[index]);
-};
-
-// 处理材料选择
-const handleMaterialSelect = (item) => {
-  handleChangeClothes(item);
-};
-
-// 切换衣服
-const handleChangeClothes = async (item) => {
-  try {
-    loading.value = true;
-    let params = {
-      modelUrl:
-        "http://suuqjbby1.hn-bkt.clouddn.com/tryon/origin/uploads/2025-04-18/changeclothes.png",
-      clothesUrl: item.url,
-      cateId: item.cateId,
-    };
-    let res = await clothesApi.changeClothes(params);
-    activeImage.value = res.data.resultImage;
-    // 可以在这里添加成功提示或其他操作
-    loading.value = false;
-  } catch (err) {
-    loading.value = false;
-    console.error("Failed to change clothes:", err);
-    // 处理错误情况
+const loopImages = computed(() => {
+  if (images.value.length === 0) return [];
+  if (images.value.length < visibleCount) {
+    // 不做头尾补齐
+    return images.value;
   }
-};
-
-// 在组件挂载时获取衣服列表
-onMounted(() => {
-  fetchClothes();
+  return [
+    ...images.value.slice(-cloneCount),
+    ...images.value,
+    ...images.value.slice(0, cloneCount),
+  ];
 });
 
-// 计算是否显示了最后一张图片
-const isLastImageVisible = computed(() => {
-  // 考虑到一次显示3张图片，当currentIndex到达倒数第三张时，最后一张就会出现在视口中
-  return currentIndex.value >= images.value.length - 3;
-});
-
-const carouselStyle = computed(() => ({
-  transform: `translateX(calc(-${currentIndex.value * 33.333}% - ${
-    currentIndex.value * 10
-  }px))`,
-  transition: "transform 0.3s ease-out",
-}));
-
-const goBack = () => {
-  router.push("/main");
-};
-
-const handleTouchStart = (e) => {
-  touchStartX = e.touches[0].clientX;
-};
-
-const handleTouchMove = (e) => {
-  e.preventDefault(); // 防止页面滚动
-};
-
-const handleTouchEnd = async (e) => {
-  const touchEndX = e.changedTouches[0].clientX;
-  const diff = touchEndX - touchStartX;
-  const minSwipeDistance = 50;
-
-  if (Math.abs(diff) > minSwipeDistance) {
-    if (diff > 0 && currentIndex.value > 0) {
-      currentIndex.value--;
-      // 切换到上一件衣服时调用 API
-      await handleChangeClothes(images.value[currentIndex.value]);
-    } else if (
-      diff < 0 &&
-      !isLastImageVisible.value &&
-      currentIndex.value < images.value.length - 1
-    ) {
-      currentIndex.value++;
-      // 切换到下一件衣服时调用 API
-      await handleChangeClothes(images.value[currentIndex.value]);
+onMounted(async () => {
+  // 从路由参数中获取图片
+  if (route.query.image) {
+    try {
+      activeImage.value = route.query.image;
+    } catch (e) {
+      console.error("解析图片数据失败:", e);
     }
   }
-};
+
+  // 获取衣服列表
+  const res = await clothesApi.getClothes({
+    cateId: selectedType.value,
+    page: 1,
+    pageSize: 100,
+  });
+
+  if (res.data && res.data.list) {
+    images.value = res.data.list;
+  }
+});
+
+// 监听性别和类型变化，重新获取衣服列表
+watch([activeGender, selectedType], async ([newGender, newType]) => {
+  const res = await clothesApi.getClothes({
+    cateId: newType,
+    page: 1,
+    pageSize: 100,
+  });
+
+  if (res.data && res.data.list) {
+    images.value = res.data.list;
+  }
+});
+
+function changeGender(gender) {
+  activeGender.value = gender;
+  selectedType.value = gender === "female" ? 12 : 9;
+}
+
+// 点击图片切换
+function handleItemClick(index) {
+  currentIndex.value = index;
+  nextTick(() => {
+    scrollToCenter(index);
+    checkLoop();
+  });
+}
+
+// 检查是否到达假头/假尾，瞬间跳转
+function checkLoop() {
+  if (images.value.length < visibleCount) return; // 不做无限循环
+  if (currentIndex.value < cloneCount) {
+    currentIndex.value = images.value.length + currentIndex.value;
+    scrollToCenter(currentIndex.value, true);
+  } else if (currentIndex.value >= images.value.length + cloneCount) {
+    currentIndex.value = currentIndex.value - images.value.length;
+    scrollToCenter(currentIndex.value, true);
+  }
+}
+
+// 计算每个item的样式
+function getItemStyle(index) {
+  const diff = index - currentIndex.value;
+  if (Math.abs(diff) > 2) {
+    return {
+      opacity: 0,
+      pointerEvents: "none",
+      zIndex: 0,
+      transform: "scale(0.7) translateX(0px)",
+      transition: "all 0.3s",
+    };
+  }
+  const zIndex = 10 - Math.abs(diff);
+  const scale = diff === 0 ? 1.1 : 1 - Math.abs(diff) * 0.15;
+  const offset = diff === 0 ? diff * 10 : diff * 80;
+  const opacity = diff === 0 ? 1 : 0.7 - Math.abs(diff) * 0.2;
+  return {
+    zIndex,
+    opacity,
+    transform: `scale(${scale}) translateX(${-offset}px)`,
+    transition: "all 0.3s",
+  };
+}
+
+// 滚动到中间
+function scrollToCenter(index, smooth = true) {
+  setTimeout(() => {
+    const carouselEl = carousel.value;
+    if (!carouselEl) return;
+    // 只选取可见的 carousel-item
+    const itemEls = carouselEl.querySelectorAll(".carousel-item");
+    if (!itemEls[index]) return;
+    const containerWidth = carouselEl.offsetWidth;
+    const itemLeft = itemEls[index].offsetLeft;
+    const itemWidth = itemEls[index].offsetWidth;
+    const scrollLeft = itemLeft - (containerWidth - itemWidth) / 2;
+    carouselEl.scrollTo({
+      left: scrollLeft,
+      behavior: smooth ? "smooth" : "auto",
+    });
+  }, 200);
+}
+
+// 初始化时选中中间项
+watch(loopImages, (val) => {
+  if (val.length > 0) {
+    if (images.value.length < visibleCount) {
+      currentIndex.value = Math.floor(images.value.length / 2);
+    } else {
+      currentIndex.value = cloneCount + Math.floor(images.value.length / 2);
+    }
+    setTimeout(() => scrollToCenter(currentIndex.value), 100);
+  }
+});
+
+async function handleConfirm() {
+  isLoading.value = true;
+  // 这里写你的业务逻辑，比如：
+  // 1. 获取当前选中图片
+  // 2. 跳转页面或发请求
+  const selected =
+    images.value[
+      (currentIndex.value - cloneCount + images.value.length) %
+        images.value.length
+    ];
+  // 示例：弹窗
+  const base64Response = await fetch(activeImage.value);
+  const blob = await base64Response.blob();
+
+  // 创建文件对象
+  const file = new File([blob], "edited_image.jpg", { type: "image/jpeg" });
+  const formData = new FormData();
+  formData.append("modelImage", file);
+  formData.append("cateId", selectedType.value);
+  formData.append("clothesUrl", selected.url);
+  try {
+    const res = await clothesApi.changeClothes(formData);
+    changeActiveImage.value = res.data;
+    isLoading.value = false;
+  } catch (error) {
+    isLoading.value = false;
+  }
+}
 </script>
 
 <style lang="less" scoped>
@@ -261,7 +344,7 @@ const handleTouchEnd = async (e) => {
     .gender-tabs {
       display: flex;
       justify-content: center;
-      margin: 20px 0;
+      margin: 0 0 20px 0;
       width: 220px;
       height: 40px;
       background: rgba(0, 0, 0, 0.3);
@@ -292,14 +375,13 @@ const handleTouchEnd = async (e) => {
       min-height: 0;
 
       .preview-container {
-        flex: 1;
+        width: 40%;
         position: relative;
         display: flex;
         justify-content: center;
         align-items: center;
         border-radius: 15px;
         overflow: hidden;
-        background: rgba(255, 255, 255, 0.1);
 
         .preview-image {
           max-width: 100%;
@@ -309,63 +391,68 @@ const handleTouchEnd = async (e) => {
       }
 
       .clothes-carousel {
-        width: 150px;
-        margin-left: 20px;
-        overflow: hidden;
-
+        width: 60%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        flex-direction: column;
+        .carousel-mask {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          width: 60px;
+          z-index: 2;
+          pointer-events: none;
+          &.left {
+            left: 0;
+            background: linear-gradient(to right, #000 60%, transparent);
+          }
+          &.right {
+            right: 0;
+            background: linear-gradient(to left, #000 60%, transparent);
+          }
+        }
         .carousel-container {
           display: flex;
-          flex-direction: column;
-          gap: 15px;
-          height: 100%;
-          overflow-y: auto;
-          padding-right: 10px;
-
+          flex-direction: row;
+          align-items: center;
+          gap: -60px;
+          width: 100%;
+          overflow-x: auto;
+          scroll-behavior: smooth;
+          padding: 30px;
+          scroll-snap-type: x mandatory;
           &::-webkit-scrollbar {
-            width: 3px;
+            display: none;
           }
-
-          &::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
+        }
+        .carousel-item {
+          position: relative;
+          flex: 0 0 240px;
+          height: 340px;
+          scroll-snap-align: center;
+          border-radius: 20px;
+          overflow: hidden;
+          background: #fff;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+          opacity: 0.5;
+          transform: scale(0.8);
+          transition: all 0.3s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          &.active {
+            opacity: 1;
+            transform: scale(1.1);
+            z-index: 1;
+            border: 2px solid #fff;
           }
-
-          &::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-          }
-
-          .carousel-item {
+          img {
             width: 100%;
-            height: 100px;
-            border-radius: 10px;
-            overflow: hidden;
-            cursor: pointer;
-            position: relative;
-
-            &:hover {
-              transform: scale(1.05);
-              transition: transform 0.2s;
-            }
-
-            &.active {
-              border: 2px solid white;
-
-              &:after {
-                content: "";
-                position: absolute;
-                top: 5px;
-                right: 5px;
-                width: 15px;
-                height: 15px;
-                border-radius: 50%;
-                background: #4caf50;
-              }
-            }
-
-            img {
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
-            }
+            height: 100%;
+            object-fit: contain;
           }
         }
       }
@@ -378,7 +465,7 @@ const handleTouchEnd = async (e) => {
         display: flex;
         justify-content: center;
         margin-bottom: 15px;
-
+        gap: 130px;
         .material-tab {
           padding: 8px 20px;
           cursor: pointer;
@@ -451,5 +538,51 @@ const handleTouchEnd = async (e) => {
     height: 30px;
     right: 20px;
   }
+}
+
+.confirm-btn {
+  display: block;
+  margin: 30px auto 0 auto;
+  padding: 10px 40px;
+  font-size: 20px;
+  background: #fff;
+  color: #333;
+  border: none;
+  border-radius: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: background 0.2s;
+  &:hover {
+    background: #f0f0f0;
+  }
+}
+/* 在 style 部分添加加载样式 */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 20px;
+}
+
+.loading-text {
+  color: white;
+  font-size: 18px;
 }
 </style>
