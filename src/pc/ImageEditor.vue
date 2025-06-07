@@ -215,6 +215,7 @@ const changeClothes = () => {
     query: {
       image: imageUrl.value,
       personId: personId.value,
+      boxFromRoute: boxFromRoute.value,
     },
   });
 };

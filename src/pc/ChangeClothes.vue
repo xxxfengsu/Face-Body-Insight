@@ -74,7 +74,7 @@
         </div>
       </div>
 
-      <div class="material-selection">
+      <div class="material-selection" v-if="boxFromRoute != '32'">
         <div class="material-tabs">
           <div
             v-for="(label, key) in clothesTypeDic[activeGender]"
@@ -108,6 +108,7 @@ const route = useRoute();
 
 const carousel = ref(null);
 const currentIndex = ref(0);
+const boxFromRoute = ref("");
 
 const images = ref([]);
 const activeImage = ref("");
@@ -159,8 +160,9 @@ onMounted(async () => {
       console.error("解析图片数据失败:", e);
     }
   }
-
-  // 获取衣服列表
+  boxFromRoute.value = route.query.boxFromRoute;
+  // 获取衣服或头发列表
+  if (boxFromRoute.value == "32") selectedType.value = 16;
   const res = await clothesApi.getClothes({
     cateId: selectedType.value,
     page: 1,
@@ -187,7 +189,11 @@ watch([activeGender, selectedType], async ([newGender, newType]) => {
 
 function changeGender(gender) {
   activeGender.value = gender;
-  selectedType.value = gender === "female" ? 12 : 9;
+  if (boxFromRoute.value == "32") {
+    selectedType.value = gender === "female" ? 16 : 15;
+  } else {
+    selectedType.value = gender === "female" ? 12 : 9;
+  }
 }
 
 // 点击图片切换
@@ -287,7 +293,12 @@ async function handleConfirm() {
   formData.append("cateId", selectedType.value);
   formData.append("clothesUrl", selected.url);
   try {
-    const res = await clothesApi.changeClothes(formData);
+    let res;
+    if (boxFromRoute.value == "32") {
+      res = await clothesApi.changeHair(formData);
+    } else {
+      res = await clothesApi.changeClothes(formData);
+    }
     changeActiveImage.value = res.data;
     isLoading.value = false;
   } catch (error) {

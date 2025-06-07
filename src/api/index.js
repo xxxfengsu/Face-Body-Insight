@@ -123,6 +123,17 @@ export const clothesApi = {
       },
     });
   },
+  // 换头发
+  changeHair(formData) {
+    return service({
+      url: "/tryon/hair",
+      method: "post",
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data", // 文件上传需要修改Content-Type
+      },
+    });
+  },
   // 创建风格参考
   createStyleReference(formData) {
     return service({
