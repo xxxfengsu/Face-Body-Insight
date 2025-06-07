@@ -580,7 +580,9 @@ const generateAndUploadImage = async () => {
   try {
     await nextTick();
     isLoading.value = true;
-    const element = document.querySelector(".face-analysis");
+    const element =
+      document.querySelector(".face-analysis") ||
+      document.querySelector(".body-analysis");
     if (!element) throw new Error("找不到报告内容");
 
     // 1. 记录原始样式

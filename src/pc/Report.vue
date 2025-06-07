@@ -425,12 +425,7 @@
                   <!-- 左侧图片和颜色面板 -->
                   <div class="style-image-section">
                     <img
-                      :src="
-                        (reportData?.body_type?.image_url ||
-                          '../assets/baseDeepPic.png') +
-                        '?t=' +
-                        new Date().getTime()
-                      "
+                      :src="reportData?.body_type?.image_url"
                       alt="风格参考"
                       class="style-image"
                     />

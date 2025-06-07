@@ -212,7 +212,10 @@ const marksStyle = computed(() => {
 const changeClothes = () => {
   router.push({
     path: "/change-clothes",
-    query: { imageUrl: imageUrl.value, personId: personId.value },
+    query: {
+      image: imageUrl.value,
+      personId: personId.value,
+    },
   });
 };
 
@@ -851,6 +854,7 @@ const saveEdits = async () => {
       // 创建FormData对象
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("personId", personId.value);
       formData.append("provider", "bailian");
 
       // 获取token并添加到formData
@@ -866,7 +870,7 @@ const saveEdits = async () => {
     if (boxFromRoute.value == 32) {
       reportData = res.data.rawData;
     } else {
-      reportData = res.data;
+      reportData = res.data.rawData;
     }
 
     localStorage.setItem("reportData", JSON.stringify(reportData));
