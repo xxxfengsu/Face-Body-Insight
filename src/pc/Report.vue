@@ -381,30 +381,47 @@
                     reportData?.feature_types?.brows.result_name || ""
                   }}</span>
                 </div>
+                <p
+                  v-html="formatAdvice(reportData?.feature_types?.brows.advice)"
+                ></p>
                 <div class="feature-item">
                   <span class="feature-label">眼睛:</span>
                   <span class="feature-value">{{
                     reportData?.feature_types?.eyes.result_name || ""
                   }}</span>
                 </div>
+                <p
+                  v-html="formatAdvice(reportData?.feature_types?.eyes.advice)"
+                ></p>
                 <div class="feature-item">
                   <span class="feature-label">鼻子:</span>
                   <span class="feature-value">{{
                     reportData?.feature_types?.nose.result_name || ""
                   }}</span>
                 </div>
+                <p
+                  v-html="formatAdvice(reportData?.feature_types?.nose.advice)"
+                ></p>
                 <div class="feature-item">
                   <span class="feature-label">嘴巴:</span>
                   <span class="feature-value">{{
                     reportData?.feature_types?.lip.result_name || ""
                   }}</span>
                 </div>
+                <p
+                  v-html="formatAdvice(reportData?.feature_types?.lip.advice)"
+                ></p>
                 <div class="feature-item">
                   <span class="feature-label">脸型:</span>
                   <span class="feature-value">{{
                     reportData?.feature_types?.face_shape.result_name || ""
                   }}</span>
                 </div>
+                <p
+                  v-html="
+                    formatAdvice(reportData?.feature_types?.face_shape.advice)
+                  "
+                ></p>
               </div>
             </div>
           </div>
