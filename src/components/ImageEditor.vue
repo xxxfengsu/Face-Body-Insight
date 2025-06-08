@@ -207,7 +207,11 @@ const marksStyle = computed(() => {
 const changeClothes = () => {
   router.push({
     path: "/change-clothes",
-    query: { imageUrl: imageUrl.value, personId: personId.value },
+    query: {
+      imageUrl: imageUrl.value,
+      personId: personId.value,
+      boxFromRoute: boxFromRoute.value,
+    },
   });
 };
 // 计算滑动百分比值

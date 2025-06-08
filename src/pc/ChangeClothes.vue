@@ -113,8 +113,7 @@ const boxFromRoute = ref("");
 const images = ref([]);
 const activeImage = ref("");
 const changeActiveImage = ref("");
-const loading = ref(false);
-const error = ref(null);
+
 const clothesTypeDic = {
   male: {
     9: "上衣",
@@ -274,9 +273,7 @@ watch(loopImages, (val) => {
 
 async function handleConfirm() {
   isLoading.value = true;
-  // 这里写你的业务逻辑，比如：
-  // 1. 获取当前选中图片
-  // 2. 跳转页面或发请求
+
   const selected =
     images.value[
       (currentIndex.value - cloneCount + images.value.length) %
