@@ -532,9 +532,16 @@ const reportData = computed(() => {
   return null;
 });
 
-// 处理advice文本，将句号替换为换行符
+// 处理advice文本，将句号替换为换行符，如果是数组则每一项换一行
 const formatAdvice = (advice) => {
   if (!advice) return "";
+
+  // 如果是数组，将每个元素用<br>连接
+  if (Array.isArray(advice)) {
+    return advice.join("<br>");
+  }
+
+  // 如果是字符串，保持原有逻辑
   return advice.replace(/。/g, "。<br>").replace(/\.$/, ".<br>");
 };
 
