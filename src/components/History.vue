@@ -48,9 +48,9 @@
           @click="handleDownload(item)"
         >
           <div class="item-content">
-            <div class="item-title">{{ item.personId || "No Title" }}</div>
+            <div class="item-title">{{ item?.personId || "No Title" }}</div>
             <div class="item-date">
-              {{ formatDate(item.CreatedAt) || "No Date" }}
+              {{ formatDate(item?.CreatedAt) || "No Date" }}
             </div>
           </div>
           <div class="document-icon">
