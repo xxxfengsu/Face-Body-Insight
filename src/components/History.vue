@@ -44,7 +44,7 @@
         <div
           class="history-item"
           v-for="(item, index) in historyItems"
-          :key="item.id || index"
+          :key="index"
           @click="handleDownload(item)"
         >
           <div class="item-content">
