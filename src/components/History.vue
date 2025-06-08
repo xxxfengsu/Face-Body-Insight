@@ -45,6 +45,7 @@
           class="history-item"
           v-for="(item, index) in historyItems"
           :key="item.id || index"
+          @click="handleDownload(item)"
         >
           <div class="item-content">
             <div class="item-title">{{ item.personId || "No Title" }}</div>
@@ -52,23 +53,12 @@
               {{ formatDate(item.CreatedAt) || "No Date" }}
             </div>
           </div>
-          <div class="document-icon" @click="handleDownload(item)">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path
-                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-              ></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-            </svg>
+          <div class="document-icon">
+            <img
+              style="width: 40px; height: 40px"
+              :src="item.imageUrl"
+              alt=""
+            />
           </div>
         </div>
 
@@ -374,6 +364,9 @@ const changeRoute = (index) => {
         align-items: center;
         margin: 15px 0;
         width: 100%;
+        padding: 0 10px 0 0;
+        box-sizing: border-box;
+        cursor: pointer;
         border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 
         .document-icon {
