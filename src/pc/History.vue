@@ -79,7 +79,7 @@
           <div class="document-icon">
             <img
               style="width: 40px; height: 40px"
-              :src="item.imageUrl"
+              :src="item?.imageUrl"
               alt=""
             />
           </div>
@@ -153,8 +153,10 @@ const fetchHistoryData = async () => {
     const response = await reportApi.getHistory(params);
 
     if (response.data.list) {
+      // 过滤掉null项
+      const filteredList = response.data.list.filter((item) => item !== null);
       // 追加数据而不是替换
-      historyItems.value = [...historyItems.value, ...response.data.list];
+      historyItems.value = [...historyItems.value, ...filteredList];
 
       // 等待内容完全渲染后再检查高度
       await nextTick();
