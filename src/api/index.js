@@ -6,8 +6,7 @@ const config = getConfig();
 
 // 创建 axios 实例
 const service = axios.create({
-  // baseURL: "http://112.74.166.183:8881",
-  baseURL: "http://139.224.59.6:8881",
+  baseURL: config.baseURL,
   timeout: 100000,
   headers: {
     "Content-Type": "application/json",
@@ -60,7 +59,7 @@ service.interceptors.response.use(
           console.error("No permission");
           break;
         default:
-          console.error(res.msg || "Error");
+          alert(res.msg || "Error");
       }
       return Promise.reject(new Error(res.msg || "Error"));
     }
@@ -94,19 +93,6 @@ export const clothesApi = {
     });
   },
 
-  // POST请求，参数在body中
-  changeClothes(data) {
-    console.log("Sending POST request with data:", data); // 添加日志
-    return service({
-      url: "/tryon/submit",
-      method: "post", // 确保这里是小写的 'post'
-      data, // 请求体数据
-      headers: {
-        "Content-Type": "application/json", // 确保设置了正确的 Content-Type
-      },
-    });
-  },
-
   // 如果有文件上传
   uploadImage(formData) {
     return service({
@@ -126,6 +112,39 @@ export const clothesApi = {
       method: "delete",
     });
   },
+  // 换衣
+  changeClothes(formData) {
+    return service({
+      url: "/tryon/clothes",
+      method: "post",
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data", // 文件上传需要修改Content-Type
+      },
+    });
+  },
+  // 换头发
+  changeHair(formData) {
+    return service({
+      url: "/tryon/hair",
+      method: "post",
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data", // 文件上传需要修改Content-Type
+      },
+    });
+  },
+  // 创建风格参考
+  createStyleReference(formData) {
+    return service({
+      url: "/styleReferences/createStyleReferences",
+      method: "post",
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data", // 文件上传需要修改Content-Type
+      },
+    });
+  },
 };
 
 // 用户相关的 API 封装
@@ -142,7 +161,7 @@ export const userApi = {
 export const reportApi = {
   getReport(data) {
     return service({
-      url: "/analysis/report",
+      url: "/analysis/face",
       method: "post",
       data,
       headers: {
@@ -152,7 +171,7 @@ export const reportApi = {
   },
   getBodyReport(data) {
     return service({
-      url: "/analysis/body",
+      url: "/analysis/body/provider",
       method: "post",
       data,
       headers: {

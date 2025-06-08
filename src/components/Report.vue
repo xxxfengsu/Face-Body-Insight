@@ -337,30 +337,47 @@
                   reportData?.feature_types?.brows.result_name || ""
                 }}</span>
               </div>
+              <p
+                v-html="formatAdvice(reportData?.feature_types?.brows.advice)"
+              ></p>
               <div class="feature-item">
                 <span class="feature-label">眼睛:</span>
                 <span class="feature-value">{{
                   reportData?.feature_types?.eyes.result_name || ""
                 }}</span>
               </div>
+              <p
+                v-html="formatAdvice(reportData?.feature_types?.eyes.advice)"
+              ></p>
               <div class="feature-item">
                 <span class="feature-label">鼻子:</span>
                 <span class="feature-value">{{
                   reportData?.feature_types?.nose.result_name || ""
                 }}</span>
               </div>
+              <p
+                v-html="formatAdvice(reportData?.feature_types?.nose.advice)"
+              ></p>
               <div class="feature-item">
                 <span class="feature-label">嘴巴:</span>
                 <span class="feature-value">{{
                   reportData?.feature_types?.lip.result_name || ""
                 }}</span>
               </div>
+              <p
+                v-html="formatAdvice(reportData?.feature_types?.lip.advice)"
+              ></p>
               <div class="feature-item">
                 <span class="feature-label">脸型:</span>
                 <span class="feature-value">{{
                   reportData?.feature_types?.face_shape.result_name || ""
                 }}</span>
               </div>
+              <p
+                v-html="
+                  formatAdvice(reportData?.feature_types?.face_shape.advice)
+                "
+              ></p>
             </div>
           </div>
         </div>
@@ -511,6 +528,7 @@ const isLoading = ref(false);
 
 const personId = ref("");
 const cateId = ref("");
+const ID = ref("");
 // 添加这段代码来接收参数
 const reportData = computed(() => {
   if (route.query.reportData) {
@@ -531,9 +549,16 @@ const reportData = computed(() => {
   return null;
 });
 
-// 处理advice文本，将句号替换为换行符
+// 处理advice文本，将句号替换为换行符，如果是数组则每一项换一行
 const formatAdvice = (advice) => {
   if (!advice) return "";
+
+  // 如果是数组，将每个元素用<br>连接
+  if (Array.isArray(advice)) {
+    return advice.join("<br>");
+  }
+
+  // 如果是字符串，保持原有逻辑
   return advice.replace(/。/g, "。<br>").replace(/\.$/, ".<br>");
 };
 
@@ -579,7 +604,9 @@ const generateAndUploadImage = async () => {
   try {
     await nextTick();
     isLoading.value = true;
-    const element = document.querySelector(".face-analysis");
+    const element =
+      document.querySelector(".face-analysis") ||
+      document.querySelector(".body-analysis");
     if (!element) throw new Error("找不到报告内容");
 
     // 1. 记录原始样式
@@ -624,7 +651,7 @@ const generateAndUploadImage = async () => {
     formData.append("files", blob, "report.png");
     formData.append("personId", personId.value);
     formData.append("cateId", cateId.value);
-
+    formData.append("id", ID.value);
     isLoading.value = false;
     const response = await reportApi.createRecord(formData);
     console.log("图片上传成功:", response.msg);
@@ -640,7 +667,7 @@ onMounted(async () => {
     personId.value = route.query.personId;
   }
   cateId.value = route.query.cateId || localStorage.getItem("cateId");
-
+  ID.value = route.query.ID;
   // 等待报告数据加载完成
   if (reportData.value) {
     // 给页面一个加载时间，确保所有图片都加载完成

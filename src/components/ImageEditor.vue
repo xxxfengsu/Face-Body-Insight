@@ -207,7 +207,11 @@ const marksStyle = computed(() => {
 const changeClothes = () => {
   router.push({
     path: "/change-clothes",
-    query: { imageUrl: imageUrl.value, personId: personId.value },
+    query: {
+      imageUrl: imageUrl.value,
+      personId: personId.value,
+      boxFromRoute: boxFromRoute.value,
+    },
   });
 };
 // 计算滑动百分比值
@@ -846,6 +850,7 @@ const saveEdits = async () => {
       // 创建FormData对象
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("personId", personId.value);
       formData.append("provider", "bailian");
 
       // 获取token并添加到formData
@@ -858,17 +863,25 @@ const saveEdits = async () => {
 
     // 上传成功后，取消loading，然后跳转
     isLoading.value = false;
-    localStorage.setItem("reportData", JSON.stringify(res.data));
+    let reportData;
+    if (boxFromRoute.value == 32) {
+      reportData = res.data.rawData;
+    } else {
+      reportData = res.data.rawData;
+    }
+
+    localStorage.setItem("reportData", JSON.stringify(reportData));
     localStorage.setItem("fromImageEditor", "true");
     localStorage.setItem("cateId", boxFromRoute.value);
     // 跳转到报告页面
     router.push({
       path: "/report",
       query: {
-        reportData: JSON.stringify(res.data),
+        reportData: JSON.stringify(reportData),
         personId: personId.value,
         cateId: boxFromRoute.value,
         fromImageEditor: "true",
+        ID: res.data.ID,
       },
     });
   } catch (error) {

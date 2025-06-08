@@ -381,30 +381,47 @@
                     reportData?.feature_types?.brows.result_name || ""
                   }}</span>
                 </div>
+                <p
+                  v-html="formatAdvice(reportData?.feature_types?.brows.advice)"
+                ></p>
                 <div class="feature-item">
                   <span class="feature-label">眼睛:</span>
                   <span class="feature-value">{{
                     reportData?.feature_types?.eyes.result_name || ""
                   }}</span>
                 </div>
+                <p
+                  v-html="formatAdvice(reportData?.feature_types?.eyes.advice)"
+                ></p>
                 <div class="feature-item">
                   <span class="feature-label">鼻子:</span>
                   <span class="feature-value">{{
                     reportData?.feature_types?.nose.result_name || ""
                   }}</span>
                 </div>
+                <p
+                  v-html="formatAdvice(reportData?.feature_types?.nose.advice)"
+                ></p>
                 <div class="feature-item">
                   <span class="feature-label">嘴巴:</span>
                   <span class="feature-value">{{
                     reportData?.feature_types?.lip.result_name || ""
                   }}</span>
                 </div>
+                <p
+                  v-html="formatAdvice(reportData?.feature_types?.lip.advice)"
+                ></p>
                 <div class="feature-item">
                   <span class="feature-label">脸型:</span>
                   <span class="feature-value">{{
                     reportData?.feature_types?.face_shape.result_name || ""
                   }}</span>
                 </div>
+                <p
+                  v-html="
+                    formatAdvice(reportData?.feature_types?.face_shape.advice)
+                  "
+                ></p>
               </div>
             </div>
           </div>
@@ -425,10 +442,7 @@
                   <!-- 左侧图片和颜色面板 -->
                   <div class="style-image-section">
                     <img
-                      :src="
-                        reportData?.body_type?.image_url ||
-                        '../assets/baseDeepPic.png'
-                      "
+                      :src="reportData?.body_type?.image_url"
                       alt="风格参考"
                       class="style-image"
                     />
@@ -444,17 +458,18 @@
                     </div>
                     <div class="style-item">
                       <div class="style-label">特性特征:</div>
-                      <span
-                        class="info-value"
-                        v-for="(item, index) in reportData?.body_type?.features"
-                        :key="index"
-                        >{{ item
-                        }}{{
-                          index < reportData?.body_type?.features.length - 1
-                            ? "、"
-                            : ""
-                        }}</span
-                      >
+                    </div>
+                    <div
+                      class="info-value"
+                      v-for="(item, index) in reportData?.body_type?.features"
+                      :key="index"
+                    >
+                      {{ item
+                      }}{{
+                        index < reportData?.body_type?.features.length - 1
+                          ? "、"
+                          : ""
+                      }}
                     </div>
                   </div>
                 </div>
@@ -468,8 +483,10 @@
                   <div class="style-image-section">
                     <img
                       :src="
-                        reportData?.body_proportion?.image_url ||
-                        '../assets/baseDeepPic.png'
+                        (reportData?.body_proportion?.image_url ||
+                          '../assets/baseDeepPic.png') +
+                        '?t=' +
+                        new Date().getTime()
                       "
                       alt="风格参考"
                       class="style-image"
@@ -592,9 +609,16 @@ const reportData = computed(() => {
   return null;
 });
 
-// 处理advice文本，将句号替换为换行符
+// 处理advice文本，将句号替换为换行符，如果是数组则每一项换一行
 const formatAdvice = (advice) => {
   if (!advice) return "";
+
+  // 如果是数组，将每个元素用<br>连接
+  if (Array.isArray(advice)) {
+    return advice.join("<br>");
+  }
+
+  // 如果是字符串，保持原有逻辑
   return advice.replace(/。/g, "。<br>").replace(/\.$/, ".<br>");
 };
 
@@ -934,7 +958,7 @@ const handleRightScroll = (event) => {
 
         .style-content {
           display: flex;
-          align-items: flex-start;
+          // align-items: flex-start;
           gap: 10px;
           overflow: hidden;
         }
@@ -981,12 +1005,11 @@ const handleRightScroll = (event) => {
 
         .style-label {
           font-weight: bold;
-          min-width: 65px;
+          min-width: 90px;
           text-align: left;
         }
 
         .style-value {
-          flex: 1;
           text-align: left;
         }
       }

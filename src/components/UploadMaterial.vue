@@ -158,6 +158,9 @@ const uploadDict = {
     4: 14,
   },
 };
+
+let uploadedFile = null;
+
 onMounted(() => {
   // 获取存储的语言设置
   const savedLanguage = localStorage.getItem("language");
@@ -192,30 +195,9 @@ const triggerFileUpload = () => {
 };
 
 const handleFileUpload = (event) => {
-  // 清空之前选择的文件
-  const fileInputElement = fileInput.value;
-
   const file = event.target.files[0];
   if (file) {
-    // 验证文件类型
-    if (!file.type.includes("image/")) {
-      alert("请上传图片文件（jpg、png等）");
-      if (fileInputElement) {
-        fileInputElement.value = ""; // 清空文件选择
-      }
-      return;
-    }
-
-    // 验证文件大小（限制为10MB）
-    if (file.size > 10 * 1024 * 1024) {
-      alert("图片大小不能超过10MB");
-      if (fileInputElement) {
-        fileInputElement.value = ""; // 清空文件选择
-      }
-      return;
-    }
-
-    // 创建一个临时URL用于图片预览
+    uploadedFile = file;
     uploadedImageUrl.value = URL.createObjectURL(file);
   }
 };
@@ -232,24 +214,36 @@ const handleSubmit = async () => {
     // 将base64数据转换为Blob
     const base64Response = await fetch(uploadedImageUrl.value);
     const blob = await base64Response.blob();
-    // 创建文件对象
-    const file = new File([blob], "edited_image.jpg", { type: "image/jpeg" });
+    // 用原文件名和类型
+    const file = new File([blob], uploadedFile.name, {
+      type: uploadedFile.type,
+    });
 
     // 创建FormData对象
     const formData = new FormData();
     formData.append("file", file);
     formData.append("cateId", cateId);
+    formData.append("isSave", "1");
     const token = sessionStorage.getItem("token");
     if (token) {
       formData.append("token", token);
     }
-
+    let res;
     // 调用API上传文件
-    const res = await clothesApi.uploadImage(formData);
+    if (cateId == 29 || cateId == 30) {
+      res = await clothesApi.createStyleReference(formData);
+    } else {
+      res = await clothesApi.uploadImage(formData);
+    }
+
     if (res.code == 0) {
       // 上传成功后，取消loading，然后跳转
       // 跳转到报告页面
       alert("图片保存成功");
+      uploadedImageUrl.value = null;
+      if (fileInput.value) {
+        fileInput.value.value = "";
+      }
     } else {
       alert("图片保存失败，请重试");
     }
@@ -257,7 +251,6 @@ const handleSubmit = async () => {
   } catch (error) {
     // 出错时也要取消loading
     isLoading.value = false;
-    alert("图片保存失败，请重试");
   }
 };
 

@@ -67,31 +67,21 @@
         <div
           class="history-item"
           v-for="(item, index) in historyItems"
-          :key="item.id || index"
+          :key="index"
+          @click="handleDownload(item)"
         >
           <div class="item-content">
-            <div class="item-title">{{ item.personId || "No Title" }}</div>
+            <div class="item-title">{{ item?.personId || "No Title" }}</div>
             <div class="item-date">
-              {{ formatDate(item.CreatedAt) || "No Date" }}
+              {{ formatDate(item?.CreatedAt) || "No Date" }}
             </div>
           </div>
-          <div class="document-icon" @click="handleDownload(item)">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path
-                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-              ></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-            </svg>
+          <div class="document-icon">
+            <img
+              style="width: 40px; height: 40px"
+              :src="item?.imageUrl"
+              alt=""
+            />
           </div>
         </div>
 
@@ -163,8 +153,10 @@ const fetchHistoryData = async () => {
     const response = await reportApi.getHistory(params);
 
     if (response.data.list) {
+      // 过滤掉null项
+      const filteredList = response.data.list.filter((item) => item !== null);
       // 追加数据而不是替换
-      historyItems.value = [...historyItems.value, ...response.data.list];
+      historyItems.value = [...historyItems.value, ...filteredList];
 
       // 等待内容完全渲染后再检查高度
       await nextTick();
@@ -432,6 +424,9 @@ const changeRoute = (index) => {
         align-items: center;
         margin: 15px 0;
         width: 100%;
+        padding: 0 10px;
+        box-sizing: border-box;
+        cursor: pointer;
         border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 
         .document-icon {
