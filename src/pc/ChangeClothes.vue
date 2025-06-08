@@ -289,14 +289,17 @@ async function handleConfirm() {
   // 创建文件对象
   const file = new File([blob], "edited_image.jpg", { type: "image/jpeg" });
   const formData = new FormData();
-  formData.append("modelImage", file);
-  formData.append("cateId", selectedType.value);
-  formData.append("clothesUrl", selected.url);
+
   try {
     let res;
     if (boxFromRoute.value == "32") {
+      formData.append("faceImage", file);
+      formData.append("shapeUrl", selected.url);
       res = await clothesApi.changeHair(formData);
     } else {
+      formData.append("modelImage", file);
+      formData.append("cateId", selectedType.value);
+      formData.append("clothesUrl", selected.url);
       res = await clothesApi.changeClothes(formData);
     }
     changeActiveImage.value = res.data;
