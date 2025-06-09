@@ -154,7 +154,9 @@ const fetchHistoryData = async () => {
 
     if (response.data.list) {
       // 过滤掉null项
-      const filteredList = response.data.list.filter((item) => item !== null);
+      const filteredList = response.data.list.filter(
+        (item) => item !== null && item.fileUrl !== ""
+      );
       // 追加数据而不是替换
       historyItems.value = [...historyItems.value, ...filteredList];
 
