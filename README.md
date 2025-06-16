@@ -42,8 +42,8 @@ Face & Body Insight is a rapid development solution built with Vue 3 + Vite, des
 1. Clone the repository
 
 ```bash
-git clone https://github.com/xxxfengsu/shapeCheck.git
-cd shapeCheck
+git clone https://github.com/xxxfengsu/Face-Body-Insight.git
+cd Face-Body-Insight
 ```
 
 2. Install dependencies
