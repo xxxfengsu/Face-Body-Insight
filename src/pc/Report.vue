@@ -896,11 +896,14 @@ onMounted(async () => {
           border-radius: 15px;
           overflow: hidden;
           width: 50%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
         }
 
         .style-image {
           width: 100%;
-          border-radius: 15px 15px 0 0;
+          border-radius: 15px;
           display: block;
         }
 
