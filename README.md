@@ -1,10 +1,10 @@
-# ShapeCheck - Shape Inspection Tool
+# Face & Body Insight
 
-A modern shape inspection tool built with Vue 3 + Vite, supporting internationalization.
+A modern AI-powered face and body analysis tool built with Vue 3 + Vite, supporting internationalization.
 
 ## Project Overview
 
-ShapeCheck is a rapid development solution built with Vue 3 + Vite, designed for quick deployment and production use. This project demonstrates how to quickly build and deploy a modern web application with the following advantages:
+Face & Body Insight is a rapid development solution built with Vue 3 + Vite, designed for quick deployment and production use. This project demonstrates how to quickly build and deploy a modern web application with the following advantages:
 
 - ⚡ **Lightning Fast Development**: Leveraging Vite's instant server start and hot module replacement
 - 🚀 **Quick Deployment**: Automated CI/CD pipeline for rapid production deployment
@@ -14,7 +14,7 @@ ShapeCheck is a rapid development solution built with Vue 3 + Vite, designed for
 
 ## Features
 
-- 🎯 Shape Inspection and Analysis
+- 🎯 AI-Powered Face & Body Analysis
 - 🌐 Multi-language Support (i18n)
 - 📱 Responsive Design
 - 🎨 Modern UI Interface
