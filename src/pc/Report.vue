@@ -29,7 +29,7 @@
       />
     </div>
     <div class="content" v-if="cateId == 32">
-      <div class="report_left" ref="leftContainer" @scroll="handleLeftScroll">
+      <div class="report_left" ref="leftContainer">
         <div class="face-analysis">
           <!-- 滑动容器，改为垂直布局 -->
           <div class="analysis-slider">
@@ -430,7 +430,7 @@
       <div class="centerLine"></div>
     </div>
     <div class="content" v-if="cateId == 33">
-      <div class="report_left" ref="leftContainer" @scroll="handleLeftScroll">
+      <div class="report_left" ref="leftContainer">
         <div class="face-analysis">
           <div class="analysis-slider">
             <div class="analysis-slide">
@@ -655,77 +655,6 @@ onMounted(async () => {
     cateId.value = localStorage.getItem("cateId");
   }
 });
-
-// 添加滚动同步的引用和处理函数
-const leftContainer = ref(null);
-const rightContainer = ref(null);
-let isScrolling = false;
-
-// 处理左侧滚动时同步右侧
-const handleLeftScroll = (event) => {
-  if (isScrolling) return;
-  isScrolling = true;
-
-  if (rightContainer.value) {
-    // 计算左侧容器已滚动的百分比
-    const leftScrollPercentage =
-      event.target.scrollTop /
-      (event.target.scrollHeight - event.target.clientHeight || 1);
-
-    // 确保滚动到底部时，右侧也滚动到底部
-    if (
-      Math.abs(leftScrollPercentage - 1) < 0.05 ||
-      leftScrollPercentage > 0.95
-    ) {
-      // 如果左侧接近或已达到底部，强制右侧滚动到底部
-      rightContainer.value.scrollTop = rightContainer.value.scrollHeight;
-    } else {
-      // 否则按比例滚动
-      const rightTargetScroll =
-        leftScrollPercentage *
-        (rightContainer.value.scrollHeight -
-          rightContainer.value.clientHeight || 1);
-      rightContainer.value.scrollTop = rightTargetScroll;
-    }
-  }
-
-  setTimeout(() => {
-    isScrolling = false;
-  }, 1); // 增加防抖时间
-};
-
-// 处理右侧滚动时同步左侧
-const handleRightScroll = (event) => {
-  if (isScrolling) return;
-  isScrolling = true;
-
-  if (leftContainer.value) {
-    // 计算右侧容器已滚动的百分比
-    const rightScrollPercentage =
-      event.target.scrollTop /
-      (event.target.scrollHeight - event.target.clientHeight || 1);
-
-    // 确保滚动到底部时，左侧也滚动到底部
-    if (
-      Math.abs(rightScrollPercentage - 1) < 0.05 ||
-      rightScrollPercentage > 0.95
-    ) {
-      // 如果右侧接近或已达到底部，强制左侧滚动到底部
-      leftContainer.value.scrollTop = leftContainer.value.scrollHeight;
-    } else {
-      // 否则按比例滚动
-      const leftTargetScroll =
-        rightScrollPercentage *
-        (leftContainer.value.scrollHeight - leftContainer.value.clientHeight ||
-          1);
-      leftContainer.value.scrollTop = leftTargetScroll;
-    }
-  }
-
-  setTimeout(() => {
-    isScrolling = false;
-  }, 1); // 增加防抖时间
-};
 </script>
 
 <style lang="less" scoped>
@@ -967,11 +896,14 @@ const handleRightScroll = (event) => {
           border-radius: 15px;
           overflow: hidden;
           width: 50%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
         }
 
         .style-image {
           width: 100%;
-          border-radius: 15px 15px 0 0;
+          border-radius: 15px;
           display: block;
         }
 
